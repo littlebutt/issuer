@@ -1,7 +1,6 @@
 import os
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 
 
 def get_default_db_url() -> str:

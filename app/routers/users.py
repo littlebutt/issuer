@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+
+
+from models import User
 
 
 router = APIRouter(
@@ -8,17 +10,6 @@ router = APIRouter(
         response={404: {"description": "Not Found"}}
         )
 
-
-class User(BaseModel):
-    '''
-    User model.
-
-    '''
-    user_code: str | None = None
-    user_name: str | None = None
-    passwd: str | None = None
-    description: str | None = None
-    phone: str | None = None
 
 
 @router.post('/sign_in')
