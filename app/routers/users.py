@@ -1,13 +1,13 @@
 from fastapi import APIRouter, HTTPException
 
 
-from models import User
+from routers.models import User
 
 
 router = APIRouter(
         prefix='/users',
         tags=["users"],
-        response={404: {"description": "Not Found"}}
+        responses={404: {"description": "Not Found"}}
         )
 
 
