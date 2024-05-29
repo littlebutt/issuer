@@ -10,3 +10,13 @@ class User(Base):
     gmt_create = Column(DateTime, default=datetime.datetime.now())
     gmt_modified = Column(DateTime, default=datetime.datetime.now())
 
+    user_code = Column(String, nullable=False)
+    user_name = Column(String, nullable=False)
+    passwd = Column(String, nullable=False)
+    role = Column(String, nullable=False)
+    description = Column(String)
+    phone = Column(String, nullable=False)
+
+
+
+
