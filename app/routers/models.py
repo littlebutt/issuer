@@ -11,6 +11,3 @@ class User(BaseModel):
     role: str
     description: str | None = None
     phone: str | None = None
-
-
-

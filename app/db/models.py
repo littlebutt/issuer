@@ -25,7 +25,3 @@ class User(SQLModel, table=True):
     email: str = Field(nullable=False, index=True)
     description: Optional[str] = Field(nullable=True)
     phone: Optional[str] = Field(nullable=True)
-
-
-
-

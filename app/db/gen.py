@@ -15,4 +15,3 @@ def generate_code(meta_type: str) -> str:
         stmt = select(Generator).order_by(Generator.id.desc()).limit(1)
         result = session.exec(stmt).first()
         return meta_type + str(result.id)
-

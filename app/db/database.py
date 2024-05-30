@@ -29,7 +29,7 @@ class Database:
 
 class DatabaseFactory:
 
-    db: ClassVar["Database"] = None
+    db: ClassVar["Database"] = None # noqa
 
     @classmethod
     def get_db(cls) -> "Database":
