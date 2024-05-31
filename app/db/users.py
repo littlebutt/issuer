@@ -14,6 +14,7 @@ def insert_user(user: "User") -> bool:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             session.add(user)
             session.commit()
+            session.refresh(user)
     except Exception as e:
         Logger.error(e)
         return False
@@ -35,6 +36,7 @@ def update_user_by_code(user: "User") -> bool:
 
             session.add(result)
             session.commit()
+            session.refresh(result)
     except Exception as e:
         Logger.error(e)
         return False

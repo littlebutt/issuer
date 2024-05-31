@@ -1,8 +1,6 @@
 from setuptools import setup, find_packages
 
 
-packages = find_packages(include=('app'))
-
 setup(
     name='issuer',
     version='1.0',
@@ -11,7 +9,6 @@ setup(
     license='MIT License',
     url="https://github.com/littlebutt/issuer",
     description='A project manager application.',
-    packages=packages,
     package_dir={'issuer': 'app'},
     install_requires=['fastapi>=0.111', 'sqlmodel'],
     python_requires='>=3.10',
