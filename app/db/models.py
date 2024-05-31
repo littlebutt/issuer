@@ -13,7 +13,7 @@ class Generator(SQLModel, table=True):
 
 
 class User(SQLModel, table=True):
-    __table__args__ = (UniqueConstraint("email"),)
+    __table_args__ = (UniqueConstraint("email"),)
     id: Optional[int] = Field(default=None, primary_key=True)
     gmt_create: Optional[datetime] = Field(default_factory=datetime.utcnow)
     gmt_modified: Optional[datetime] = Field(default_factory=datetime.utcnow)
