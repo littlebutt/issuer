@@ -1,7 +1,7 @@
 from sqlmodel import Session, select
 
-from db.models import Generator
-from db.database import DatabaseFactory
+from issuer.db.models import Generator
+from issuer.db.database import DatabaseFactory
 
 
 def generate_code(meta_type: str) -> str:

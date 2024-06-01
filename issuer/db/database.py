@@ -4,7 +4,7 @@ from typing import ClassVar
 from sqlalchemy import Engine
 from sqlmodel import SQLModel, create_engine
 
-from db import models # noqa
+from issuer.db import models # noqa
 
 
 def get_default_db_url() -> str:

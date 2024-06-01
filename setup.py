@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 
 setup(
@@ -9,7 +9,7 @@ setup(
     license='MIT License',
     url="https://github.com/littlebutt/issuer",
     description='A project manager application.',
-    package_dir={'issuer': 'app'},
+    packages=['issuer'],
     install_requires=['fastapi>=0.111', 'sqlmodel'],
     python_requires='>=3.10',
     platforms='any'

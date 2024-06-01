@@ -1,7 +1,7 @@
 import pytest
 
 from issuer.db import insert_user, delete_all_users, update_user_by_code, \
-    find_user_by_email
+    find_user_by_email, delete_user_by_code, find_user_by_code
 from issuer.db import User
 
 
@@ -30,3 +30,14 @@ def test_update_user_by_code():
 
     new_user = find_user_by_email("test")
     assert new_user.user_name == "bar"
+
+
+def test_delete_user_by_code():
+    delete_all_users()
+    user = User(user_code="us99", user_name="test", passwd="test", role="admin",
+                email="test")
+    res = insert_user(user=user)
+    assert res is True
+    delete_user_by_code(user_code="us99")
+    new_user = find_user_by_code(user_code="us99")
+    assert new_user is None

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-from db import DatabaseFactory, User, insert_user
-from routers import users
+from issuer.db import DatabaseFactory, User, insert_user
+from issuer.routers import users
 
 
 app = FastAPI()

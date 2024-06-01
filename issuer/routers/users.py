@@ -3,9 +3,9 @@ import hashlib
 from typing import Annotated, Optional
 from fastapi import APIRouter, Cookie
 
-import db
-from db import User
-from routers.models import UserModel, UserRoleEnum
+from issuer import db
+from issuer.db import User
+from issuer.routers.models import UserModel, UserRoleEnum
 
 
 router = APIRouter(

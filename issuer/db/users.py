@@ -1,9 +1,9 @@
 import logging
 from typing import Optional
 from sqlmodel import Session, select
-from db.models import User
-from db.database import DatabaseFactory
-from db.gen import generate_code
+from issuer.db.models import User
+from issuer.db.database import DatabaseFactory
+from issuer.db.gen import generate_code
 
 
 Logger = logging.getLogger(__name__)
