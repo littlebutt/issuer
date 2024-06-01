@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 from sqlmodel import Session, select
 from db.models import User
 from db.database import DatabaseFactory
@@ -44,13 +45,17 @@ def update_user_by_code(user: "User") -> bool:
 
 
 def delete_user_by_code(user_code: str):
-    with Session(DatabaseFactory.get_db().get_engine()) as session:
-        stmt = select(User).where(User.user_code == user_code)
-        results = session.exec(stmt)
-        result = results.one()
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(User).where(User.user_code == user_code)
+            results = session.exec(stmt)
+            result = results.one()
 
-        session.delete(result)
-        session.commit()
+            session.delete(result)
+            session.commit()
+    except Exception as e:
+        Logger.error(e)
+    return True
 
 
 def delete_all_users():
@@ -62,7 +67,21 @@ def delete_all_users():
         session.commit()
 
 
-def find_user_by_email(email: str):
-    with Session(DatabaseFactory.get_db().get_engine()) as session:
-        stmt = select(User).where(User.email == email)
-        return session.exec(stmt).one()
+def find_user_by_email(email: str) -> Optional["User"]:
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(User).where(User.email == email)
+            return session.exec(stmt).one()
+    except Exception as e:
+        Logger.error(e)
+    return None
+
+
+def find_user_by_code(user_code: str) -> Optional["User"]:
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(User).where(User.user_code == user_code)
+            return session.exec(stmt).one()
+    except Exception as e:
+        Logger.error(e)
+    return None

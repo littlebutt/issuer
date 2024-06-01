@@ -18,10 +18,12 @@ class User(SQLModel, table=True):
     gmt_create: Optional[datetime] = Field(default_factory=datetime.utcnow)
     gmt_modified: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
-    user_code: Optional[str] = Field(nullable=False, index=True)
-    user_name: str = Field(nullable=False)
-    passwd: str = Field(nullable=False)
-    role: str = Field(nullable=False)
-    email: str = Field(nullable=False, index=True)
-    description: Optional[str] = Field(nullable=True)
-    phone: Optional[str] = Field(nullable=True)
+    user_code: Optional[str] = Field(index=True)
+    user_name: str
+    passwd: str
+    role: str
+    email: str = Field(index=True)
+    description: Optional[str]
+    phone: Optional[str]
+
+    token: Optional[str]
