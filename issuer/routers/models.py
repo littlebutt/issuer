@@ -7,9 +7,10 @@ class UserModel(BaseModel):
     User model.
 
     '''
-    user_name: str
-    passwd: str
-    email: str
+    user_code: str | None = None
+    user_name: str | None = None
+    passwd: str | None = None
+    email: str | None = None
     role: str | None = None
     description: str | None = None
     phone: str | None = None

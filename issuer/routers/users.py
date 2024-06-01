@@ -50,25 +50,24 @@ def check_cookie(cookie: Optional[str]) -> Optional["User"]:
 
 
 @router.post('/sign_in')
-async def sign_in(email: str,
-                  passwd: str,
-                  cookie: Annotated[str | None, Cookie()] = None):
-    user = check_cookie(cookie=cookie)
-    if user is not None:
+async def sign_in(user: "UserModel",
+                  current_user: Annotated[str | None, Cookie()] = None):
+    _user = check_cookie(cookie=current_user)
+    if _user is not None:
         return {
             "success": True,
             "reason": "Valid token",
-            "user": user
+            "user": _user
         }
 
     md5 = hashlib.md5()
-    md5.update(passwd.encode('utf-8'))
+    md5.update(user.passwd.encode('utf-8'))
     passwd_md5 = md5.hexdigest()
 
-    user = db.find_user_by_email(email)
+    user = db.find_user_by_email(user.email)
     if user is None:
         return {
-            "success": "False",
+            "success": False,
             "reason": "Not exist"
         }
 
@@ -97,33 +96,18 @@ async def sign_in(email: str,
 
 
 @router.post('/sign_out')
-async def sign_out(user_code: str,
-                   cookie: Annotated[str | None, Cookie()] = None):
-    user = check_cookie(cookie)
-    if user is None:
-        return {
-            "success": False,
-            "reason": "Already sign out"
-        }
-    else:
-        user.token = None
-        res = db.update_user_by_code(user)
-        return {
-            "success": res
-        }
+async def sign_out(user: "UserModel"):
+    user = db.find_user_by_code(user.user_code)
+    user.token = None
+    res = db.update_user_by_code(user)
+    return {
+        "success": res
+    }
 
 
 @router.post('/cancel')
-async def concel(user_code: str,
-                 cookie: Annotated[str | None, Cookie()] = None):
-    user = check_cookie(cookie)
-    if user is None:
-        return {
-            "success": False,
-            "reason": "Invalid token"
-        }
-    else:
-        res = db.delete_user_by_code(user_code)
-        return {
-            "success": res
-        }
+async def cancel(user: "UserModel"):
+    res = db.delete_user_by_code(user.user_code)
+    return {
+        "success": res
+    }
