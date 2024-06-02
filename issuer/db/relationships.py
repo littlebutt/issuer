@@ -92,3 +92,17 @@ def find_user_to_user_group_by_group(group_code: str) -> \
     except Exception as e:
         Logger.error(e)
     return list()
+
+
+def delete_all_user_to_user_group() -> bool:
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(UserToUserGroup)
+            user_to_user_groups = session.exec(stmt).all()
+            for user_to_user_group in user_to_user_groups:
+                session.delete(user_to_user_group)
+            session.commit()
+    except Exception as e:
+        Logger.error(e)
+        return False
+    return True

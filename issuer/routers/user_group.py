@@ -25,6 +25,7 @@ async def new_user_group(user_group_model: "UserGroupReq",
     res = db.insert_user_group(user_group=user_group_do)
     if res is False:
         return {"success": res}
+    # 把自己添加入members列表
     user_groups = db.find_user_group_by_owner(owner=user_group_model.owner)
     # XXX: 找到刚才新增的用户组
     user_group = user_groups[-1] if len(user_groups) > 0 else None
@@ -62,14 +63,15 @@ async def change_user_group(user_group_model: "UserGroupReq",
     res = db.update_user_group_by_code(_user_group)
 
     db.delete_user_to_user_group_by_group(_group_code)
-    users = user_group_model.members.split(',')
-    for user in users:
-        res = db.insert_user_to_user_group(
-            UserToUserGroup(user_code=user,
-                            group_code=_group_code)
-        )
-        if res is False:
-            return {"success": False, "reason": "Internal error"}
+    if user_group_model.members is not None:
+        users = user_group_model.members.split(',')
+        for user in users:
+            res = db.insert_user_to_user_group(
+                UserToUserGroup(user_code=user,
+                                group_code=_group_code)
+            )
+            if res is False:
+                return {"success": False, "reason": "Internal error"}
     return {"success": res}
 
 
@@ -101,7 +103,7 @@ async def query_user_group_by_code(group_code: str,
 
 
 @router.get('/query_group')
-def query_user_group_by_user(user_code: str,
+async def query_user_group_by_user(user_code: str,
                              current_user: Annotated[str | None, Cookie()] = None): # noqa
     _user = check_cookie(cookie=current_user)
     if _user is None:

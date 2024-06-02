@@ -13,7 +13,8 @@ Logger = logging.getLogger(__name__)
 
 
 def insert_user_group(user_group: "UserGroup") -> bool:
-    user_group.group_code = generate_code('UG')
+    if user_group.group_code is None:
+        user_group.group_code = generate_code('UG')
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             session.add(user_group)
@@ -81,3 +82,18 @@ def find_user_group_by_owner(owner: str) -> Sequence["UserGroup"]:
     except Exception as e:
         Logger.error(e)
     return list()
+
+
+def delete_all_user_groups() -> bool:
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(UserGroup)
+            results = session.exec(stmt).all()
+
+            for result in results:
+                session.delete(result)
+            session.commit()
+    except Exception as e:
+        Logger.error(e)
+        return False
+    return True

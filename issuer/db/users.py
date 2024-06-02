@@ -11,7 +11,8 @@ Logger = logging.getLogger(__name__)
 
 
 def insert_user(user: "User") -> bool:
-    user.user_code = generate_code('US')
+    if user.user_code is None:
+        user.user_code = generate_code('US')
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             session.add(user)

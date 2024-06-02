@@ -5,8 +5,15 @@ from issuer.db import insert_user, delete_all_users, update_user_by_code, \
 from issuer.db import User
 
 
-def test_insert_user():
+def setup_function(function):
     delete_all_users()
+
+
+def teardown_function(function):
+    delete_all_users()
+
+
+def test_insert_user():
     user1 = User(user_name="test", passwd="test", role="admin", email="test")
     res = insert_user(user=user1)
     assert res is True
@@ -15,11 +22,8 @@ def test_insert_user():
     res = insert_user(user=user2)
     assert res is False
 
-    delete_all_users()
-
 
 def test_update_user_by_code():
-    delete_all_users()
     user = User(user_name="foo", passwd="test", role="admin", email="test")
     res = insert_user(user=user)
     assert res is True
@@ -33,11 +37,22 @@ def test_update_user_by_code():
 
 
 def test_delete_user_by_code():
-    delete_all_users()
-    user = User(user_code="us99", user_name="test", passwd="test", role="admin",
-                email="test")
+    user = User(user_code="us99", user_name="test", passwd="test",
+                role="admin", email="test")
     res = insert_user(user=user)
     assert res is True
     delete_user_by_code(user_code="us99")
     new_user = find_user_by_code(user_code="us99")
     assert new_user is None
+
+
+def test_find_user():
+    user = User(user_code="test", user_name="test", passwd="test",
+                role="admin", email="test")
+    res = insert_user(user=user)
+    assert res is True
+    res = find_user_by_email("test")
+    assert res is not None
+
+    res = find_user_by_code("test")
+    assert res is not None
