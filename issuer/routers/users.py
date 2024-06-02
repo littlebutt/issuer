@@ -108,6 +108,9 @@ async def sign_out(user: "UserModel"):
 @router.post('/cancel')
 async def cancel(user: "UserModel"):
     res = db.delete_user_by_code(user.user_code)
+    if res is False:
+        return {"success": False}
+    res = db.delete_user_to_user_group_by_user(user.user_code)
     return {
         "success": res
     }

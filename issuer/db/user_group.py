@@ -1,42 +1,41 @@
 from datetime import datetime
 import logging
-from typing import Optional
+from typing import Optional, Sequence
+
 from sqlmodel import Session, select
-from issuer.db.models import User
+
 from issuer.db.database import DatabaseFactory
 from issuer.db.gen import generate_code
+from issuer.db.models import UserGroup
 
 
 Logger = logging.getLogger(__name__)
 
 
-def insert_user(user: "User") -> bool:
-    user.user_code = generate_code('US')
+def insert_user_group(user_group: "UserGroup") -> bool:
+    user_group.group_code = generate_code('UG')
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            session.add(user)
+            session.add(user_group)
             session.commit()
-            session.refresh(user)
+            session.refresh(user_group)
     except Exception as e:
         Logger.error(e)
         return False
     return True
 
 
-def update_user_by_code(user: "User") -> bool:
+def update_user_group_by_code(user_group: "UserGroup") -> bool:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(User).where(User.user_code == user.user_code)
+            stmt = select(UserGroup) \
+                .where(UserGroup.group_code == user_group.group_code)
             results = session.exec(stmt)
             result = results.one()
 
             result.gmt_modified = datetime.utcnow()
-            result.user_name = user.user_name
-            result.passwd = user.passwd
-            result.role = user.role
-            result.description = user.description
-            result.phone = user.phone
-            result.token = user.token
+            result.group_name = user_group.group_name
+            result.group_owner = user_group.group_owner
 
             session.add(result)
             session.commit()
@@ -47,10 +46,10 @@ def update_user_by_code(user: "User") -> bool:
     return True
 
 
-def delete_user_by_code(user_code: str):
+def delete_user_group_by_code(group_code: str) -> bool:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(User).where(User.user_code == user_code)
+            stmt = select(UserGroup).where(UserGroup.group_code == group_code)
             results = session.exec(stmt)
             result = results.one()
 
@@ -58,33 +57,27 @@ def delete_user_by_code(user_code: str):
             session.commit()
     except Exception as e:
         Logger.error(e)
+        return False
     return True
 
 
-def delete_all_users():
-    with Session(DatabaseFactory.get_db().get_engine()) as session:
-        stmt = select(User)
-        results = session.exec(stmt).all()
-        for result in results:
-            session.delete(result)
-        session.commit()
-
-
-def find_user_by_email(email: str) -> Optional["User"]:
+def find_user_group_by_code(group_code: str) -> Optional["UserGroup"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(User).where(User.email == email)
-            return session.exec(stmt).one()
+            stmt = select(UserGroup).where(UserGroup.group_code == group_code)
+            results = session.exec(stmt)
+            return results.one()
     except Exception as e:
         Logger.error(e)
     return None
 
 
-def find_user_by_code(user_code: str) -> Optional["User"]:
+def find_user_group_by_owner(owner: str) -> Sequence["UserGroup"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(User).where(User.user_code == user_code)
-            return session.exec(stmt).one()
+            stmt = select(UserGroup).where(UserGroup.group_owner == owner)
+            results = session.exec(stmt)
+            return results.all()
     except Exception as e:
         Logger.error(e)
-    return None
+    return list()
