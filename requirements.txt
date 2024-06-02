@@ -1,0 +1,3 @@
+fastapi >= 0.111
+pytest >= 8.2
+sqlmodel == 0.0.18
