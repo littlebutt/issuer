@@ -17,6 +17,16 @@ router = APIRouter(
 
 @router.post('/sign_up')
 async def sign_up(user: "UserModel"):
+    '''
+    用户注册接口。
+
+    Args:
+        user: :class:`UserModel`模型，必须提供:arg:`email`，:arg:`user_name`和
+            :arg:`passwd`字段，可提供:arg:`role`，:arg:`description`和
+            :arg:`phone`字段。若未提供:arg:`role`字段则采用默认
+            :enum:`UserRoleEnum.Normal`枚举值。
+
+    '''
     if user.role is None:
         user.role = UserRoleEnum.Normal.name
     md5 = hashlib.md5()
@@ -52,6 +62,16 @@ def check_cookie(cookie: Optional[str]) -> Optional["User"]:
 @router.post('/sign_in')
 async def sign_in(user: "UserModel",
                   current_user: Annotated[str | None, Cookie()] = None):
+    '''
+    用户登录接口。
+
+    Args:
+        user: :class:`UserModel`模型，必须提供:arg:`email`字段以及:arg:`passwd`字
+            段。
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+
+    '''
     _user = check_cookie(cookie=current_user)
     if _user is not None:
         return {
@@ -97,6 +117,13 @@ async def sign_in(user: "UserModel",
 
 @router.post('/sign_out')
 async def sign_out(user: "UserModel"):
+    '''
+    用户登出接口。
+
+    Args:
+        user: :class:`UserModel`模型，必须提供:argL`user_code`字段。
+
+    '''
     user = db.find_user_by_code(user.user_code)
     user.token = None
     res = db.update_user_by_code(user)
@@ -107,6 +134,13 @@ async def sign_out(user: "UserModel"):
 
 @router.post('/cancel')
 async def cancel(user: "UserModel"):
+    '''
+    用户注销接口。
+
+    Args:
+        user: :class:`UserModel`模型，必须提供:arg:`user_code`字段。
+
+    '''
     res = db.delete_user_by_code(user.user_code)
     if res is False:
         return {"success": False}
