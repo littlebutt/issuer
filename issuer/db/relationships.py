@@ -131,7 +131,7 @@ def delete_project_to_user_by_project_and_user(project_code: str,
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             stmt = select(ProjectToUser) \
-                .where(ProjectToUser.project_code == project_code, 
+                .where(ProjectToUser.project_code == project_code,
                        ProjectToUser.user_code == user_code)
             result = session.exec(stmt).one()
 
