@@ -83,7 +83,7 @@ async def query_user_group_by_code(group_code: str,
         return {"success": False, "reason": "Invalid token"}
 
     user_group = db.find_user_group_by_code(group_code)
-    user_to_user_groups = db.find_user_to_user_group_by_group(group_code)
+    user_to_user_groups = db.list_user_to_user_group_by_group(group_code)
     users = list()
     for user_to_user_group in user_to_user_groups:
         user = db.find_user_by_code(user_to_user_group.user_code)
@@ -110,7 +110,7 @@ async def query_user_group_by_user(user_code: str,
         return {"success": False, "reason": "Invalid token"}
 
     user_to_user_groups = db.\
-        find_user_to_user_group_by_user(user_code=user_code)
+        list_user_to_user_group_by_user(user_code=user_code)
     user_groups = list()
     for user_to_user_group in user_to_user_groups:
         user_group = db.find_user_group_by_code(user_to_user_group.group_code)

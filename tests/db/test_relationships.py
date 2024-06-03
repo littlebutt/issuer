@@ -2,8 +2,8 @@ import pytest
 
 from issuer.db import delete_all_user_to_user_group, \
     insert_user_to_user_group, delete_user_to_user_group_by_user_and_group, \
-    find_user_to_user_group_by_user, delete_user_to_user_group_by_group, \
-    delete_user_to_user_group_by_user, find_user_to_user_group_by_group
+    list_user_to_user_group_by_user, delete_user_to_user_group_by_group, \
+    delete_user_to_user_group_by_user, list_user_to_user_group_by_group
 from issuer.db import UserToUserGroup
 
 
@@ -28,7 +28,7 @@ def test_delete_user_to_user_group_by_user_and_group():
 
     res = delete_user_to_user_group_by_user_and_group("test", "test")
     assert res is True
-    user_groups = find_user_to_user_group_by_user("test")
+    user_groups = list_user_to_user_group_by_user("test")
     assert len(user_groups) == 0
 
 
@@ -39,7 +39,7 @@ def test_delete_user_to_user_group_by_group():
 
     res = delete_user_to_user_group_by_group("test")
     assert res is True
-    user_groups = find_user_to_user_group_by_user("test")
+    user_groups = list_user_to_user_group_by_user("test")
     assert len(user_groups) == 0
 
 
@@ -50,5 +50,5 @@ def test_delete_user_to_user_group_by_user():
 
     res = delete_user_to_user_group_by_user("test")
     assert res is True
-    user_groups = find_user_to_user_group_by_group("test")
+    user_groups = list_user_to_user_group_by_group("test")
     assert len(user_groups) == 0

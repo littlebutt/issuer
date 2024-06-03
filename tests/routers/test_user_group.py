@@ -63,7 +63,7 @@ def test_new_user_group():
     assert len(res) == 1
     code = res[0].group_code
 
-    res = db.find_user_to_user_group_by_group(code)
+    res = db.list_user_to_user_group_by_group(code)
     assert len(res) == 1
 
 
@@ -91,7 +91,7 @@ def test_delete_user_group():
     res = db.find_user_group_by_owner("test")
     assert len(res) == 0
 
-    res = db.find_user_to_user_group_by_group(code)
+    res = db.list_user_to_user_group_by_group(code)
     assert len(res) == 0
 
 

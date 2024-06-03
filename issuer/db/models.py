@@ -107,7 +107,7 @@ class Project(SQLModel, table=True):
     project_name: str
     '''项目名称'''
 
-    start_date: date = Field(default_factory=datetime.date)
+    start_date: Optional[date] = Field(default_factory=datetime.date)
     '''项目开始日期'''
 
     end_date: Optional[date] = Field(default=None)
@@ -122,7 +122,6 @@ class Project(SQLModel, table=True):
     status: str
     '''
     项目状态
-    TODO: 分为几种状态
     '''
 
     budget: Optional[str]
@@ -133,12 +132,23 @@ class Project(SQLModel, table=True):
     权限，分为公开(Public)和私有(Private)，若私有权限仅限参与者查看。
     '''
 
-    participants: str
-    '''
-    参与者，用逗号分隔的用户码。TODO:拆分多对多关系
-    '''
-
     issues: Optional[str]
     '''
     议题，用逗号分隔的议题码。
     '''
+
+
+class ProjectToUser(SQLModel, table=True):
+    '''
+    项目-用户关系模型
+    '''
+    __table_args__ = (UniqueConstraint("project_code", "user_code"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    gmt_create: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    gmt_modified: Optional[datetime] = Field(default_factory=datetime.utcnow)
+
+    project_code: str = Field(index=True)
+    '''项目码'''
+
+    user_code: str = Field(index=True)
+    '''用户码'''
