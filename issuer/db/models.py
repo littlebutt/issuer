@@ -107,7 +107,7 @@ class Project(SQLModel, table=True):
     project_name: str
     '''项目名称'''
 
-    start_date: Optional[date] = Field(default_factory=datetime.date)
+    start_date: Optional[date] = Field(default=datetime.now().date())
     '''项目开始日期'''
 
     end_date: Optional[date] = Field(default=None)
