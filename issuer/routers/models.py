@@ -4,10 +4,6 @@ from pydantic import BaseModel
 
 
 class UserModel(BaseModel):
-    '''
-    User model.
-
-    '''
     user_code: str | None = None
     user_name: str | None = None
     passwd: str | None = None

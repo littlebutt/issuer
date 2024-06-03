@@ -21,9 +21,9 @@ async def sign_up(user: "UserModel"):
     用户注册接口。
 
     Args:
-        user: :class:`UserModel`模型，必须提供:arg:`email`，:arg:`user_name`和
-            :arg:`passwd`字段，可提供:arg:`role`，:arg:`description`和
-            :arg:`phone`字段。若未提供:arg:`role`字段则采用默认
+        user: :class:`UserModel`模型，必须提供:attr:`email`，:attr:`user_name`和
+            :attr:`passwd`字段，可提供:attr:`role`，:attr:`description`和
+            :attr:`phone`字段。若未提供:attr:`role`字段则采用默认
             :enum:`UserRoleEnum.Normal`枚举值。
 
     '''
@@ -66,7 +66,7 @@ async def sign_in(user: "UserModel",
     用户登录接口。
 
     Args:
-        user: :class:`UserModel`模型，必须提供:arg:`email`字段以及:arg:`passwd`字
+        user: :class:`UserModel`模型，必须提供:attr:`email`字段以及:attr:`passwd`字
             段。
         current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
             形式。
@@ -121,7 +121,7 @@ async def sign_out(user: "UserModel"):
     用户登出接口。
 
     Args:
-        user: :class:`UserModel`模型，必须提供:argL`user_code`字段。
+        user: :class:`UserModel`模型，必须提供:attr:`user_code`字段。
 
     '''
     user = db.find_user_by_code(user.user_code)
@@ -138,13 +138,14 @@ async def cancel(user: "UserModel"):
     用户注销接口。
 
     Args:
-        user: :class:`UserModel`模型，必须提供:arg:`user_code`字段。
+        user: :class:`UserModel`模型，必须提供:attr:`user_code`字段。
 
     '''
     res = db.delete_user_by_code(user.user_code)
     if res is False:
         return {"success": False}
     res = db.delete_user_to_user_group_by_user(user.user_code)
+    # TODO: 检查是否存在项目owner和未关闭的issue
     return {
         "success": res
     }

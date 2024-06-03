@@ -17,6 +17,16 @@ router = APIRouter(
 @router.post('/new')
 async def new_user_group(user_group_model: "UserGroupReq",
                          current_user: Annotated[str | None, Cookie()] = None):
+    '''
+    新增用户组接口。
+
+    Args:
+        user_group_model: :class:`UserGroupReq`模型，必须提供:attr:`group_name`和
+            :attr:`owner`字段。
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+
+    '''
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
@@ -39,9 +49,19 @@ async def new_user_group(user_group_model: "UserGroupReq",
 @router.post('/delete')
 async def delete_user_group(user_group_model: "UserGroupReq",
                             current_user: Annotated[str | None, Cookie()] = None): # noqa
+    '''
+    删除用户组，必须是组长(owner)才能进行的操作。
+
+    Args:
+        user_group_model: :class:`UserGroupReq`模型，必须提供:attr:`group_code`
+            字段。
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+    '''
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
+    # TODO: 检查是否为用户组的owner
     res = db.delete_user_group_by_code(user_group_model.group_code)
     if res is False:
         return {"success": res}
@@ -52,10 +72,21 @@ async def delete_user_group(user_group_model: "UserGroupReq",
 @router.post('/change')
 async def change_user_group(user_group_model: "UserGroupReq",
                             current_user: Annotated[str | None, Cookie()] = None): # noqa
+    '''
+    变更用户组，必须是组长(owner)才能进行的操作。
+
+    Args:
+        user_group_model: :class:`UserGroupReq`模型，必须提供:attr:`group_code`，
+            :attr:`group_name`和:attr:`owner`字段。可以提供:attr:`members`字段，
+            若不提供则清除所有关联成员。
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+
+    '''
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
-
+    # TODO: 检查是否是用户组的owner，如果不是只能退出用户组
     _group_code = user_group_model.group_code
     _user_group = db.find_user_group_by_code(_group_code)
     _user_group.group_name = user_group_model.group_name
@@ -78,6 +109,15 @@ async def change_user_group(user_group_model: "UserGroupReq",
 @router.get('/query', response_model=UserGroupRes)
 async def query_user_group_by_code(group_code: str,
                                    current_user: Annotated[str | None, Cookie()] = None): # noqa
+    '''
+    根据:arg:`group_code`查询用户组。
+
+    Args:
+        group_code: 用户组码。
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+
+    '''
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
@@ -105,6 +145,15 @@ async def query_user_group_by_code(group_code: str,
 @router.get('/query_group')
 async def query_user_group_by_user(user_code: str,
                              current_user: Annotated[str | None, Cookie()] = None): # noqa
+    '''
+    根据:arg:`user_code`查询参与的所有项目。
+
+    Args:
+        user_code: 用户码
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+
+    '''
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
@@ -120,3 +169,4 @@ async def query_user_group_by_user(user_code: str,
         "user_code": user_code,
         "user_groups": user_groups
     }
+# TODO: 新增根据用户码查询所有组长为该用户的用户组。
