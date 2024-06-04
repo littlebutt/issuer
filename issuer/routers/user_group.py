@@ -62,7 +62,7 @@ async def delete_user_group(user_group_model: "UserGroupReq",
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
     user_group = db.find_user_group_by_code(user_group_model.group_code)
-    if user_group.group_owner != _user.user_name:
+    if user_group.group_owner != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
     res = db.delete_user_group_by_code(user_group_model.group_code)
     if res is False:
@@ -89,7 +89,7 @@ async def change_user_group(user_group_model: "UserGroupReq",
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
     user_group = db.find_user_group_by_code(user_group_model.group_code)
-    if user_group.group_owner != _user.user_name:
+    if user_group.group_owner != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
     _group_code = user_group_model.group_code
     _user_group = db.find_user_group_by_code(_group_code)
@@ -174,3 +174,5 @@ async def query_user_group_by_user(user_code: str,
         "user_groups": user_groups
     }
 # TODO: 新增根据用户码查询所有组长为该用户的用户组。
+
+

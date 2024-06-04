@@ -24,7 +24,7 @@ def teardown_function(function):
     delete_all_user_groups()
 
 
-def _get_cookie() -> "httpx.Cookie":
+def _get_cookie():
     res = client.post('/users/sign_up',
                       json={
                           "user_name": "test",
@@ -46,11 +46,11 @@ def _get_cookie() -> "httpx.Cookie":
     user_code = res.json()['user']['user_code']
     cookie = httpx.Cookies()
     cookie.set(name="current_user", value=f"{user_code}:{token}")
-    return cookie
+    return cookie, user_code
 
 
 def test_new_user_group():
-    cookie = _get_cookie()
+    cookie, _ = _get_cookie()
     res = client.post('/user_group/new',
                       json={
                           "group_name": "test",
@@ -68,16 +68,16 @@ def test_new_user_group():
 
 
 def test_delete_user_group():
-    cookie = _get_cookie()
+    cookie, user_code = _get_cookie()
     res = client.post('/user_group/new',
                       json={
                           "group_name": "test",
-                          "owner": "test"
+                          "owner": user_code
                       },
                       cookies=cookie)
     assert res.json()['success'] is True
 
-    res = db.find_user_group_by_owner("test")
+    res = db.find_user_group_by_owner(user_code)
     assert len(res) == 1
     code = res[0].group_code
 
@@ -88,7 +88,7 @@ def test_delete_user_group():
                       cookies=cookie)
     assert res.json()['success'] is True
 
-    res = db.find_user_group_by_owner("test")
+    res = db.find_user_group_by_owner(user_code)
     assert len(res) == 0
 
     res = db.list_user_to_user_group_by_group(code)
@@ -96,16 +96,16 @@ def test_delete_user_group():
 
 
 def test_change_user_group():
-    cookie = _get_cookie()
+    cookie, user_code = _get_cookie()
     res = client.post('/user_group/new',
                       json={
                           "group_name": "test",
-                          "owner": "test"
+                          "owner": user_code
                       },
                       cookies=cookie)
     assert res.json()['success'] is True
 
-    res = client.get('/user_group/query_group?user_code=test',
+    res = client.get(f'/user_group/query_group?user_code={user_code}',
                      cookies=cookie)
     assert res.json()['success'] is True
     code = res.json()['user_groups'][0]["group_code"]
@@ -114,19 +114,19 @@ def test_change_user_group():
                       json={
                           "group_code": code,
                           "group_name": "foo",
-                          "owner": "test",
+                          "owner": user_code,
                           "members": "test"
                       },
                       cookies=cookie)
     assert res.json()['success'] is True
-    res = client.get('/user_group/query_group?user_code=test',
+    res = client.get(f'/user_group/query_group?user_code=test',
                      cookies=cookie)
     assert res.json()['success'] is True
     assert res.json()['user_groups'][0]["group_name"] == "foo"
 
 
 def test_query_user_group_by_code():
-    cookie = _get_cookie()
+    cookie, _ = _get_cookie()
     res = client.post('/user_group/new',
                       json={
                           "group_name": "test",
