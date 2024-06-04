@@ -116,7 +116,8 @@ async def sign_in(user: "UserModel",
 
 
 @router.post('/sign_out')
-async def sign_out(user: "UserModel"):
+async def sign_out(user: "UserModel",
+                   current_user: Annotated[str | None, Cookie()] = None):
     '''
     用户登出接口。
 
@@ -124,6 +125,13 @@ async def sign_out(user: "UserModel"):
         user: :class:`UserModel`模型，必须提供:attr:`user_code`字段。
 
     '''
+    _user = check_cookie(cookie=current_user)
+    if _user is None or _user.user_code != user.user_code:
+        return {
+            "success": False,
+            "reason": "Invalid token",
+        }
+    
     user = db.find_user_by_code(user.user_code)
     user.token = None
     res = db.update_user_by_code(user)
@@ -133,7 +141,8 @@ async def sign_out(user: "UserModel"):
 
 
 @router.post('/cancel')
-async def cancel(user: "UserModel"):
+async def cancel(user: "UserModel",
+                 current_user: Annotated[str | None, Cookie()] = None):
     '''
     用户注销接口。
 
@@ -141,6 +150,19 @@ async def cancel(user: "UserModel"):
         user: :class:`UserModel`模型，必须提供:attr:`user_code`字段。
 
     '''
+    _user = check_cookie(cookie=current_user)
+    if _user is None or _user.user_code != user.user_code:
+        return {
+            "success": False,
+            "reason": "Invalid token",
+        }
+    
+    projects = db.list_project_by_owner(user.user_code)
+    if len(projects) != 0:
+        return {
+            "success": False,
+            "reason": "Unfinished projects"
+        }
     res = db.delete_user_by_code(user.user_code)
     if res is False:
         return {"success": False}

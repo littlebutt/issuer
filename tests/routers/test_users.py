@@ -92,12 +92,18 @@ def test_sign_out():
                           "email": "test"
                       })
     assert res.json()['success'] is True
+    
+    token = res.json()['token']
+    user_code = res.json()['user']['user_code']
+    cookie = httpx.Cookies()
+    cookie.set(name="current_user", value=f"{user_code}:{token}")
 
     user_code = res.json()['user']['user_code']
     res = client.post('/users/sign_out',
                       json={
                           "user_code": user_code
-                      })
+                      },
+                      cookies=cookie)
     print(res.json())
     assert res.json()['success'] is True
     _user = find_user_by_code(user_code)
@@ -122,10 +128,15 @@ def test_cancel():
                           "email": "test"
                       })
     assert res.json()['success'] is True
-
+    token = res.json()['token']
+    user_code = res.json()['user']['user_code']
+    cookie = httpx.Cookies()
+    cookie.set(name="current_user", value=f"{user_code}:{token}")
+ 
     user_code = res.json()['user']['user_code']
     res = client.post('/users/cancel',
                       json={
                           "user_code": user_code
-                      })
+                      },
+                      cookies=cookie)
     assert res.json()['success'] is True
