@@ -4,8 +4,8 @@ from fastapi import APIRouter, Cookie
 
 from issuer import db
 from issuer.db.models import Project
-from issuer.routers.models import ProjectPrivilegeEnum, ProjectReq, ProjectRes, \
-    ProjectStatusEnum
+from issuer.routers.models import ProjectPrivilegeEnum, ProjectReq, \
+    ProjectRes, ProjectStatusEnum
 from issuer.routers.users import check_cookie
 
 
