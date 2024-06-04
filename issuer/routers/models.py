@@ -49,13 +49,13 @@ class ProjectRes(BaseModel):
     project_code: str
     project_name: str
     start_date: str
-    end_date: str
+    end_date: str | None = None
     owner: UserModel
     description: str | None = None
     status: str
     budget: str | None = None
     privilege: str
-    participants: List[UserModel]
+    participants: List[UserModel] | str
     issues: str | None = None
 
 
