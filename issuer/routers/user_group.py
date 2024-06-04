@@ -91,6 +91,8 @@ async def change_user_group(user_group_model: "UserGroupReq",
     user_group = db.find_user_group_by_code(user_group_model.group_code)
     if user_group.group_owner != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
+    if _user.user_code not in user_group_model.members:
+        return {"success": False, "reason": "Owner not in members"}
     _group_code = user_group_model.group_code
     _user_group = db.find_user_group_by_code(_group_code)
     _user_group.group_name = user_group_model.group_name

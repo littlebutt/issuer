@@ -115,11 +115,11 @@ def test_change_user_group():
                           "group_code": code,
                           "group_name": "foo",
                           "owner": user_code,
-                          "members": "test"
+                          "members": f"{user_code},test"
                       },
                       cookies=cookie)
     assert res.json()['success'] is True
-    res = client.get(f'/user_group/query_group?user_code=test',
+    res = client.get(f'/user_group/query_group?user_code={user_code}',
                      cookies=cookie)
     assert res.json()['success'] is True
     assert res.json()['user_groups'][0]["group_name"] == "foo"
