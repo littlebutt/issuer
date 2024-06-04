@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, List
 from fastapi import APIRouter, Cookie
 
 from issuer import db
@@ -31,12 +31,12 @@ async def new_user_group(user_group_model: "UserGroupReq",
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
     user_group_do = UserGroup(group_name=user_group_model.group_name,
-                              group_owner=user_group_model.owner)
+                              group_owner=_user.user_code)
     res = db.insert_user_group(user_group=user_group_do)
     if res is False:
         return {"success": res}
     # 把自己添加入members列表
-    user_groups = db.find_user_group_by_owner(owner=user_group_model.owner)
+    user_groups = db.find_user_group_by_owner(owner=_user.user_code)
     # XXX: 找到刚才新增的用户组
     user_group = user_groups[-1] if len(user_groups) > 0 else None
     res = db.insert_user_to_user_group(
@@ -140,17 +140,51 @@ async def query_user_group_by_code(group_code: str,
                                    role=user.role,
                                    description=user.description,
                                    phone=user.phone))
-
+    owner = db.find_user_by_code(user_group.group_owner)
     res = UserGroupRes(group_code=group_code,
                        group_name=user_group.group_name,
-                       owner=user_group.group_owner,
+                       owner=UserModel(
+                           user_code=owner.user_code,
+                           user_name=owner.user_name,
+                           email=owner.email,
+                           role=owner.role,
+                           description=owner.description,
+                           phone=owner.phone
+                       ),
                        members=users)
     return res
 
 
-@router.get('/query_group')
+@router.get('/list_users', response_model=List[UserModel])
+async def list_users_by_group_code(group_code: str,
+                                   page_num: int = 1,
+                                   page_size: int = 10,
+                                   current_user: Annotated[str | None, Cookie()] = None): # noqa
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {"success": False, "reason": "Invalid token"}
+    u2ugs = db.list_user_to_user_group_by_group(group_code,
+                                                page_num=page_num,
+                                                page_size=page_size)
+    res = list()
+    for u2ug in u2ugs:
+        u = db.find_user_by_code(u2ug.user_code)
+        res.append(UserModel(
+            user_code=u.user_code,
+            user_name=u.user_name,
+            email=u.email,
+            role=u.role,
+            description=u.description,
+            phone=u.phone
+        ))
+    return res
+
+
+@router.get('/query_group', response_model=List[UserGroupRes])
 async def query_user_group_by_user(user_code: str,
-                             current_user: Annotated[str | None, Cookie()] = None): # noqa
+                                   page_num: int = 1,
+                                   page_size: int = 10,
+                                   current_user: Annotated[str | None, Cookie()] = None): # noqa
     '''
     根据:arg:`user_code`查询参与的所有项目。
 
@@ -165,16 +199,25 @@ async def query_user_group_by_user(user_code: str,
         return {"success": False, "reason": "Invalid token"}
 
     user_to_user_groups = db.\
-        list_user_to_user_group_by_user(user_code=user_code)
+        list_user_to_user_group_by_user(user_code=user_code,
+                                        page_num=page_num, page_size=page_size)
     user_groups = list()
     for user_to_user_group in user_to_user_groups:
         user_group = db.find_user_group_by_code(user_to_user_group.group_code)
-        user_groups.append(user_group)
-    return {
-        "success": True,
-        "user_code": user_code,
-        "user_groups": user_groups
-    }
-# TODO: 新增根据用户码查询所有组长为该用户的用户组。
-
-
+        owner = db.find_user_by_code(user_group.group_owner)
+        members = list()
+        us = db.list_user_to_user_group_by_group(user_group.group_code)
+        for u in us:
+            members.append(u.user_code)
+        user_groups.append(UserGroupRes(
+            group_code=user_group.group_code,
+            group_name=user_group.group_name,
+            owner=UserModel(user_code=owner.user_code,
+                            user_name=owner.user_name,
+                            email=owner.email,
+                            role=owner.role,
+                            description=owner.description,
+                            phone=owner.phone),
+            members=','.join(members)
+        ))
+    return user_groups

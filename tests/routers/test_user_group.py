@@ -50,16 +50,16 @@ def _get_cookie():
 
 
 def test_new_user_group():
-    cookie, _ = _get_cookie()
+    cookie, user_code = _get_cookie()
     res = client.post('/user_group/new',
                       json={
                           "group_name": "test",
-                          "owner": "test"
+                          "owner": user_code
                       },
                       cookies=cookie)
     assert res.json()['success'] is True
 
-    res = db.find_user_group_by_owner("test")
+    res = db.find_user_group_by_owner(user_code)
     assert len(res) == 1
     code = res[0].group_code
 
@@ -107,8 +107,8 @@ def test_change_user_group():
 
     res = client.get(f'/user_group/query_group?user_code={user_code}',
                      cookies=cookie)
-    assert res.json()['success'] is True
-    code = res.json()['user_groups'][0]["group_code"]
+    assert len(res.json()) > 0
+    code = res.json()[0]["group_code"]
 
     res = client.post('/user_group/change',
                       json={
@@ -121,26 +121,27 @@ def test_change_user_group():
     assert res.json()['success'] is True
     res = client.get(f'/user_group/query_group?user_code={user_code}',
                      cookies=cookie)
-    assert res.json()['success'] is True
-    assert res.json()['user_groups'][0]["group_name"] == "foo"
+    assert len(res.json()) > 0
+    assert res.json()[0]["group_name"] == "foo"
 
 
 def test_query_user_group_by_code():
-    cookie, _ = _get_cookie()
+    cookie, user_code = _get_cookie()
     res = client.post('/user_group/new',
                       json={
                           "group_name": "test",
-                          "owner": "test"
+                          "owner": user_code
                       },
                       cookies=cookie)
     assert res.json()['success'] is True
 
-    res = client.get('/user_group/query_group?user_code=test',
+    res = client.get(f'/user_group/query_group?user_code={user_code}',
                      cookies=cookie)
-    assert res.json()['success'] is True
-    code = res.json()['user_groups'][0]["group_code"]
+    print(res.json())
+    assert len(res.json()) > 0
+    code = res.json()[0]["group_code"]
 
     res = client.get(f'/user_group/query?group_code={code}',
                      cookies=cookie)
     print(res.json())
-    assert res.json()['owner'] == "test"
+    assert res.json()['owner']['user_name'] == "test"
