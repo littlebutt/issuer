@@ -6,7 +6,8 @@ from issuer.db import delete_all_user_to_user_group, \
     delete_user_to_user_group_by_user, list_user_to_user_group_by_group, \
     delete_all_project_to_user, insert_project_to_user, \
     list_project_to_user_by_project, \
-    delete_project_to_user_by_project_and_user, list_project_to_user_by_user
+    delete_project_to_user_by_project_and_user, \
+    list_project_to_user_by_user, delete_project_to_user_by_project
 from issuer.db import UserToUserGroup, ProjectToUser
 
 
@@ -95,3 +96,13 @@ def test_list_project_to_user_by_user():
         insert_project_to_user(project_to_user)
     res = list_project_to_user_by_user(user_code="bar")
     assert len(res) == 10
+
+
+def test_delete_project_to_user_by_project():
+    project_to_user = ProjectToUser(project_code="foo", user_code="bar")
+    res = insert_project_to_user(project_to_user)
+    assert res is True
+
+    res = delete_project_to_user_by_project("foo")
+    assert res is True
+
