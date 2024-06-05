@@ -143,6 +143,21 @@ def delete_project_to_user_by_project_and_user(project_code: str,
     return True
 
 
+def delete_project_to_user_by_project(project_code: str) -> bool:
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(ProjectToUser) \
+                .where(ProjectToUser.project_code == project_code)
+            results = session.exec(stmt).all()
+            for result in results:
+                session.delete(result)
+            session.commit()
+    except Exception as e:
+        Logger.error(e)
+        return False
+    return True
+
+
 def list_project_to_user_by_project(project_code: str,
                                     page_num: int = 1,
                                     page_size: int = 10) -> \

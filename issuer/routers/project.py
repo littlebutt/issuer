@@ -81,8 +81,18 @@ async def change_project(project: "ProjectReq",
     res = db.update_project_by_code(project_do)
     return {"success": res}
 
-# TODO: 添加成员至项目
 
+@router.post('/change_members')
+async def change_project_members(project: "ProjectReq",
+                                 current_user: Annotated[str | None, Cookie()] = None):
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {"success": False, "reason": "Invalid token"}
+    db.delete_project_to_user_by_project(project.project_code)
+    members = project.members.split(',')
+    for member in members:
+        db.insert_project_to_user(ProjectToUser(project_code=project.project_code, user_code=member))
+    return {"success": True}
 
 @router.get('/query_privileges')
 async def query_privileges():
