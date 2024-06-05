@@ -10,7 +10,7 @@ from issuer.db.models import Project
 Logger = logging.getLogger(__name__)
 
 
-def insert_project(project: "Project") -> bool:
+def insert_project(project: "Project") -> str | None:
     if project.project_code is None:
         project.project_code = generate_code('PJ')
     try:
@@ -20,8 +20,8 @@ def insert_project(project: "Project") -> bool:
             session.refresh(project)
     except Exception as e:
         Logger.error(e)
-        return False
-    return True
+        return None
+    return project.project_code
 
 
 def update_project_by_code(project: "Project") -> bool:

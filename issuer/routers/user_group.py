@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import Annotated, Dict, List
 from fastapi import APIRouter, Cookie
 
 from issuer import db
@@ -33,12 +33,10 @@ async def new_user_group(user_group_model: "UserGroupReq",
     user_group_do = UserGroup(group_name=user_group_model.group_name,
                               group_owner=_user.user_code)
     res = db.insert_user_group(user_group=user_group_do)
-    if res is False:
-        return {"success": res}
+    if res is None:
+        return {"success": False}
     # 把自己添加入members列表
-    user_groups = db.find_user_group_by_owner(owner=_user.user_code)
-    # XXX: 找到刚才新增的用户组
-    user_group = user_groups[-1] if len(user_groups) > 0 else None
+    user_group = db.find_user_group_by_code(res)
     res = db.insert_user_to_user_group(
         UserToUserGroup(user_code=user_group_model.owner,
                         group_code=user_group.group_code)
@@ -112,7 +110,7 @@ async def change_user_group(user_group_model: "UserGroupReq",
     return {"success": res}
 
 
-@router.get('/query', response_model=UserGroupRes)
+@router.get('/query', response_model=UserGroupRes | Dict)
 async def query_user_group_by_code(group_code: str,
                                    current_user: Annotated[str | None, Cookie()] = None): # noqa
     '''
@@ -155,7 +153,7 @@ async def query_user_group_by_code(group_code: str,
     return res
 
 
-@router.get('/list_users', response_model=List[UserModel])
+@router.get('/list_users', response_model=List[UserModel] | Dict)
 async def list_users_by_group_code(group_code: str,
                                    page_num: int = 1,
                                    page_size: int = 10,
@@ -180,7 +178,7 @@ async def list_users_by_group_code(group_code: str,
     return res
 
 
-@router.get('/query_group', response_model=List[UserGroupRes])
+@router.get('/query_group', response_model=List[UserGroupRes] | Dict)
 async def query_user_group_by_user(user_code: str,
                                    page_num: int = 1,
                                    page_size: int = 10,

@@ -12,7 +12,7 @@ from issuer.db.models import UserGroup
 Logger = logging.getLogger(__name__)
 
 
-def insert_user_group(user_group: "UserGroup") -> bool:
+def insert_user_group(user_group: "UserGroup") -> str | None:
     if user_group.group_code is None:
         user_group.group_code = generate_code('UG')
     try:
@@ -22,8 +22,8 @@ def insert_user_group(user_group: "UserGroup") -> bool:
             session.refresh(user_group)
     except Exception as e:
         Logger.error(e)
-        return False
-    return True
+        return None
+    return user_group.group_code
 
 
 def update_user_group_by_code(user_group: "UserGroup") -> bool:

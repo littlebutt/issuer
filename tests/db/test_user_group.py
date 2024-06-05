@@ -18,14 +18,14 @@ def test_insert_user_group():
     user_group = UserGroup(group_code="test", group_name="test",
                            group_owner="test",)
     res = insert_user_group(user_group)
-    assert res is True
+    assert res is not None
 
 
 def test_update_user_group_by_code():
     user_group = UserGroup(group_code="test", group_name="foo",
                            group_owner="test")
     res = insert_user_group(user_group)
-    assert res is True
+    assert res is not None
 
     user_group.group_name = "bar"
     res = update_user_group_by_code(user_group)
@@ -39,7 +39,7 @@ def test_delete_user_group_by_code():
     user_group = UserGroup(group_code="test", group_name="foo",
                            group_owner="test")
     res = insert_user_group(user_group)
-    assert res is True
+    assert res is not None
 
     res = delete_user_group_by_code("test")
     assert res is True
@@ -51,12 +51,12 @@ def test_find_user_group_by_owner():
     user_group1 = UserGroup(group_code="foo", group_name="foo",
                             group_owner="test")
     res = insert_user_group(user_group1)
-    assert res is True
+    assert res is not None
 
     user_group2 = UserGroup(group_code="bar", group_name="foo",
                             group_owner="test")
     res = insert_user_group(user_group2)
-    assert res is True
+    assert res is not None
 
     res = find_user_group_by_owner("test")
     assert len(res) == 2

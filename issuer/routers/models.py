@@ -43,6 +43,7 @@ class ProjectReq(BaseModel):
     status: str | None = None
     budget: str | None = None
     privilege: str | None = None
+    members: str | None = None
 
 
 class ProjectRes(BaseModel):

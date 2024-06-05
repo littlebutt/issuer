@@ -19,14 +19,14 @@ def test_insert_project():
     project = Project(project_code="test", project_name="test", owner="test",
                       status="start", privilege="public")
     res = insert_project(project)
-    assert res is True
+    assert res is not None
 
 
 def test_update_project_by_code():
     project = Project(project_code="test", project_name="bar", owner="test",
                       status="start", privilege="public")
     res = insert_project(project)
-    assert res is True
+    assert res is not None
 
     new_project = find_project_by_code("test")
     assert new_project is not None
@@ -43,7 +43,7 @@ def test_delete_project_by_code():
     project = Project(project_code="test", project_name="bar", owner="test",
                       status="start", privilege="public")
     res = insert_project(project)
-    assert res is True
+    assert res is not None
 
     res = delete_project_by_code("test")
     assert res is True
@@ -55,13 +55,13 @@ def test_list_project_by_owner():
     project = Project(project_code="test1", project_name="bar", owner="test",
                       status="start", privilege="public")
     res = insert_project(project)
-    assert res is True
+    assert res is not None
 
     project = Project(project_code="test2", project_name="foo", owner="test",
                       status="start", privilege="public",
                       start_date=datetime.date(2024, 6, 6))
     res = insert_project(project)
-    assert res is True
+    assert res is not None
 
     projects = list_project_by_owner("test")
     assert len(projects) == 2
