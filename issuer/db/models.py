@@ -178,7 +178,7 @@ class Issue(SQLModel, table=True):
 
     status: str
     '''
-    议题状态，包括开启(Open)，完成(Finished)，关闭(closed)
+    议题状态，包括开启(Open)，完成(Finished)，关闭(Closed)
     '''
 
     tags: Optional[str]

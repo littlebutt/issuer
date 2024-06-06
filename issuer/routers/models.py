@@ -69,3 +69,21 @@ class ProjectStatusEnum(Enum):
 class ProjectPrivilegeEnum(Enum):
     Public = 1
     Private = 2
+
+
+class IssueReq(BaseModel):
+    issue_code: str | None = None
+    project_code: str | None = None
+    issue_id: int | None = None
+    title: str | None = None
+    owner: str | None = None
+    propose_date: str | None = None
+    status: str | None = None
+    tags: str | None = None
+    followers: str | None = None
+
+
+class IssueStatusEnum(Enum):
+    Open = 1
+    Finished = 2
+    Closed = 3

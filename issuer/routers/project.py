@@ -53,7 +53,9 @@ async def delete_project(project: "ProjectReq",
     project_do = db.find_project_by_code(project.project_code)
     if project_do.owner != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
-    # TODO: 删除关联的issue
+    issues = db.list_issues_by_condition(project_code=project.project_code)
+    if len(issues) > 0:
+        return {"success": False, "reason": "Undeleted issues"}
     res = db.delete_project_by_code(project_do.project_code)
     return {"success": res}
 

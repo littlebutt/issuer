@@ -1,6 +1,6 @@
 from datetime import date, datetime
 import logging
-from typing import Optional, Sequence
+from typing import List, Optional, Sequence
 from sqlalchemy import func
 from sqlmodel import Session, select
 from issuer.db.database import DatabaseFactory
@@ -82,6 +82,7 @@ def list_issues_by_condition(issue_code: Optional[str] = None,
                              start_date: Optional[date] = None,
                              end_date: Optional[date] = None,
                              follower: Optional[str] = None,
+                             tags: Optional[List[str]] = None,
                              page_num: int = 1,
                              page_size: int = 10) -> Sequence["Issue"]:
     try:
@@ -105,6 +106,9 @@ def list_issues_by_condition(issue_code: Optional[str] = None,
                 stmt = stmt.where(Issue.propose_date <= end_date)
             if follower is not None:
                 stmt = stmt.where(Issue.followers.like('%' + follower + '%'))
+            if tags is not None:
+                for tag in tags:
+                    stmt = stmt.where(Issue.tags.like('%' + tag + '%'))
             stmt = stmt.limit(page_size).offset((page_num - 1) * page_size)
             results = session.exec(stmt).all()
             return results
@@ -126,5 +130,3 @@ def delete_all_issues() -> bool:
         Logger.error(e)
         return False
     return True
-
-# TODO: list issues by tags
