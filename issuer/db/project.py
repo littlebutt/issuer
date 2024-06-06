@@ -40,7 +40,6 @@ def update_project_by_code(project: "Project") -> bool:
             result.status = project.status
             result.budget = project.budget
             result.privilege = project.privilege
-            result.issues = project.issues
             session.add(result)
             session.commit()
             session.refresh(result)

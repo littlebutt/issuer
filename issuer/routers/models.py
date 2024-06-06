@@ -57,7 +57,6 @@ class ProjectRes(BaseModel):
     budget: str | None = None
     privilege: str
     participants: List[UserModel] | str
-    issues: str | None = None
 
 
 class ProjectStatusEnum(Enum):

@@ -132,11 +132,6 @@ class Project(SQLModel, table=True):
     权限，分为公开(Public)和私有(Private)，若私有权限仅限参与者查看。
     '''
 
-    issues: Optional[str]
-    '''
-    议题，用逗号分隔的议题码。
-    '''
-
 
 class ProjectToUser(SQLModel, table=True):
     '''
@@ -152,3 +147,47 @@ class ProjectToUser(SQLModel, table=True):
 
     user_code: str = Field(index=True)
     '''用户码'''
+
+
+class Issue(SQLModel, table=True):
+    '''
+    议题模型，发号标识为IS。
+
+    '''
+    id: Optional[int] = Field(default=None, primary_key=True)
+    gmt_create: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    gmt_modified: Optional[datetime] = Field(default_factory=datetime.utcnow)
+
+    issue_code: Optional[str] = Field(index=True)
+    '''议题码'''
+
+    project_code: str = Field(index=True)
+    '''项目码'''
+
+    issue_id: Optional[int]
+    '''议题编号'''
+
+    title: str
+    '''议题标题'''
+
+    owner: str
+    '''议题作者，用户码标识'''
+
+    propose_date: date = Field(default=datetime.now().date())
+    '''提出时间'''
+
+    status: str
+    '''
+    议题状态，包括开启(Open)，完成(Finished)，关闭(closed)
+    '''
+
+    tags: Optional[str]
+    '''
+    议题标签，用逗号分隔
+    '''
+
+    followers: Optional[str]
+    '''议题关注者'''
+
+    comments: Optional[str]
+    '''评论列表，用逗号分隔'''
