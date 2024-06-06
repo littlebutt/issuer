@@ -188,6 +188,3 @@ class Issue(SQLModel, table=True):
 
     followers: Optional[str]
     '''议题关注者'''
-
-    comments: Optional[str]
-    '''评论列表，用逗号分隔'''

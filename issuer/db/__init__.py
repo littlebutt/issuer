@@ -1,6 +1,6 @@
 from issuer.db.database import DatabaseFactory
 from issuer.db.models import User, UserGroup, UserToUserGroup, Project, \
-    ProjectToUser
+    ProjectToUser, Issue
 from issuer.db.users import insert_user, delete_all_users, \
     find_user_by_email, update_user_by_code, delete_user_by_code, \
     find_user_by_code
@@ -11,6 +11,8 @@ from issuer.db.user_group import insert_user_group, \
 from issuer.db.project import insert_project, update_project_by_code, \
     delete_project_by_code, find_project_by_code, list_project_by_owner, \
     delete_all_projects
+from issuer.db.issue import insert_issue, update_issue_by_code, \
+    delete_issue_by_code, list_issues_by_condition, delete_all_issues
 from issuer.db.relationships import insert_user_to_user_group, \
     delete_user_to_user_group_by_user_and_group, \
     list_user_to_user_group_by_group, list_user_to_user_group_by_user, \

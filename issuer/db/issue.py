@@ -38,7 +38,9 @@ def update_issue_by_code(issue: "Issue") -> bool:
             result.status = issue.status
             result.tags = issue.tags
             result.followers = issue.followers
-            result.comments = issue.comments
+            session.add(result)
+            session.commit()
+            session.refresh(result)
     except Exception as e:
         Logger.error(e)
         return False
@@ -71,27 +73,28 @@ def delete_issue_by_code(issue_code: str) -> bool:
     return True
 
 
-def list_issues_by_condition(project_code: Optional[str] = None,
+def list_issues_by_condition(issue_code: Optional[str] = None,
+                             project_code: Optional[str] = None,
                              owner: Optional[str] = None,
                              status: Optional[str] = None,
-                             tags: Optional[str] = None,
                              issue_id: Optional[int] = None,
                              title: Optional[str] = None,
                              start_date: Optional[date] = None,
                              end_date: Optional[date] = None,
+                             follower: Optional[str] = None,
                              page_num: int = 1,
                              page_size: int = 10) -> Sequence["Issue"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             stmt = select(Issue)
+            if issue_code is not None:
+                stmt = stmt.where(Issue.issue_code == issue_code)
             if project_code is not None:
                 stmt = stmt.where(Issue.project_code == project_code)
             if owner is not None:
                 stmt = stmt.where(Issue.owner == owner)
             if status is not None:
                 stmt - stmt.where(Issue.status == status)
-            if tags is not None:
-                stmt = stmt.where(Issue.tags.like('%' + tags + '%'))
             if issue_id is not None:
                 stmt = stmt.where(Issue.issue_id == issue_id)
             if title is not None:
@@ -100,11 +103,28 @@ def list_issues_by_condition(project_code: Optional[str] = None,
                 stmt = stmt.where(Issue.propose_date >= start_date)
             if end_date is not None:
                 stmt = stmt.where(Issue.propose_date <= end_date)
+            if follower is not None:
+                stmt = stmt.where(Issue.followers.like('%' + follower + '%'))
             stmt = stmt.limit(page_size).offset((page_num - 1) * page_size)
             results = session.exec(stmt).all()
             return results
     except Exception as e:
         Logger.error(e)
     return list()
+
+
+def delete_all_issues() -> bool:
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(Issue)
+            results = session.exec(stmt).all()
+
+            for result in results:
+                session.delete(result)
+            session.commit()
+    except Exception as e:
+        Logger.error(e)
+        return False
+    return True
 
 # TODO: list issues by tags
