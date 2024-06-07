@@ -87,3 +87,15 @@ class IssueStatusEnum(Enum):
     Open = 1
     Finished = 2
     Closed = 3
+
+
+class IssueRes(BaseModel):
+    issue_code: str
+    project_code: str
+    issue_id: int
+    title: str
+    owner: UserModel
+    propose_date: str
+    status: str
+    tags: str
+    followers: List[UserModel]

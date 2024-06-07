@@ -1,10 +1,11 @@
-from datetime import datetime
-from typing import Annotated
+from datetime import date, datetime
+from typing import Annotated, List, Optional
 from fastapi import APIRouter, Cookie
 
 from issuer import db
 from issuer.db import Issue
-from issuer.routers.models import IssueReq, IssueStatusEnum
+from issuer.routers.models import IssueReq, IssueStatusEnum, IssueRes, \
+    UserModel
 from issuer.routers.users import check_cookie
 
 
@@ -65,3 +66,64 @@ async def change_issue(issue: "IssueReq",
         if issue.followers is not None else issue_do.followers
     res = db.update_issue_by_code(issue_do)
     return {"success": res}
+
+
+@router.get('/list', response_model=List["IssueRes"])
+async def list_issues_by_condition(issue_code: Optional[str] = None,
+                                   project_code: Optional[str] = None,
+                                   owner: Optional[str] = None,
+                                   status: Optional[str] = None,
+                                   issue_id: Optional[int] = None,
+                                   title: Optional[str] = None,
+                                   start_date: Optional[str] = None,
+                                   end_date: Optional[str] = None,
+                                   follower: Optional[str] = None,
+                                   tags: Optional[str] = None,
+                                   page_num: int = 1,
+                                   page_size: int = 10,
+                                   current_user: Annotated[str | None, Cookie()] = None): # noqa
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {"success": False, "reason": "Invalid token"}
+    if start_date is not None:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+    if end_date is not None:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+    if tags is not None:
+        tags = tags.split(',')
+    issues = db.list_issues_by_condition(issue_code, project_code, owner,
+                                         status, issue_id, title, start_date,
+                                         end_date, follower, tags, page_num,
+                                         page_size)
+    res = list()
+    for issue in issues:
+        owner = db.find_user_by_code(issue.owner)
+        followers = list()
+        if issue.followers is not None:
+            for _follower in issue.followers.split(','):
+                _f = db.find_user_by_code(_follower)
+                followers.append(UserModel(
+                    user_code=_f.user_code,
+                    user_name=_f.user_name,
+                    email=_f.email,
+                    role=_f.role,
+                    description=_f.description,
+                    phone=_f.phone
+                ))
+        res.append(IssueRes(
+            issue_code=issue.issue_code,
+            project_code=issue.project_code,
+            issue_id=issue.issue_id,
+            title=issue.title,
+            owner=UserModel(user_code=owner.user_code,
+                            user_name=owner.user_name,
+                            email=owner.email,
+                            role=owner.role,
+                            description=owner.description,
+                            phone=owner.phone),
+            propose_date=datetime.strftime(issue.propose_date, '%Y-%m-%d'),
+            status=issue.status,
+            tags=issue.tags,
+            followers=followers
+        ))
+    return res
