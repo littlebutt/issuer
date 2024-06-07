@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 from typing import Annotated, List, Optional
 from fastapi import APIRouter, Cookie
 
@@ -22,11 +22,10 @@ async def new_issue(issue: "IssueReq",
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
-    propose_date = datetime.strptime(issue.propose_date, '%Y-%m-%d').date()
     issue_do = Issue(project_code=issue.project_code,
                      title=issue.title,
                      owner=_user.user_code,
-                     propose_date=propose_date,
+                     propose_date=datetime.now().date(),
                      status=IssueStatusEnum.Open.name,
                      tags=issue.tags,
                      followers=_user.user_code)
@@ -42,7 +41,8 @@ async def delete_issue(issue: "IssueReq",
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
-    if issue.owner != _user.user_code:
+    issue_do = db.list_issues_by_condition(issue_code=issue.issue_code)[0]
+    if issue_do.owner != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
     res = db.delete_issue_by_code(issue.issue_code)
     # TODO:删除对应的IssueComment
@@ -55,9 +55,9 @@ async def change_issue(issue: "IssueReq",
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
-    if issue.owner != _user.user_code:
-        return {"success": False, "reason": "Permission denied"}
     issue_do = db.list_issues_by_condition(issue_code=issue.issue_code)[0]
+    if issue_do.owner != _user.user_code:
+        return {"success": False, "reason": "Permission denied"}
     issue_do.title = issue.title if issue.title is not None else issue_do.title
     issue_do.status = issue.status \
         if issue.status is not None else issue_do.status
@@ -68,7 +68,7 @@ async def change_issue(issue: "IssueReq",
     return {"success": res}
 
 
-@router.get('/list', response_model=List["IssueRes"])
+@router.get('/list', response_model=List[IssueRes])
 async def list_issues_by_condition(issue_code: Optional[str] = None,
                                    project_code: Optional[str] = None,
                                    owner: Optional[str] = None,

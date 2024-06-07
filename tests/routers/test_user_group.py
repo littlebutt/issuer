@@ -24,7 +24,7 @@ def teardown_function(function):
     delete_all_user_groups()
 
 
-def _get_cookie():
+def get_cookie():
     res = client.post('/users/sign_up',
                       json={
                           "user_name": "test",
@@ -50,7 +50,7 @@ def _get_cookie():
 
 
 def test_new_user_group():
-    cookie, user_code = _get_cookie()
+    cookie, user_code = get_cookie()
     res = client.post('/user_group/new',
                       json={
                           "group_name": "test",
@@ -68,7 +68,7 @@ def test_new_user_group():
 
 
 def test_delete_user_group():
-    cookie, user_code = _get_cookie()
+    cookie, user_code = get_cookie()
     res = client.post('/user_group/new',
                       json={
                           "group_name": "test",
@@ -96,7 +96,7 @@ def test_delete_user_group():
 
 
 def test_change_user_group():
-    cookie, user_code = _get_cookie()
+    cookie, user_code = get_cookie()
     res = client.post('/user_group/new',
                       json={
                           "group_name": "test",
@@ -126,7 +126,7 @@ def test_change_user_group():
 
 
 def test_query_user_group_by_code():
-    cookie, user_code = _get_cookie()
+    cookie, user_code = get_cookie()
     res = client.post('/user_group/new',
                       json={
                           "group_name": "test",
