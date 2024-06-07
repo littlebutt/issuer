@@ -37,6 +37,7 @@ def update_user_by_code(user: "User") -> bool:
             result.role = user.role
             result.description = user.description
             result.phone = user.phone
+            result.email = user.email
             result.token = user.token
 
             session.add(result)

@@ -63,6 +63,5 @@ async def change_issue(issue: "IssueReq",
     issue_do.tags = issue.tags if issue.tags is not None else issue_do.tags
     issue_do.followers = issue.followers \
         if issue.followers is not None else issue_do.followers
-    # TODO: 模型更新改成增量更新
     res = db.update_issue_by_code(issue_do)
     return {"success": res}

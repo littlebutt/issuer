@@ -69,17 +69,25 @@ async def change_project(project: "ProjectReq",
     project_do = db.find_project_by_code(project.project_code)
     if project_do.owner != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
-    start_date = datetime.strptime(project.start_date, '%Y-%m-%d').date()
-    end_date = datetime.strptime(project.end_date, '%Y-%m-%d').date() \
-        if project.end_date is not None else None
-    project_do.project_name = project.project_name
-    project_do.start_date = start_date
-    project_do.end_date = end_date
-    project_do.owner = project.owner
-    project_do.description = project.description
-    project_do.status = project.status
-    project_do.budget = project.budget
-    project_do.privilege = project.privilege
+
+    if project.project_name is not None:
+        project_do.project_name = project.project_name
+    if project.start_date is not None:
+        start_date = datetime.strptime(project.start_date, '%Y-%m-%d').date()
+        project_do.start_date = start_date
+    if project.end_date is not None:
+        end_date = datetime.strptime(project.end_date, '%Y-%m-%d').date()
+        project_do.end_date = end_date
+    if project.owner is not None:
+        project_do.owner = project.owner
+    if project.description is not None:
+        project_do.description = project.description
+    if project.status is not None:
+        project_do.status = project.status
+    if project.budget is not None:
+        project_do.budget = project.budget
+    if project.privilege is not None:
+        project_do.privilege = project.privilege
     res = db.update_project_by_code(project_do)
     return {"success": res}
 

@@ -91,19 +91,18 @@ async def change_user_group(user_group_model: "UserGroupReq",
         return {"success": False, "reason": "Permission denied"}
     if _user.user_code not in user_group_model.members:
         return {"success": False, "reason": "Owner not in members"}
-    _group_code = user_group_model.group_code
-    _user_group = db.find_user_group_by_code(_group_code)
-    _user_group.group_name = user_group_model.group_name
-    _user_group.group_owner = user_group_model.owner
-    res = db.update_user_group_by_code(_user_group)
-
-    db.delete_user_to_user_group_by_group(_group_code)
+    if user_group_model.group_name is not None:
+        user_group.group_name = user_group_model.group_name
+    if user_group_model.owner is not None:
+        user_group.group_owner = user_group_model.owner
+    res = db.update_user_group_by_code(user_group)
     if user_group_model.members is not None:
+        db.delete_user_to_user_group_by_group(user_group_model.group_code)
         users = user_group_model.members.split(',')
         for user in users:
             res = db.insert_user_to_user_group(
                 UserToUserGroup(user_code=user,
-                                group_code=_group_code)
+                                group_code=user_group_model.group_code)
             )
             if res is False:
                 return {"success": False, "reason": "Internal error"}

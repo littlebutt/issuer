@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from issuer.db.users import delete_all_users, find_user_by_code
 from issuer.main import app
 
+
 client = TestClient(app)
 
 
@@ -92,7 +93,7 @@ def test_sign_out():
                           "email": "test"
                       })
     assert res.json()['success'] is True
-    
+
     token = res.json()['token']
     user_code = res.json()['user']['user_code']
     cookie = httpx.Cookies()
@@ -111,7 +112,7 @@ def test_sign_out():
     delete_all_users()
 
 
-def test_cancel():
+def test_change_user():
     delete_all_users()
     res = client.post('/users/sign_up',
                       json={
@@ -128,15 +129,19 @@ def test_cancel():
                           "email": "test"
                       })
     assert res.json()['success'] is True
+
     token = res.json()['token']
     user_code = res.json()['user']['user_code']
     cookie = httpx.Cookies()
     cookie.set(name="current_user", value=f"{user_code}:{token}")
- 
+
     user_code = res.json()['user']['user_code']
-    res = client.post('/users/cancel',
+    res = client.post('/users/change',
                       json={
-                          "user_code": user_code
+                          "user_code": user_code,
+                          "email": "foo"
                       },
                       cookies=cookie)
-    assert res.json()['success'] is True
+    assert res.json()["success"] is True
+    user = find_user_by_code(user_code)
+    assert user.email == "foo"

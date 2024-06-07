@@ -131,7 +131,7 @@ async def sign_out(user: "UserModel",
             "success": False,
             "reason": "Invalid token",
         }
-    
+
     user = db.find_user_by_code(user.user_code)
     user.token = None
     res = db.update_user_by_code(user)
@@ -140,14 +140,14 @@ async def sign_out(user: "UserModel",
     }
 
 
-@router.post('/cancel')
-async def cancel(user: "UserModel",
-                 current_user: Annotated[str | None, Cookie()] = None):
+@router.post('/change')
+async def change_user(user: "UserModel",
+                      current_user: Annotated[str | None, Cookie()] = None):
     '''
-    用户注销接口。
+    更改用户属性。
 
     Args:
-        user: :class:`UserModel`模型，必须提供:attr:`user_code`字段。
+        user: :class:`UserModel`模型，必填:attr:`user_code`。
 
     '''
     _user = check_cookie(cookie=current_user)
@@ -156,18 +156,19 @@ async def cancel(user: "UserModel",
             "success": False,
             "reason": "Invalid token",
         }
-    
-    projects = db.list_project_by_owner(user.user_code)
-    if len(projects) != 0:
-        return {
-            "success": False,
-            "reason": "Unfinished projects"
-        }
-    res = db.delete_user_by_code(user.user_code)
-    if res is False:
-        return {"success": False}
-    res = db.delete_user_to_user_group_by_user(user.user_code)
-    # TODO: 检查是否存在项目owner和未关闭的issue
-    return {
-        "success": res
-    }
+    user_do = db.find_user_by_code(user.user_code)
+    if user.user_name is not None:
+        user_do.user_name = user.user_name
+    if user.passwd is not None:
+        md5 = hashlib.md5()
+        md5.update(user.passwd.encode('utf-8'))
+        passwd_md5 = md5.hexdigest()
+        user_do.passwd = passwd_md5
+    if user.email is not None:
+        user_do.email = user.email
+    if user.description is not None:
+        user_do.description = user.description
+    if user.phone is not None:
+        user_do.phone = user.phone
+    res = db.update_user_by_code(user_do)
+    return {"success": res}

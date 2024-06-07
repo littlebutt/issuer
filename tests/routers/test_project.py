@@ -68,7 +68,7 @@ def test_change_project():
                       json={
                           "project_name": "test_project",
                           "start_date": "2024-06-05",
-                          "privilege": "Start"
+                          "privilege": "Private"
                       },
                       cookies=cookie)
     assert res.json()["success"] is True
@@ -84,8 +84,7 @@ def test_change_project():
                           "start_date": "2024-06-05",
                           "project_name": "test",
                           "owner": user_code,
-                          "status": "Processing",
-                          "privilege": "Private"
+                          "status": "Processing"
                       },
                       cookies=cookie)
     assert res.json()["success"] is True
@@ -93,6 +92,7 @@ def test_change_project():
     res = client.get(f'/project/query?project_code={project_code}',
                      cookies=cookie)
     assert res.json()["status"] == "Processing"
+    assert res.json()["privilege"] == "Private"
 
 
 def test_change_project_members():
