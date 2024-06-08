@@ -5,7 +5,7 @@ from fastapi import APIRouter, Cookie
 
 from issuer import db
 from issuer.db import User
-from issuer.routers.models import UserModel, UserRoleEnum
+from issuer.routers.models import UserModel
 
 
 router = APIRouter(
@@ -22,13 +22,12 @@ async def sign_up(user: "UserModel"):
 
     Args:
         user: :class:`UserModel`模型，必须提供:attr:`email`，:attr:`user_name`和
-            :attr:`passwd`字段，可提供:attr:`role`，:attr:`description`和
-            :attr:`phone`字段。若未提供:attr:`role`字段则采用默认
-            :enum:`UserRoleEnum.Normal`枚举值。
+            :attr:`passwd`字段，可提供:attr:`role`，:attr:`description`,
+            :attr:`role`和:attr:`phone`字段。
 
     '''
     if user.role is None:
-        user.role = UserRoleEnum.Normal.name
+        user.role = 'default'
     md5 = hashlib.md5()
     md5.update(user.passwd.encode('utf-8'))
     passwd_md5 = md5.hexdigest()
@@ -172,3 +171,13 @@ async def change_user(user: "UserModel",
         user_do.phone = user.phone
     res = db.update_user_by_code(user_do)
     return {"success": res}
+
+
+@router.get('/roles')
+async def query_roles():
+    '''获取所有用户角色'''
+    metas = db.list_metas_by_type('USER_ROLE')
+    return {
+        "success": True,
+        "data": [meta.meta_value for meta in metas]
+    }

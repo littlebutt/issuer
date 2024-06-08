@@ -220,4 +220,22 @@ class IssueComment(SQLModel, table=True):
     content: str
     '''评论内容'''
 
-# TODO: Misc, Statics
+
+class Metas(SQLModel, table=True):
+    '''
+    元数据，包括各类枚举等
+
+    '''
+    __table_args__ = (UniqueConstraint("meta_type", "meta_value"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    gmt_create: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    gmt_modified: Optional[datetime] = Field(default_factory=datetime.utcnow)
+
+    meta_type: str = Field(index=True)
+    '''元数据类型'''
+
+    meta_value: str
+    '''元数据值'''
+
+    note: Optional[str]
+    '''备注'''

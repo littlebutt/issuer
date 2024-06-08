@@ -13,12 +13,6 @@ class UserModel(BaseModel):
     phone: str | None = None
 
 
-class UserRoleEnum(Enum):
-    Admin = 1
-    Normal = 2
-    Suspend = 3
-
-
 class UserGroupReq(BaseModel):
     group_code: str | None = None
     group_name: str | None = None
@@ -59,13 +53,6 @@ class ProjectRes(BaseModel):
     participants: List[UserModel] | str
 
 
-class ProjectStatusEnum(Enum):
-    Start = 1
-    Processing = 2
-    Check = 3
-    Finished = 4
-
-
 class ProjectPrivilegeEnum(Enum):
     Public = 1
     Private = 2
@@ -82,12 +69,6 @@ class IssueReq(BaseModel):
     tags: str | None = None
     followers: str | None = None
     assigned: str | None = None
-
-
-class IssueStatusEnum(Enum):
-    Open = 1
-    Finished = 2
-    Closed = 3
 
 
 class IssueRes(BaseModel):

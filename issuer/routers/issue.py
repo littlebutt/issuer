@@ -4,8 +4,7 @@ from fastapi import APIRouter, Cookie
 
 from issuer import db
 from issuer.db import Issue
-from issuer.routers.models import IssueReq, IssueStatusEnum, IssueRes, \
-    UserModel
+from issuer.routers.models import IssueReq, IssueRes, UserModel
 from issuer.routers.users import check_cookie
 
 
@@ -26,7 +25,7 @@ async def new_issue(issue: "IssueReq",
                      title=issue.title,
                      owner=_user.user_code,
                      propose_date=datetime.now().date(),
-                     status=IssueStatusEnum.Open.name,
+                     status='open',
                      tags=issue.tags,
                      followers=_user.user_code,
                      assigned=issue.assigned)
@@ -144,3 +143,12 @@ async def list_issues_by_condition(issue_code: Optional[str] = None,
             assigned=assigneds
         ))
     return res
+
+
+@router.get('/query_status')
+async def query_status():
+    metas = db.list_metas_by_type('ISSUE_STATUS')
+    return {
+        "success": True,
+        "data": [meta.meta_value for meta in metas]
+    }

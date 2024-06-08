@@ -5,7 +5,7 @@ from fastapi import APIRouter, Cookie
 from issuer import db
 from issuer.db.models import Project, ProjectToUser
 from issuer.routers.models import ProjectPrivilegeEnum, ProjectReq, \
-    ProjectRes, ProjectStatusEnum, UserModel
+    ProjectRes, UserModel
 from issuer.routers.users import check_cookie
 
 
@@ -30,7 +30,7 @@ async def new_project(project: "ProjectReq",
                          end_date=end_date,
                          owner=_user.user_code,
                          description=project.description,
-                         status=ProjectStatusEnum.Start.name,
+                         status='start',
                          budget=project.budget,
                          privilege=project.privilege)
     res = db.insert_project(project_do)
@@ -111,21 +111,17 @@ async def change_project_members(project: "ProjectReq",
 async def query_privileges():
     return {
         "success": True,
-        "enums": [ProjectPrivilegeEnum.Private.name,
-                  ProjectPrivilegeEnum.Public.name]
+        "data": [ProjectPrivilegeEnum.Private.name,
+                 ProjectPrivilegeEnum.Public.name]
     }
 
 
 @router.get('/query_status')
 async def query_status():
+    metas = db.list_metas_by_type('PROJECT_STATUS')
     return {
         "success": True,
-        "enums": [
-            ProjectStatusEnum.Start.name,
-            ProjectStatusEnum.Processing.name,
-            ProjectStatusEnum.Check.name,
-            ProjectStatusEnum.Finished.name
-        ]
+        "data": [meta.meta_value for meta in metas]
     }
 
 
