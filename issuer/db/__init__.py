@@ -13,6 +13,10 @@ from issuer.db.project import insert_project, update_project_by_code, \
     delete_all_projects
 from issuer.db.issue import insert_issue, update_issue_by_code, \
     delete_issue_by_code, list_issues_by_condition, delete_all_issues
+from issuer.db.issue_comment import insert_issue_comment, \
+    delete_all_issue_comments, change_issue_comment_by_code, \
+    delete_issue_comment_by_issue, list_issue_comment_by_commenter, \
+    list_issue_comment_by_issue
 from issuer.db.relationships import insert_user_to_user_group, \
     delete_user_to_user_group_by_user_and_group, \
     list_user_to_user_group_by_group, list_user_to_user_group_by_user, \

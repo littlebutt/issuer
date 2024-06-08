@@ -188,3 +188,35 @@ class Issue(SQLModel, table=True):
 
     followers: Optional[str]
     '''议题关注者'''
+
+# TODO: 添加assigned指派
+
+
+class IssueComment(SQLModel, table=True):
+    '''
+    议题评论模型，发号标识为IC。
+
+    '''
+    id: Optional[int] = Field(default=None, primary_key=True)
+    gmt_create: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    gmt_modified: Optional[datetime] = Field(default_factory=datetime.utcnow)
+
+    comment_code: Optional[str] = Field(index=True)
+    '''评论码'''
+
+    issue_code: str = Field(index=True)
+    '''议题码'''
+
+    comment_time: datetime
+    '''评论时间'''
+
+    commenter: str
+    '''评论人'''
+
+    fold: bool
+    '''是否折叠'''
+
+    content: str
+    '''评论内容'''
+
+# TODO: Misc, Statics

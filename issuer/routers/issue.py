@@ -44,8 +44,8 @@ async def delete_issue(issue: "IssueReq",
     issue_do = db.list_issues_by_condition(issue_code=issue.issue_code)[0]
     if issue_do.owner != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
-    res = db.delete_issue_by_code(issue.issue_code)
-    # TODO:删除对应的IssueComment
+    db.delete_issue_by_code(issue.issue_code)
+    res = db.delete_issue_comment_by_issue(issue.issue_code)
     return {"success": res}
 
 

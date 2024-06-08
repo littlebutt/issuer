@@ -105,4 +105,3 @@ def test_delete_project_to_user_by_project():
 
     res = delete_project_to_user_by_project("foo")
     assert res is True
-
