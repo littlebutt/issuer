@@ -143,7 +143,8 @@ def test_list_issues_by_condition():
                       json={
                           "project_code": project_code,
                           "title": "test_issue",
-                          "tags": "test,new"
+                          "tags": "test,new",
+                          "assigned": user_code
                       },
                       cookies=cookie)
     assert res.json()["success"] is True
@@ -157,5 +158,9 @@ def test_list_issues_by_condition():
     assert len(res.json()) > 0
 
     res = client.get(f'/issue/list?follower={user_code}',
+                     cookies=cookie)
+    assert len(res.json()) > 0
+
+    res = client.get(f'/issue/list?assigned={user_code}',
                      cookies=cookie)
     assert len(res.json()) > 0

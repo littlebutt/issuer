@@ -28,7 +28,8 @@ async def new_issue(issue: "IssueReq",
                      propose_date=datetime.now().date(),
                      status=IssueStatusEnum.Open.name,
                      tags=issue.tags,
-                     followers=_user.user_code)
+                     followers=_user.user_code,
+                     assigned=issue.assigned)
     res = db.insert_issue(issue_do)
     if res is None:
         return {"success": False, "reason": "Internal error"}
@@ -64,6 +65,8 @@ async def change_issue(issue: "IssueReq",
     issue_do.tags = issue.tags if issue.tags is not None else issue_do.tags
     issue_do.followers = issue.followers \
         if issue.followers is not None else issue_do.followers
+    issue_do.assigned = issue.assigned \
+        if issue.assigned is not None else issue_do.assigned
     res = db.update_issue_by_code(issue_do)
     return {"success": res}
 
@@ -78,6 +81,7 @@ async def list_issues_by_condition(issue_code: Optional[str] = None,
                                    start_date: Optional[str] = None,
                                    end_date: Optional[str] = None,
                                    follower: Optional[str] = None,
+                                   assigned: Optional[str] = None,
                                    tags: Optional[str] = None,
                                    page_num: int = 1,
                                    page_size: int = 10,
@@ -93,8 +97,8 @@ async def list_issues_by_condition(issue_code: Optional[str] = None,
         tags = tags.split(',')
     issues = db.list_issues_by_condition(issue_code, project_code, owner,
                                          status, issue_id, title, start_date,
-                                         end_date, follower, tags, page_num,
-                                         page_size)
+                                         end_date, follower, assigned, tags,
+                                         page_num, page_size)
     res = list()
     for issue in issues:
         owner = db.find_user_by_code(issue.owner)
@@ -110,6 +114,18 @@ async def list_issues_by_condition(issue_code: Optional[str] = None,
                     description=_f.description,
                     phone=_f.phone
                 ))
+        assigneds = list()
+        if issue.assigned is not None:
+            for _assigned in issue.assigned.split(','):
+                _a = db.find_user_by_code(_assigned)
+                assigneds.append(UserModel(
+                    user_code=_a.user_code,
+                    user_name=_a.user_name,
+                    email=_a.email,
+                    role=_a.role,
+                    description=_a.description,
+                    phone=_a.phone
+                ))
         res.append(IssueRes(
             issue_code=issue.issue_code,
             project_code=issue.project_code,
@@ -124,6 +140,7 @@ async def list_issues_by_condition(issue_code: Optional[str] = None,
             propose_date=datetime.strftime(issue.propose_date, '%Y-%m-%d'),
             status=issue.status,
             tags=issue.tags,
-            followers=followers
+            followers=followers,
+            assigned=assigneds
         ))
     return res

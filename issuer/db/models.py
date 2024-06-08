@@ -189,7 +189,8 @@ class Issue(SQLModel, table=True):
     followers: Optional[str]
     '''议题关注者'''
 
-# TODO: 添加assigned指派
+    assigned: Optional[str]
+    '''议题被指派者'''
 
 
 class IssueComment(SQLModel, table=True):

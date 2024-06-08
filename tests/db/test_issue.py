@@ -17,7 +17,8 @@ def teardown_function(function):
 
 def test_insert_issue():
     issue = Issue(project_code="test", title="test", owner="test",
-                  propose_date=datetime.now().date(), status="Open")
+                  propose_date=datetime.now().date(), status="Open",
+                  assigned="test")
     issue_code = insert_issue(issue)
     assert issue_code is not None
     issues = list_issues_by_condition(project_code="test")
@@ -27,7 +28,8 @@ def test_insert_issue():
 
 def test_update_issue_by_code():
     issue = Issue(project_code="test", title="test", owner="test",
-                  propose_date=datetime.now().date(), status="Open")
+                  propose_date=datetime.now().date(), status="Open",
+                  assigned="bar")
     issue_code = insert_issue(issue)
     assert issue_code is not None
 
@@ -36,9 +38,12 @@ def test_update_issue_by_code():
 
     issue = issues[0]
     issue.title = "foo"
+    issue.assigned = "foo,bar"
     res = update_issue_by_code(issue)
     assert res is True
     issues = list_issues_by_condition(title="foo")
+    assert len(issues) > 0
+    issues = list_issues_by_condition(assigned="bar")
     assert len(issues) > 0
 
 

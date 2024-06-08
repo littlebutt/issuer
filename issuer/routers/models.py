@@ -81,6 +81,7 @@ class IssueReq(BaseModel):
     status: str | None = None
     tags: str | None = None
     followers: str | None = None
+    assigned: str | None = None
 
 
 class IssueStatusEnum(Enum):
@@ -99,6 +100,7 @@ class IssueRes(BaseModel):
     status: str
     tags: str
     followers: List[UserModel]
+    assigned: List[UserModel]
 
 
 class IssueCommentReq(BaseModel):

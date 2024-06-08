@@ -38,6 +38,7 @@ def update_issue_by_code(issue: "Issue") -> bool:
             result.status = issue.status
             result.tags = issue.tags
             result.followers = issue.followers
+            result.assigned = issue.assigned
             session.add(result)
             session.commit()
             session.refresh(result)
@@ -82,6 +83,7 @@ def list_issues_by_condition(issue_code: Optional[str] = None,
                              start_date: Optional[date] = None,
                              end_date: Optional[date] = None,
                              follower: Optional[str] = None,
+                             assigned: Optional[str] = None,
                              tags: Optional[List[str]] = None,
                              page_num: int = 1,
                              page_size: int = 10) -> Sequence["Issue"]:
@@ -106,6 +108,8 @@ def list_issues_by_condition(issue_code: Optional[str] = None,
                 stmt = stmt.where(Issue.propose_date <= end_date)
             if follower is not None:
                 stmt = stmt.where(Issue.followers.like('%' + follower + '%'))
+            if assigned is not None:
+                stmt = stmt.where(Issue.assigned.like('%' + assigned + '%'))
             if tags is not None:
                 for tag in tags:
                     stmt = stmt.where(Issue.tags.like('%' + tag + '%'))
