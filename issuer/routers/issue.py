@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, List, Optional
+from typing import Annotated, Dict, List, Optional
 from fastapi import APIRouter, Cookie
 
 from issuer import db
@@ -68,7 +68,7 @@ async def change_issue(issue: "IssueReq",
     return {"success": res}
 
 
-@router.get('/list', response_model=List[IssueRes])
+@router.get('/list', response_model=List[IssueRes] | Dict)
 async def list_issues_by_condition(issue_code: Optional[str] = None,
                                    project_code: Optional[str] = None,
                                    owner: Optional[str] = None,

@@ -99,3 +99,21 @@ class IssueRes(BaseModel):
     status: str
     tags: str
     followers: List[UserModel]
+
+
+class IssueCommentReq(BaseModel):
+    comment_code: str | None = None
+    issue_code: str | None = None
+    comment_time: str | None = None
+    commenter: str | None = None
+    fold: bool | None = None
+    content: str | None = None
+
+
+class IssueCommentRes(BaseModel):
+    comment_code: str
+    issue_code: str
+    comment_time: str
+    commenter: UserModel
+    fold: bool
+    content: str

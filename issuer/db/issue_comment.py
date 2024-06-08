@@ -1,6 +1,6 @@
 from datetime import datetime
 import logging
-from typing import Sequence
+from typing import Optional, Sequence
 
 from sqlmodel import Session, select
 from issuer.db.database import DatabaseFactory
@@ -59,11 +59,23 @@ def change_issue_comment_by_code(comment: "IssueComment") -> bool:
     return True
 
 
+def find_issue_comment_by_code(comment_code: str) -> Optional["IssueComment"]:
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(IssueComment)\
+                .where(IssueComment.comment_code == comment_code)
+            return session.exec(stmt).one()
+    except Exception as e:
+        Logger.error(e)
+    return None
+
+
 def list_issue_comment_by_issue(issue_code: str) -> Sequence["IssueComment"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             stmt = select(IssueComment)\
-                .where(IssueComment.issue_code == issue_code)
+                .where(IssueComment.issue_code == issue_code)\
+                .order_by(IssueComment.id)
             return session.exec(stmt).all()
     except Exception as e:
         Logger.error(e)

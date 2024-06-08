@@ -138,7 +138,7 @@ async def query_project_by_code(project_code: str,
     project = db.find_project_by_code(project_code=project_code)
     owner = db.find_user_by_code(project.owner)
     p2us = db.list_project_to_user_by_project(project.project_code)
-    participants = list()
+    participants: List["UserModel"] = list()
     for p2u in p2us:
         user_do = db.find_user_by_code(p2u.user_code)
         participants.append(UserModel(
@@ -149,6 +149,9 @@ async def query_project_by_code(project_code: str,
             description=user_do.description,
             phone=user_do.phone
         ))
+    if project.privilege == ProjectPrivilegeEnum.Private.name and \
+            _user.user_code not in [u.user_code for u in participants]:
+        return {"success": False, "reason": "Permission debied"}
     return ProjectRes(
         project_code=project.project_code,
         project_name=project.project_name,
@@ -189,6 +192,9 @@ async def query_project_by_participants(user_code: str,
         for _p2u in _p2us:
             _participants.append(_p2u.user_code)
         participants = ','.join(_participants)
+        if project.privilege == ProjectPrivilegeEnum.Private.name and \
+                _user.user_code not in _participants:
+            continue
         res.append(ProjectRes(
             project_code=project.project_code,
             project_name=project.project_name,

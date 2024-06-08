@@ -3,7 +3,8 @@ import pytest
 
 from issuer.db import delete_all_issue_comments, insert_issue_comment, \
     list_issue_comment_by_issue, delete_issue_comment_by_issue, \
-    list_issue_comment_by_commenter, change_issue_comment_by_code
+    list_issue_comment_by_commenter, change_issue_comment_by_code, \
+    find_issue_comment_by_code
 from issuer.db.models import IssueComment
 
 
@@ -56,5 +57,5 @@ def test_change_issue_comment_by_code():
     res = change_issue_comment_by_code(issue_comment)
     assert res is True
 
-    res = list_issue_comment_by_commenter("test")
-    assert res[0].fold is True
+    res = find_issue_comment_by_code(comment_code=comment_code)
+    assert res is not None
