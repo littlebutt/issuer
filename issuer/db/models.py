@@ -225,6 +225,9 @@ class IssueComment(SQLModel, table=True):
     content: str
     '''评论内容'''
 
+    appendices: Optional[str]
+    '''附件'''
+
 
 class Metas(SQLModel, table=True):
     '''

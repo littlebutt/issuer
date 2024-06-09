@@ -1,11 +1,13 @@
 from datetime import datetime
+import os
 from typing import Annotated, Dict, List
-from fastapi import APIRouter, Cookie
+from fastapi import APIRouter, Cookie, Form, UploadFile
 
 from issuer import db
 from issuer.db.models import IssueComment
-from issuer.routers.models import IssueCommentReq, IssueCommentRes, UserModel
-from issuer.routers.users import check_cookie
+from issuer.routers.models import IssueCommentReq, IssueCommentRes, IssueReq, \
+    UserModel
+from issuer.routers.users import check_cookie, get_statics
 
 
 router = APIRouter(
@@ -25,7 +27,8 @@ async def new_comment(issue_comment: "IssueCommentReq",
                               comment_time=datetime.now(),
                               commenter=_user.user_code,
                               fold=False,
-                              content=issue_comment.content)
+                              content=issue_comment.content,
+                              appendices=issue_comment.appendices)
     res = db.insert_issue_comment(comment_do)
     if res is None:
         return {"success": False, "reason": "Internal error"}
@@ -70,5 +73,27 @@ async def list_comment(issue_code: str,
                                 avator=commenter.avator
                                 ),
             fold=comment.fold,
-            content=comment.content))
+            content=comment.content,
+            appendices=comment.appendices))
     return res
+
+
+@router.post('/upload_appendix')
+async def upload_appendix(file: "UploadFile",
+                          issue_code: str = Form(),
+                          current_user: Annotated[str | None, Cookie()] = None): # noqa
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {
+            "success": False,
+            "reason": "Invalid token",
+        }
+    try:
+        filename = f"{issue_code}_{file.filename}"
+        data = await file.read()
+        with open(os.path.join(get_statics(), filename), "wb") as f:
+            f.write(data)
+            f.flush()
+    except Exception as e:
+        return {"success": False, "reason": str(e)}
+    return {"success": True, "filename": '/statics/' + filename}

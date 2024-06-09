@@ -92,6 +92,7 @@ class IssueCommentReq(BaseModel):
     commenter: str | None = None
     fold: bool | None = None
     content: str | None = None
+    appendices: str | None = None
 
 
 class IssueCommentRes(BaseModel):
@@ -101,3 +102,4 @@ class IssueCommentRes(BaseModel):
     commenter: UserModel
     fold: bool
     content: str
+    appendices: str | None = None

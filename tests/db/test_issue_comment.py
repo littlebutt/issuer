@@ -49,7 +49,8 @@ def test_change_issue_comment_by_code():
                                  comment_time=datetime.utcnow(),
                                  commenter="test",
                                  fold=False,
-                                 content="This is a test.")
+                                 content="This is a test.",
+                                 appendices="path/to/pa,path/to/pb")
     comment_code = insert_issue_comment(issue_comment)
     assert comment_code is not None
 
@@ -59,3 +60,4 @@ def test_change_issue_comment_by_code():
 
     res = find_issue_comment_by_code(comment_code=comment_code)
     assert res is not None
+    assert res.appendices == "path/to/pa,path/to/pb"

@@ -1,3 +1,4 @@
+import os
 from fastapi.testclient import TestClient
 import pytest
 
@@ -142,3 +143,40 @@ def test_list_comment():
 
     res = client.get(f'/comment/list?issue_code={issue_code}')
     assert len(res.json()) > 0
+
+
+def test_upload_appendix():
+    cookie, user_code = get_cookie()
+    res = client.post('/project/new',
+                      json={
+                          "project_name": "test_project",
+                          "start_date": "2024-06-05",
+                          "privilege": "Start"
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+
+    res = client.get(f'/project/participants?user_code={user_code}',
+                     cookies=cookie)
+    project_code = res.json()[0]['project_code']
+    res = client.post('/issue/new',
+                      json={
+                          "project_code": project_code,
+                          "title": "test_issue",
+                          "tags": "test,new"
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+    res = list_issues_by_condition(project_code=project_code)
+    issue_code = res[0].issue_code
+
+    file = os.path.join(os.path.dirname(__file__), "avator.png")
+    res = client.post('/comment/upload_appendix',
+                      files={"file": open(file, "rb")},
+                      data={
+                          "issue_code": issue_code
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+    filepath = res.json()["filename"]
+    res = client.get(filepath)

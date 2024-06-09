@@ -50,6 +50,7 @@ def change_issue_comment_by_code(comment: "IssueComment") -> bool:
 
             result.gmt_modified = datetime.utcnow()
             result.fold = comment.fold
+            result.appendices = comment.appendices
             session.add(result)
             session.commit()
             session.refresh(result)
