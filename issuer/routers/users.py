@@ -212,4 +212,4 @@ async def upload_avator(file: "UploadFile",
             f.flush()
     except Exception as e:
         return {"success": False, "reason": str(e)}
-    return {"success": True, "filename": os.path.join('/statics', filename)}
+    return {"success": True, "filename": '/statics/' + filename}

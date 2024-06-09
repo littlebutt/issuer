@@ -178,5 +178,6 @@ def test_upload_avator():
                       files={"file": open(file, "rb")},
                       cookies=cookie)
 
-    print(res.json())
     assert res.json()["success"] is True
+    filepath = res.json()["filename"]
+    res = client.get(filepath)
