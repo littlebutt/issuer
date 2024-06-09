@@ -1,7 +1,8 @@
 from datetime import datetime
 import hashlib
+import os
 from typing import Annotated, Optional
-from fastapi import APIRouter, Cookie
+from fastapi import APIRouter, Cookie, UploadFile
 
 from issuer import db
 from issuer.db import User
@@ -36,7 +37,8 @@ async def sign_up(user: "UserModel"):
                    role=user.role,
                    email=user.email,
                    description=user.description,
-                   phone=user.phone)
+                   phone=user.phone,
+                   avator=user.avator)
     is_success = db.insert_user(user_do)
     return {"success": is_success}
 
@@ -56,6 +58,13 @@ def check_cookie(cookie: Optional[str]) -> Optional["User"]:
         if user is not None and user.token == token:
             return user
     return None
+
+
+def get_statics() -> str:
+    this_dir = os.path.dirname(__file__)
+    par_dir = os.path.abspath(os.path.join(this_dir, os.path.pardir))
+    st_dir = os.path.join(par_dir, 'statics')
+    return st_dir
 
 
 @router.post('/sign_in')
@@ -169,6 +178,8 @@ async def change_user(user: "UserModel",
         user_do.description = user.description
     if user.phone is not None:
         user_do.phone = user.phone
+    if user.avator is not None:
+        user_do.avator = user.avator
     res = db.update_user_by_code(user_do)
     return {"success": res}
 
@@ -181,3 +192,24 @@ async def query_roles():
         "success": True,
         "data": [meta.meta_value for meta in metas]
     }
+
+
+@router.post('/upload_avator')
+async def upload_avator(file: "UploadFile",
+                        current_user: Annotated[str | None, Cookie()] = None):
+    '''上传头像'''
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {
+            "success": False,
+            "reason": "Invalid token",
+        }
+    try:
+        filename = f"{_user.user_code}_{file.filename}"
+        data = await file.read()
+        with open(os.path.join(get_statics(), filename), "wb") as f:
+            f.write(data)
+            f.flush()
+    except Exception as e:
+        return {"success": False, "reason": str(e)}
+    return {"success": True, "filename": os.path.join('/statics', filename)}

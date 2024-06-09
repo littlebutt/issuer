@@ -1,3 +1,4 @@
+import os
 import httpx
 import pytest
 
@@ -10,8 +11,15 @@ from issuer.main import app
 client = TestClient(app)
 
 
-def test_sign_up():
+def setup_function(function):
     delete_all_users()
+
+
+def teardown_function(function):
+    delete_all_users()
+
+
+def test_sign_up():
     res = client.post('/users/sign_up',
                       json={
                           "user_name": "test",
@@ -20,11 +28,9 @@ def test_sign_up():
                       })
     print(res.json())
     assert res.json()['success'] is True
-    delete_all_users()
 
 
 def test_sign_in():
-    delete_all_users()
     res = client.post('/users/sign_up',
                       json={
                           "user_name": "test",
@@ -73,11 +79,9 @@ def test_sign_in():
                       })
     assert res.json()['success'] is False and \
         res.json()['reason'] == "Wrong passwd"
-    delete_all_users()
 
 
 def test_sign_out():
-    delete_all_users()
     res = client.post('/users/sign_up',
                       json={
                           "user_name": "test",
@@ -109,11 +113,9 @@ def test_sign_out():
     assert res.json()['success'] is True
     _user = find_user_by_code(user_code)
     assert _user.token is None
-    delete_all_users()
 
 
 def test_change_user():
-    delete_all_users()
     res = client.post('/users/sign_up',
                       json={
                           "user_name": "test",
@@ -139,9 +141,42 @@ def test_change_user():
     res = client.post('/users/change',
                       json={
                           "user_code": user_code,
-                          "email": "foo"
+                          "email": "foo",
+                          "avator": "/path/to/avator"
                       },
                       cookies=cookie)
     assert res.json()["success"] is True
     user = find_user_by_code(user_code)
     assert user.email == "foo"
+    assert user.avator == "/path/to/avator"
+
+
+def test_upload_avator():
+    res = client.post('/users/sign_up',
+                      json={
+                          "user_name": "test",
+                          "passwd": "test",
+                          "email": "test"
+                      })
+    assert res.json()['success'] is True
+
+    res = client.post('/users/sign_in',
+                      json={
+                          "user_name": "test",
+                          "passwd": "test",
+                          "email": "test"
+                      })
+    assert res.json()['success'] is True
+
+    token = res.json()['token']
+    user_code = res.json()['user']['user_code']
+    cookie = httpx.Cookies()
+    cookie.set(name="current_user", value=f"{user_code}:{token}")
+
+    file = os.path.join(os.path.dirname(__file__), "avator.png")
+    res = client.post('/users/upload_avator',
+                      files={"file": open(file, "rb")},
+                      cookies=cookie)
+
+    print(res.json())
+    assert res.json()["success"] is True

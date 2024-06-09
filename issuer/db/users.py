@@ -39,6 +39,7 @@ def update_user_by_code(user: "User") -> bool:
             result.phone = user.phone
             result.email = user.email
             result.token = user.token
+            result.avator = user.avator
 
             session.add(result)
             session.commit()

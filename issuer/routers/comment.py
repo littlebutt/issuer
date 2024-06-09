@@ -66,7 +66,8 @@ async def list_comment(issue_code: str,
                                 email=commenter.email,
                                 role=commenter.role,
                                 description=commenter.description,
-                                phone=commenter.phone
+                                phone=commenter.phone,
+                                avator=commenter.avator
                                 ),
             fold=comment.fold,
             content=comment.content))

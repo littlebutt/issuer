@@ -165,3 +165,7 @@ cython_debug/
 # vscode
 
 .vscode
+
+# statics file
+
+issuer/statics/*

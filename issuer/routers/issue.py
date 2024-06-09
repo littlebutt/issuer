@@ -111,7 +111,8 @@ async def list_issues_by_condition(issue_code: Optional[str] = None,
                     email=_f.email,
                     role=_f.role,
                     description=_f.description,
-                    phone=_f.phone
+                    phone=_f.phone,
+                    avator=_f.avator
                 ))
         assigneds = list()
         if issue.assigned is not None:
@@ -123,7 +124,8 @@ async def list_issues_by_condition(issue_code: Optional[str] = None,
                     email=_a.email,
                     role=_a.role,
                     description=_a.description,
-                    phone=_a.phone
+                    phone=_a.phone,
+                    avator=_a.avator
                 ))
         res.append(IssueRes(
             issue_code=issue.issue_code,
@@ -135,7 +137,8 @@ async def list_issues_by_condition(issue_code: Optional[str] = None,
                             email=owner.email,
                             role=owner.role,
                             description=owner.description,
-                            phone=owner.phone),
+                            phone=owner.phone,
+                            avator=owner.avator),
             propose_date=datetime.strftime(issue.propose_date, '%Y-%m-%d'),
             status=issue.status,
             tags=issue.tags,

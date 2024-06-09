@@ -11,6 +11,7 @@ class UserModel(BaseModel):
     role: str | None = None
     description: str | None = None
     phone: str | None = None
+    avator: str | None = None
 
 
 class UserGroupReq(BaseModel):
