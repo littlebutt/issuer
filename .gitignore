@@ -163,9 +163,8 @@ cython_debug/
 *.db
 
 # vscode
-
 .vscode
 
 # statics file
-
 issuer/statics/*
+!issuer/statics/.gitkeep
