@@ -14,7 +14,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm --prefix ./web build
+    - run: npm --prefix ./web run build
   test:
     needs: build  
     runs-on: ubuntu-latest  
