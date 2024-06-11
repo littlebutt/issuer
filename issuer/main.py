@@ -11,6 +11,13 @@ def get_statics_path():
     return os.path.join(pardir, 'statics')
 
 
+def get_index_path():
+    pardir = os.path.dirname(__file__)
+    parpardir = os.path.join(pardir, os.path.pardir)
+    webdir = os.path.join(parpardir, 'web')
+    return os.path.join(webdir, 'build')
+
+
 app = FastAPI()
 
 
@@ -21,6 +28,8 @@ app.include_router(issue.router)
 app.include_router(comment.router)
 app.mount("/statics",
           StaticFiles(directory=get_statics_path()), name="statics")
+app.mount("/",
+          StaticFiles(directory=get_index_path(), html=True))
 
 
 @app.on_event('startup')

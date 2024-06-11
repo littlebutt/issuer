@@ -14,3 +14,5 @@ setup(
     python_requires='>=3.10',
     platforms='any'
 )
+
+# TODO: Web app
