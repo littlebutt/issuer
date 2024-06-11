@@ -2,4 +2,6 @@
 $currentPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $parentPath = Split-Path -Parent $currentPath
 
-uvicorn.exe --app-dir $parentPath "issuer.main:app"
+$webPath = Join-Path -Path $parentPath -ChildPath `web`
+
+npm.ps1 --prefix $webPath run build
