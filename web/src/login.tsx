@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import axios from 'axios'
 
 import { Button } from "./components/ui/button"
 import {
@@ -11,8 +12,11 @@ import {
 import { Input } from "./components/ui/input"
 import { Label } from "./components/ui/label"
 import { PasswordInput } from "./components/ui/password"
+import { useToast } from "./components/ui/use-toast"
+import { Toaster } from "./components/ui/toaster"
 
-import './login.css'
+import "./login.css"
+
 
 
 const Login:React.FC = () => {
@@ -25,6 +29,8 @@ const Login:React.FC = () => {
     const [showEmailReminder, setShowEmailReminder] = useState<boolean>(false)
     const [showPasswordReminder, setShowPasswordReminder] = useState<boolean>(false)
     const [showRepasswordReminder, setShowRepasswordReminder] = useState<boolean>(false)
+
+    const { toast } = useToast()
 
     const checkEmailFormat = (email: string) => {
         let reg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
@@ -50,9 +56,79 @@ const Login:React.FC = () => {
         setShowRepasswordReminder(password !== repassword)
         setRepassword(repassword)
     }
+
+    const doSignin = () => {
+        if (!checkEmailFormat(email)) {
+            return
+        }
+        if (!checkPasswordFormat(password)) {
+            return
+        }
+        axios({
+            method: 'POST',
+            url: '/users/sign_in',
+            data: {
+                email: email,
+                passwd: password
+            }
+        }).then((res) => {
+            console.log(res.data)
+            if (res.status === 200 && res.data.success === true) {
+                toast({
+                    title: "登陆成功"
+                })
+                // redirect
+                document.cookie = `current_user=${res.data.user.user_code}:${res.data.user.token}`
+            } else {
+                toast({
+                    title: "登陆失败"
+                })
+            }
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
+    const doSignup = () => {
+        if (!checkEmailFormat(email)) {
+            return
+        }
+        if (!checkPasswordFormat(password)) {
+            return
+        }
+        if (password !== repassword) {
+            return
+        }
+        if (username.trim() === "") {
+            return
+        }
+        axios({
+            method: 'POST',
+            url: '/users/sign_up',
+            data: {
+                email: email,
+                passwd: password,
+                user_name: username,
+            }
+        }).then((res) => {
+            if (res.status === 200 && res.data.success === true) {
+                toast({
+                    title: "注册成功"
+                })
+                setLoginMode(true)
+            } else {
+                toast({
+                    title: "注册失败"
+                })
+            }
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
     
     return (
         <div className='page'>
+            <Toaster />
             <div className='left bg-zinc-950 dark:bg-white'></div>
             <div className='right'>
                 <div className='top-right'></div>
@@ -85,7 +161,7 @@ const Login:React.FC = () => {
                     </CardContent>
                     <CardFooter className="flex justify-between">
                         <Button variant="link" onClick={() => {setLoginMode(false)}}>注册</Button>
-                        <Button>登录</Button>
+                        <Button onClick={doSignin} variant="default">登录</Button>
                     </CardFooter>
                   </Card>
                 ):(
@@ -131,7 +207,7 @@ const Login:React.FC = () => {
                     </CardContent>
                     <CardFooter className="flex justify-between">
                         <Button variant="link" onClick={() => setLoginMode(true)}>已有账号，现在登录</Button>
-                        <Button>注册</Button>
+                        <Button onClick={doSignup} variant="default">注册</Button>
                     </CardFooter>
                   </Card>
                 )}

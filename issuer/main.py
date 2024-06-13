@@ -39,7 +39,7 @@ async def create_engine():
 
     # 添加管理员
     admin = User(user_name="admin", passwd="21232f297a57a5a743894a0e4a801fc3",
-                 role='admin', email="NULL")
+                 role='admin', email="admin@issuer.com")
     insert_user(admin)
 
     # 添加管理员角色
