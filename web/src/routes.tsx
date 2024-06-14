@@ -1,17 +1,31 @@
 import React from "react"
 
-import { Route, Routes, Navigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import Login from "./login"
+import Layout from "./layout"
+import Dashboard from "./dashboard"
 
 
-const AppRoutes: React.FC = () => {
-    return (
-        <Routes>
-            <Route path="/" element={<Navigate to="/login"/>}></Route>
-            <Route path="/login" element={<Login/>}></Route>
-            <Route path="/dashboard"></Route>
-        </Routes>
-    )
-}
+const router = [
+    {
+        path: "/",
+        element: <Navigate to="/login"/>,
+    },
+    {
+        path: "/login",
+        element: <Login/>
+    },
+    {
+        path: "/main/*",
+        element: <Layout/>,
+        children: [
+            {
+                path: "dashboard",
+                element: <Dashboard/>
+            }
+            
+        ]
+    }
+  ]
 
-export default AppRoutes
+export default router

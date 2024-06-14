@@ -15,8 +15,6 @@ import { PasswordInput } from "./components/ui/password"
 import { useToast } from "./components/ui/use-toast"
 import { Toaster } from "./components/ui/toaster"
 
-import "./login.css"
-
 
 
 const Login:React.FC = () => {
@@ -127,13 +125,10 @@ const Login:React.FC = () => {
     }
     
     return (
-        <div className='page'>
+        <div className="grid grid-cols-[0%_2fr_1fr] h-screen w-full bg-zinc-100">
             <Toaster />
-            <div className='left bg-zinc-950 dark:bg-white'></div>
-            <div className='right'>
-                <div className='top-right'></div>
-                <div className='center-right'>
-                    <div className='center-right-left'></div>
+            <div className=" bg-zinc-950 dark:bg-white"></div>
+            <div className='h-full grid place-items-center'>
                     {loginMode ? (
                         <Card className="w-[350px]">
                             <CardHeader>
@@ -143,13 +138,13 @@ const Login:React.FC = () => {
                             <form>
                                 <div className="grid w-full items-center gap-4">
                                 <div className="flex flex-col space-y-1.5">
-                                    <Label htmlFor="email">邮箱{showEmailReminder && <span> 请输入正确的邮箱</span>}</Label>
+                                    <Label htmlFor="email">邮箱{showEmailReminder && <span className="text-red-500"> 请输入正确的邮箱</span>}</Label>
                                     <Input id="email" 
                                            value={email}
                                            onChange={(e) => onChangeEmail(e.target.value)}/>
                                 </div>
                                 <div className="flex flex-col space-y-1.5">
-                                    <Label htmlFor="password">密码{showPasswordReminder && <span> 密码必须由数字字母和@、_和!组成</span>}</Label>
+                                    <Label htmlFor="password">密码{showPasswordReminder && <span className="text-red-500"> 密码必须由数字字母和@、_和!组成</span>}</Label>
                                     <PasswordInput
 					                    id="password"
 					                    value={password}
@@ -174,7 +169,7 @@ const Login:React.FC = () => {
                                 <div className="grid w-full items-center gap-1">
                                     <div className="flex flex-row space-x-1.5">
                                         <div className="flex flex-col space-y-1.5">
-                                            <Label htmlFor="email">邮箱{showEmailReminder && <span>请输入正确的邮箱</span>}</Label>
+                                            <Label htmlFor="email">邮箱{showEmailReminder && <span className="text-red-500">请输入正确的邮箱</span>}</Label>
                                             <Input  id="email" 
                                                     value={email}
                                                     onChange={(e) => onChangeEmail(e.target.value)}/>
@@ -187,7 +182,7 @@ const Login:React.FC = () => {
                                         </div>
                                     </div>
                                 <div className="flex flex-col space-y-1.5">
-                                    <Label htmlFor="password">密码{showPasswordReminder && <span> 密码必须由数字字母和@、_和!组成</span>}</Label>
+                                    <Label htmlFor="password">密码{showPasswordReminder && <span className="text-red-500"> 密码必须由数字字母和@、_和!组成</span>}</Label>
                                     <PasswordInput
 					                    id="password"
 					                    value={password}
@@ -195,7 +190,7 @@ const Login:React.FC = () => {
 				                    />
                                 </div>
                                 <div className="flex flex-col space-y-1.5">
-                                    <Label htmlFor="repassword">重复密码{showRepasswordReminder && <span> 重复输入密码于原密码不一致</span>}</Label>
+                                    <Label htmlFor="repassword">重复密码{showRepasswordReminder && <span className="text-red-500"> 重复输入密码于原密码不一致</span>}</Label>
                                     <PasswordInput
 					                    id="repassword"
 					                    value={repassword}
@@ -211,10 +206,6 @@ const Login:React.FC = () => {
                     </CardFooter>
                   </Card>
                 )}
-                <div className='center-right-right'></div>
-                </div>
-                
-                <div className='bottom-right'></div>
             </div>
         </div>
     )
