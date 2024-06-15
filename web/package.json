@@ -43,7 +43,7 @@
     ],
     "rules": {
       "jsx-a11y/heading-has-content": "off",
-      "eqeqeq": "off"
+      "react-hooks/exhaustive-deps": "off"
     }
   },
   "browserslist": {
