@@ -1,7 +1,7 @@
 from datetime import datetime
 import hashlib
 import os
-from typing import Annotated, Optional
+from typing import Annotated, Dict, Optional
 from fastapi import APIRouter, Cookie, UploadFile
 
 from issuer import db
@@ -213,3 +213,25 @@ async def upload_avator(file: "UploadFile",
     except Exception as e:
         return {"success": False, "reason": str(e)}
     return {"success": True, "filename": '/statics/' + filename}
+
+
+@router.get('/user', response_model=UserModel | Dict)
+async def get_user(user_code: str,
+                   current_user: Annotated[str | None, Cookie()] = None):
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {
+            "success": False,
+            "reason": "Invalid token",
+        }
+    user = db.find_user_by_code(user_code=user_code)
+    if user is not None:
+        return UserModel(
+            user_code=user.user_code,
+            user_name=user.user_name,
+            email=user.email,
+            role=user.role,
+            description=user.description,
+            phone=user.phone,
+            avator=user.avator
+        )

@@ -14,6 +14,7 @@ import { Label } from "./components/ui/label"
 import { PasswordInput } from "./components/ui/password"
 import { useToast } from "./components/ui/use-toast"
 import { Toaster } from "./components/ui/toaster"
+import { useNavigate } from "react-router-dom"
 
 
 
@@ -29,6 +30,8 @@ const Login:React.FC = () => {
     const [showRepasswordReminder, setShowRepasswordReminder] = useState<boolean>(false)
 
     const { toast } = useToast()
+
+    const navigate = useNavigate()
 
     const checkEmailFormat = (email: string) => {
         let reg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
@@ -75,8 +78,8 @@ const Login:React.FC = () => {
                 toast({
                     title: "登陆成功"
                 })
-                // redirect
                 document.cookie = `current_user=${res.data.user.user_code}:${res.data.user.token}`
+                navigate("/main/dashboard")
             } else {
                 toast({
                     title: "登陆失败"

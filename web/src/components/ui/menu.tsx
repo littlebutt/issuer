@@ -1,5 +1,6 @@
 "use client"
 
+import { Link } from "react-router-dom"
 import { cn } from "../../lib/utils"
 import { Button } from "./button"
 import { ScrollArea } from "./scroll-area"
@@ -51,7 +52,7 @@ export function SideMenu({ menuList, className }: MenuProps) {
                               className="w-full justify-start h-10 mb-1 hover:bg-zinc-500"
                               asChild
                             >
-                              <a href={href}>
+                              <Link to={href}>
                                 <span
                                   className="mr-4 text-sky-500"
                                 >
@@ -62,7 +63,7 @@ export function SideMenu({ menuList, className }: MenuProps) {
                                 >
                                   {label}
                                 </p>
-                              </a>
+                              </Link>
                             </Button>
                           </TooltipTrigger>
                         </Tooltip>

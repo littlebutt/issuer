@@ -173,7 +173,7 @@ def test_upload_avator():
     cookie = httpx.Cookies()
     cookie.set(name="current_user", value=f"{user_code}:{token}")
 
-    file = os.path.join(os.path.dirname(__file__), "avator.png")
+    file = os.path.join(os.path.dirname(__file__), "avatar.png")
     res = client.post('/users/upload_avator',
                       files={"file": open(file, "rb")},
                       cookies=cookie)
@@ -181,3 +181,30 @@ def test_upload_avator():
     assert res.json()["success"] is True
     filepath = res.json()["filename"]
     res = client.get(filepath)
+
+
+def test_get_user():
+    res = client.post('/users/sign_up',
+                      json={
+                          "user_name": "test",
+                          "passwd": "test",
+                          "email": "test"
+                      })
+    assert res.json()['success'] is True
+
+    res = client.post('/users/sign_in',
+                      json={
+                          "user_name": "test",
+                          "passwd": "test",
+                          "email": "test"
+                      })
+    assert res.json()['success'] is True
+
+    token = res.json()['token']
+    user_code = res.json()['user']['user_code']
+    cookie = httpx.Cookies()
+    cookie.set(name="current_user", value=f"{user_code}:{token}")
+
+    res = client.get(f'/users/user?user_code={user_code}',
+                     cookies=cookie)
+    assert res.json()['user_code'] == user_code

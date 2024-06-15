@@ -1,12 +1,12 @@
 interface User {
-    user_code: string | null
-    user_name: string | null
-    passwd: string | null
-    email: string | null
-    role: string | null
-    description: string | null
-    phone: string | null
-    avator: string | null
+    user_code?: string
+    user_name?: string
+    passwd?: string
+    email?: string
+    role?: string
+    description?: string
+    phone?: string
+    avator?: string
 }
 
 export type { User }

@@ -170,7 +170,7 @@ def test_upload_appendix():
     res = list_issues_by_condition(project_code=project_code)
     issue_code = res[0].issue_code
 
-    file = os.path.join(os.path.dirname(__file__), "avator.png")
+    file = os.path.join(os.path.dirname(__file__), "avatar.png")
     res = client.post('/comment/upload_appendix',
                       files={"file": open(file, "rb")},
                       data={

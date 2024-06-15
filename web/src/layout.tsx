@@ -11,6 +11,7 @@ import {
   } from "lucide-react"
 import { Toaster } from "./components/ui/toaster"
 import { Outlet } from "react-router-dom"
+import Header from "./header"
 
 
 const Layout: React.FC = () => {
@@ -81,7 +82,7 @@ const Layout: React.FC = () => {
             <Toaster/>
             <SideMenu className="bg-zinc-950 text-white" menuList={menuList}></SideMenu>
             <div className="grid grid-rows-1=[1fr 9fr]">
-              <div></div>
+              <Header/>
               <Outlet/>
             </div>
         </div>
