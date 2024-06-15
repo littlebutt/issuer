@@ -166,4 +166,4 @@ cython_debug/
 
 # statics file
 issuer/statics/*
-!issuer/statics/.gitkeep
+!issuer/statics/avatar.png

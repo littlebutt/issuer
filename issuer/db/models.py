@@ -55,7 +55,7 @@ class User(SQLModel, table=True):
     登录token，如果为空代表已登出，否则存放最近一次Cookie中的token。
     '''
 
-    avator: Optional[str]
+    avatar: Optional[str]
     '''
     用户头像路径
     '''

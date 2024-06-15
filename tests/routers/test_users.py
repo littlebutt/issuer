@@ -142,16 +142,16 @@ def test_change_user():
                       json={
                           "user_code": user_code,
                           "email": "foo",
-                          "avator": "/path/to/avator"
+                          "avatar": "/path/to/avatar"
                       },
                       cookies=cookie)
     assert res.json()["success"] is True
     user = find_user_by_code(user_code)
     assert user.email == "foo"
-    assert user.avator == "/path/to/avator"
+    assert user.avatar == "/path/to/avatar"
 
 
-def test_upload_avator():
+def test_upload_avatar():
     res = client.post('/users/sign_up',
                       json={
                           "user_name": "test",
@@ -174,7 +174,7 @@ def test_upload_avator():
     cookie.set(name="current_user", value=f"{user_code}:{token}")
 
     file = os.path.join(os.path.dirname(__file__), "avatar.png")
-    res = client.post('/users/upload_avator',
+    res = client.post('/users/upload_avatar',
                       files={"file": open(file, "rb")},
                       cookies=cookie)
 

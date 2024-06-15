@@ -144,7 +144,7 @@ async def query_project_by_code(project_code: str,
             role=user_do.role,
             description=user_do.description,
             phone=user_do.phone,
-            avator=user_do.avator
+            avatar=user_do.avatar
         ))
     if project.privilege == ProjectPrivilegeEnum.Private.name and \
             _user.user_code not in [u.user_code for u in participants]:
@@ -161,7 +161,7 @@ async def query_project_by_code(project_code: str,
             role=owner.role,
             description=owner.description,
             phone=owner.phone,
-            avator=owner.avator
+            avatar=owner.avatar
         ),
         description=project.description,
         status=project.status,
@@ -205,7 +205,7 @@ async def query_project_by_participants(user_code: str,
                 role=owner.role,
                 description=owner.description,
                 phone=owner.phone,
-                avator=owner.avator
+                avatar=owner.avatar
             ),
             description=project.description,
             status=project.status,

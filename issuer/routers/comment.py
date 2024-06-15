@@ -70,7 +70,7 @@ async def list_comment(issue_code: str,
                                 role=commenter.role,
                                 description=commenter.description,
                                 phone=commenter.phone,
-                                avator=commenter.avator
+                                avatar=commenter.avatar
                                 ),
             fold=comment.fold,
             content=comment.content,

@@ -23,7 +23,7 @@ const Header: React.FC = () => {
             role: res.data.role,
             description: res.data?.description,
             phone: res.data?.phone,
-            avator: res.data?.avatar
+            avatar: res.data?.avatar
         })).catch(err => {
             console.log(err)
         })
@@ -39,7 +39,7 @@ const Header: React.FC = () => {
                 <HoverCard>
                     <HoverCardTrigger>
                         <Avatar>
-                            <AvatarImage src={userInfo.avator ? userInfo.avator : "/statics/avatar.png"} alt="avatar"/>
+                            <AvatarImage src={userInfo.avatar ? userInfo.avatar : "/statics/avatar.png"} alt="avatar"/>
                             <AvatarFallback>{userInfo.user_name}</AvatarFallback>
                         </Avatar>
                     </HoverCardTrigger>

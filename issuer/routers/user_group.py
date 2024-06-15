@@ -137,7 +137,7 @@ async def query_user_group_by_code(group_code: str,
                                    role=user.role,
                                    description=user.description,
                                    phone=user.phone,
-                                   avator=user.avator))
+                                   avatar=user.avatar))
     owner = db.find_user_by_code(user_group.group_owner)
     res = UserGroupRes(group_code=group_code,
                        group_name=user_group.group_name,
@@ -148,7 +148,7 @@ async def query_user_group_by_code(group_code: str,
                            role=owner.role,
                            description=owner.description,
                            phone=owner.phone,
-                           avator=owner.avator
+                           avatar=owner.avatar
                        ),
                        members=users)
     return res
@@ -175,7 +175,7 @@ async def list_users_by_group_code(group_code: str,
             role=u.role,
             description=u.description,
             phone=u.phone,
-            avator=u.avator
+            avatar=u.avatar
         ))
     return res
 
@@ -218,7 +218,7 @@ async def query_user_group_by_user(user_code: str,
                             role=owner.role,
                             description=owner.description,
                             phone=owner.phone,
-                            avator=owner.avator),
+                            avatar=owner.avatar),
             members=','.join(members)
         ))
     return user_groups

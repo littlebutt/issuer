@@ -6,7 +6,7 @@ interface User {
     role?: string
     description?: string
     phone?: string
-    avator?: string
+    avatar?: string
 }
 
 export type { User }

@@ -38,7 +38,7 @@ async def sign_up(user: "UserModel"):
                    email=user.email,
                    description=user.description,
                    phone=user.phone,
-                   avator=user.avator)
+                   avatar=user.avatar)
     is_success = db.insert_user(user_do)
     return {"success": is_success}
 
@@ -178,8 +178,8 @@ async def change_user(user: "UserModel",
         user_do.description = user.description
     if user.phone is not None:
         user_do.phone = user.phone
-    if user.avator is not None:
-        user_do.avator = user.avator
+    if user.avatar is not None:
+        user_do.avatar = user.avatar
     res = db.update_user_by_code(user_do)
     return {"success": res}
 
@@ -194,8 +194,8 @@ async def query_roles():
     }
 
 
-@router.post('/upload_avator')
-async def upload_avator(file: "UploadFile",
+@router.post('/upload_avatar')
+async def upload_avatar(file: "UploadFile",
                         current_user: Annotated[str | None, Cookie()] = None):
     '''上传头像'''
     _user = check_cookie(cookie=current_user)
@@ -233,5 +233,5 @@ async def get_user(user_code: str,
             role=user.role,
             description=user.description,
             phone=user.phone,
-            avator=user.avator
+            avatar=user.avatar
         )
