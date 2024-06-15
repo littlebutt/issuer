@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import axios from 'axios'
 
 import { Button } from "./components/ui/button"
@@ -15,6 +15,7 @@ import { PasswordInput } from "./components/ui/password"
 import { useToast } from "./components/ui/use-toast"
 import { Toaster } from "./components/ui/toaster"
 import { useNavigate } from "react-router-dom"
+import Cookie from "./lib/cookies"
 
 
 
@@ -78,7 +79,7 @@ const Login:React.FC = () => {
                 toast({
                     title: "登陆成功"
                 })
-                document.cookie = `current_user=${res.data.user.user_code}:${res.data.user.token}`
+                Cookie().setCookie("current_user", `${res.data.user.user_code}:${res.data.user.token}`, {expires: 0.5})
                 navigate("/main/dashboard")
             } else {
                 toast({
@@ -126,6 +127,17 @@ const Login:React.FC = () => {
             console.log(err)
         })
     }
+
+    const autoLogin = () => {
+        let cookie = Cookie().getCookie("current_user")
+        if (cookie) {
+            navigate("/main/dashboard")
+        }
+    }
+
+    useEffect(() => {
+        autoLogin()
+    },[])
     
     return (
         <div className="grid grid-cols-[0%_2fr_1fr] h-screen w-full bg-zinc-100">
