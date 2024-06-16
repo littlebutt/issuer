@@ -65,7 +65,7 @@ const Layout: React.FC = () => {
           groupLabel: "设置",
           menus: [
             {
-              href: "",
+              href: "/main/settings",
               label: "个人",
               icon: Users
             },
@@ -81,7 +81,7 @@ const Layout: React.FC = () => {
         <div className="grid grid-cols-[0%_1fr_5fr] h-screen w-full bg-zinc-100">
             <Toaster/>
             <SideMenu className="bg-zinc-950 text-white" menuList={menuList}></SideMenu>
-            <div className="grid grid-rows-1=[1fr 9fr]">
+            <div className="grid grid-rows-[1fr_9fr]">
               <Header/>
               <Outlet/>
             </div>

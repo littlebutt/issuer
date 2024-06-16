@@ -1,5 +1,5 @@
 // copy from js-cookie
-const Cookie = () => {
+const useCookie = () => {
 
     const read = (value: string) => {
         if (value[0] === '"') {
@@ -83,4 +83,4 @@ const Cookie = () => {
     return Object.create({getCookie, setCookie})
 }
 
-export default Cookie
+export default useCookie

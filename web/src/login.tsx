@@ -15,7 +15,7 @@ import { PasswordInput } from "./components/ui/password"
 import { useToast } from "./components/ui/use-toast"
 import { Toaster } from "./components/ui/toaster"
 import { useNavigate } from "react-router-dom"
-import Cookie from "./lib/cookies"
+import useCookie from "./lib/cookies"
 
 
 
@@ -33,6 +33,8 @@ const Login:React.FC = () => {
     const { toast } = useToast()
 
     const navigate = useNavigate()
+
+    const cookie = useCookie()
 
     const checkEmailFormat = (email: string) => {
         let reg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
@@ -79,7 +81,7 @@ const Login:React.FC = () => {
                 toast({
                     title: "登陆成功"
                 })
-                Cookie().setCookie("current_user", `${res.data.user.user_code}:${res.data.user.token}`, {expires: 0.5})
+                cookie.setCookie("current_user", `${res.data.user.user_code}:${res.data.user.token}`, {expires: 0.5})
                 navigate("/main/dashboard")
             } else {
                 toast({
@@ -129,8 +131,8 @@ const Login:React.FC = () => {
     }
 
     const autoLogin = () => {
-        let cookie = Cookie().getCookie("current_user")
-        if (cookie) {
+        let current_user = cookie.getCookie("current_user")
+        if (current_user) {
             navigate("/main/dashboard")
         }
     }

@@ -4,6 +4,7 @@ import { Navigate } from 'react-router-dom'
 import Login from "./login"
 import Layout from "./layout"
 import Dashboard from "./dashboard"
+import Settings from "./settings"
 
 
 const router = [
@@ -22,8 +23,11 @@ const router = [
             {
                 path: "dashboard",
                 element: <Dashboard/>
+            },
+            {
+                path: "settings",
+                element: <Settings/>
             }
-            
         ]
     }
   ]
