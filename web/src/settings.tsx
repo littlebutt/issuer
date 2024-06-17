@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { ChangeEvent, useEffect, useState } from "react"
 import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
 import useCookie from "./lib/cookies"
@@ -9,11 +9,15 @@ import { PasswordInput } from "./components/ui/password"
 import { Button } from "./components/ui/button"
 import { Textarea } from "./components/ui/textarea"
 import { Avatar, AvatarImage } from "./components/ui/avatar"
+import axios from "axios"
+import { Toaster } from "./components/ui/toaster"
+import { useToast } from "./components/ui/use-toast"
 
 const Settings: React.FC = () => {
 
     const [userInfo, setUserInfo] = useState<User>({})
     const [repassword, setRepassword] = useState<string>("")
+    const [avatarFile, setAvatarFile] = useState<File | null>(null)
 
     const [showEmailReminder, setShowEmailReminder] = useState<boolean>(false)
     const [showPasswordReminder, setShowPasswordReminder] = useState<boolean>(false)
@@ -21,6 +25,7 @@ const Settings: React.FC = () => {
 
     const cookie = useCookie()
     const navigate = useNavigate()
+    const { toast } = useToast()
 
     const checkEmailFormat = (email: string) => {
         let reg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
@@ -47,24 +52,97 @@ const Settings: React.FC = () => {
         setRepassword(repassword)
     }
 
+    const previewAvatar = (e: ChangeEvent<HTMLInputElement>) => {
+        let files = e.currentTarget.files
+        if (files) {
+            let avatar = document.querySelector("#avatar")
+            let wuc = window.URL.createObjectURL(files[0])
+            setAvatarFile(files[0])
+            avatar?.setAttribute("src", wuc)
+        }
+    }
+
+    const uploadAvatar = () => {
+        if (avatarFile === null) {
+            toast({
+                title: "请选择文件"
+            })
+            return
+        }
+        let data = new FormData()
+        data.append("file", avatarFile as Blob)
+        axios({
+            method: 'POST',
+            url: "/users/upload_avatar",
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            data
+        }).then(res => {
+            if (res.status === 200 && res.data?.success === true) {
+                setUserInfo({...userInfo, avatar: res.data.filename})
+                toast({
+                    title: "上传成功"
+                })
+            } else {
+                toast({
+                    title: "上传失败",
+                    variant: "destructive"
+                })
+            }
+        }).catch(err => console.log(err))
+
+    }
+
+    const changeProfile = () => {
+        axios({
+            method: 'POST',
+            url: "/users/change",
+            data: userInfo
+        }).then(res => {
+            if (res.status === 200 && res.data.success === true) {
+                toast({
+                    title: "更新成功"
+                })
+            } else {
+                toast({
+                    title: "更新失败",
+                    variant: "destructive"
+                })
+            }
+        })
+    }
+
+    const resetProfile = () => {
+        fetchUser(cookie, navigate)
+        .then(res => {
+            if (res.status === 200) {
+                setUserInfo(res.data)
+            }
+        }).catch(err => console.log(err))
+    }
+
     useEffect(() => {
-        setUserInfo(fetchUser(cookie, navigate))
+        fetchUser(cookie, navigate)
+        .then(res => {
+            if (res.status === 200) {
+                setUserInfo(res.data)
+            }
+        }).catch(err => console.log(err))
     }, [])
     
     return (
         <div>
+            <Toaster />
             <div className="grid grid-rows-[repeat(6,80px)] grid-cols-2 grid-flow-col w-full px-5 py-0 gap-0">
             <div className="row-span-5 flex justify-center">
-                <Avatar className="size-96 hover:[mask:url(pen.png)_0_0/350px_350px] hover:[mask-mode:luminance]">
-                    <AvatarImage className="object-fill" src={userInfo.avatar ? userInfo.avatar : "/statics/avatar.png"}/>
+                <Avatar className="size-96">
+                    <AvatarImage id="avatar" className="object-fill" src={userInfo.avatar ? userInfo.avatar : "/statics/avatar.png"}/>
                 </Avatar>
             </div>
-            <div className="col-span-2 space-y-1">
-                <Label htmlFor="description">签名</Label>
-                <Textarea className="h-150 min-h-[150px]" placeholder={userInfo.description} onChange={(e) => setUserInfo({...userInfo, description: e.target.value})}/>
-                <div className="w-full flex justify-end">
-                    <Button className="w-1/2">更新</Button>
-                </div>
+            <div className="row-span-1 flex justify-center space-x-2">
+                <Input className="w-1/2" type="file" accept="image/png, image/jpeg" onChange={e => previewAvatar(e)}/>
+                <Button className="w-1/4 hover:bg-zinc-200" variant="outline" onClick={uploadAvatar}>上传</Button>
             </div>
             <div className="col-span-1 space-y-1">
                 <Label htmlFor="username">用户名</Label>
@@ -85,6 +163,13 @@ const Settings: React.FC = () => {
             <div className="col-span-1 space-y-1">
                 <Label htmlFor="phone">联系方式</Label>
                 <Input id="phone" value={userInfo.phone} onChange={(e) => setUserInfo({...userInfo, phone: e.target.value})}/>
+            </div>
+            <div className="col-span-2 space-y-1">
+                <Label htmlFor="description">签名</Label>
+                <Textarea className="h-150 min-h-[150px]" placeholder={userInfo.description} onChange={(e) => setUserInfo({...userInfo, description: e.target.value})}/>
+                <div className="w-full flex justify-end py-2">
+                    <Button className="w-1/2 mx-1 hover:bg-zinc-200" variant="outline" onClick={resetProfile}>重置</Button><Button className="w-1/2" onClick={changeProfile}>更新</Button>
+                </div>
             </div>
             </div>
         </div>

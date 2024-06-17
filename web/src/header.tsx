@@ -32,8 +32,13 @@ const Header: React.FC = () => {
     }
 
     useEffect(() => {
-        setUserInfo(fetchUser(cookie, navigate))
-        console.log(userInfo)
+        fetchUser(cookie, navigate)
+        .then(res => {
+            if (res.status === 200) {
+                setUserInfo(res.data)
+            }
+        })
+        .catch(err => console.log(err))
     }, [])
 
     return (

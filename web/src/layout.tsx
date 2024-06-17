@@ -9,7 +9,6 @@ import {
     SquarePen,
     LayoutGrid
   } from "lucide-react"
-import { Toaster } from "./components/ui/toaster"
 import { Outlet } from "react-router-dom"
 import Header from "./header"
 
@@ -78,8 +77,7 @@ const Layout: React.FC = () => {
         }
       ]
     return (
-        <div className="grid grid-cols-[0%_1fr_5fr] h-screen w-full bg-zinc-100">
-            <Toaster/>
+        <div className="grid grid-cols-[1fr_5fr] h-screen w-full bg-zinc-100">
             <SideMenu className="bg-zinc-950 text-white" menuList={menuList}></SideMenu>
             <div className="grid grid-rows-[1fr_9fr]">
               <Header/>
