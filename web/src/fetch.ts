@@ -1,5 +1,4 @@
 import axios, { AxiosResponse } from "axios"
-import { User } from "./types"
 import { NavigateFunction } from "react-router-dom"
 
 
