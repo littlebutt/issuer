@@ -1,4 +1,4 @@
-interface User {
+type User = {
     user_code?: string
     user_name?: string
     passwd?: string
@@ -9,4 +9,8 @@ interface User {
     avatar?: string
 }
 
-export type { User }
+type UserRole = {
+    value: string
+    label: string
+}
+export type { User, UserRole }

@@ -2,7 +2,7 @@ import React, { ChangeEvent, useEffect, useState } from "react"
 import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
 import useCookie from "./lib/cookies"
-import { User } from "./types"
+import { User, UserRole } from "./types"
 import fetchUser from "./fetch"
 import { useNavigate } from "react-router-dom"
 import { PasswordInput } from "./components/ui/password"
@@ -12,12 +12,14 @@ import { Avatar, AvatarImage } from "./components/ui/avatar"
 import axios from "axios"
 import { Toaster } from "./components/ui/toaster"
 import { useToast } from "./components/ui/use-toast"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select"
 
 const Settings: React.FC = () => {
 
     const [userInfo, setUserInfo] = useState<User>({})
     const [repassword, setRepassword] = useState<string>("")
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
+    const [roles, setRoles] = useState<UserRole[]>([])
 
     const [showEmailReminder, setShowEmailReminder] = useState<boolean>(false)
     const [showPasswordReminder, setShowPasswordReminder] = useState<boolean>(false)
@@ -122,6 +124,33 @@ const Settings: React.FC = () => {
         }).catch(err => console.log(err))
     }
 
+    const fetchRoles = () => {
+        axios({
+            method: 'GET',
+            url: "/users/roles"
+        }).then(res => {
+            if (res.status === 200 && res.data.success === true) {
+                setRoles(res.data.data)
+            } else {
+                toast({
+                    title: "获取角色失败",
+                    variant: "destructive"
+                })
+            }
+        }).catch(err => console.log(err))
+    }
+
+    const value2label = (value: string | undefined) => {
+        if (value === undefined) {
+            return undefined
+        }
+        let role = roles.filter(role => role.value === value)
+        if (role.length > 0) {
+            return role[0].label
+        }
+        return undefined
+    }
+
     useEffect(() => {
         fetchUser(cookie, navigate)
         .then(res => {
@@ -129,13 +158,14 @@ const Settings: React.FC = () => {
                 setUserInfo(res.data)
             }
         }).catch(err => console.log(err))
+        fetchRoles()
     }, [])
     
     return (
         <div>
             <Toaster />
             <div className="grid grid-rows-[repeat(6,80px)] grid-cols-2 grid-flow-col w-full px-5 py-0 gap-0">
-            <div className="row-span-5 flex justify-center">
+            <div className="row-span-5 flex justify-center min-w-[400px]">
                 <Avatar className="size-96">
                     <AvatarImage id="avatar" className="object-fill" src={userInfo.avatar ? userInfo.avatar : "/statics/avatar.png"}/>
                 </Avatar>
@@ -144,9 +174,26 @@ const Settings: React.FC = () => {
                 <Input className="w-1/2" type="file" accept="image/png, image/jpeg" onChange={e => previewAvatar(e)}/>
                 <Button className="w-1/4 hover:bg-zinc-200" variant="outline" onClick={uploadAvatar}>上传</Button>
             </div>
-            <div className="col-span-1 space-y-1">
-                <Label htmlFor="username">用户名</Label>
-                <Input id="username" value={userInfo.user_name} onChange={(e) => setUserInfo({...userInfo, user_name: e.target.value})}/>
+            <div className="col-span-1 space-y-1 flex justify-center space-x-1">
+                <div className="w-1/2">
+                    <Label htmlFor="username">用户名</Label>
+                    <Input id="username" value={userInfo.user_name} onChange={(e) => setUserInfo({...userInfo, user_name: e.target.value})}/>
+                </div>
+                <div className="w-1/2">
+                    <Label htmlFor="role">角色</Label>
+                    <Select onValueChange={(v) => setUserInfo({...userInfo, role: v})}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder={value2label(userInfo.role)}/>
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                {roles.map(role => role.value !== 'admin' && (
+                                    <SelectItem value={role?.value}>{role?.label}</SelectItem>
+                                ))}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
             <div className="col-span-1 space-y-1">
                 <Label htmlFor="email">邮箱{showEmailReminder && <span className="text-red-500"> 请输入正确的邮箱</span>}</Label>

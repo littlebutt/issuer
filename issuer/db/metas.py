@@ -1,5 +1,5 @@
 import logging
-from typing import Sequence
+from typing import Optional, Sequence
 
 from sqlmodel import Session, select
 from issuer.db.database import DatabaseFactory
@@ -15,8 +15,7 @@ def insert_metas(metas: "Metas") -> bool:
             session.add(metas)
             session.commit()
             session.refresh(metas)
-    except Exception as e:
-        Logger.error(e)
+    except Exception:
         return False
     return True
 

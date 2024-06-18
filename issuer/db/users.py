@@ -18,8 +18,7 @@ def insert_user(user: "User") -> bool:
             session.add(user)
             session.commit()
             session.refresh(user)
-    except Exception as e:
-        Logger.error(e)
+    except Exception:
         return False
     return True
 

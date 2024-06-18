@@ -174,6 +174,8 @@ async def change_user(user: "UserModel",
         user_do.passwd = passwd_md5
     if user.email is not None:
         user_do.email = user.email
+    if user.role is not None:
+        user_do.role = user.role
     if user.description is not None:
         user_do.description = user.description
     if user.phone is not None:
@@ -190,7 +192,9 @@ async def query_roles():
     metas = db.list_metas_by_type('USER_ROLE')
     return {
         "success": True,
-        "data": [meta.meta_value for meta in metas]
+        "data": [
+            {"value": meta.meta_value, "label": meta.note} for meta in metas
+        ]
     }
 
 

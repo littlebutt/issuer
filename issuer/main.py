@@ -43,32 +43,37 @@ async def create_engine():
     insert_user(admin)
 
     # 添加管理员角色
-    user_role_admin = Metas(meta_type='USER_ROLE', meta_value='admin')
+    user_role_admin = Metas(meta_type='USER_ROLE',
+                            meta_value='admin',
+                            note="管理员")
     insert_metas(user_role_admin)
-    user_role_default = Metas(meta_type='USER_ROLE', meta_value='default')
+
+    user_role_default = Metas(meta_type='USER_ROLE',
+                              meta_value='default',
+                              note="默认")
     insert_metas(user_role_default)
 
     # 添加项目状态
     project_status_start = Metas(meta_type='PROJECT_STATUS',
-                                 meta_value='start')
+                                 meta_value='start', note="开始")
     insert_metas(project_status_start)
     project_status_processing = Metas(meta_type='PROJECT_STATUS',
-                                      meta_value='processing')
+                                      meta_value='processing', note="进行")
     insert_metas(project_status_processing)
     project_status_checking = Metas(meta_type='PROJECT_STATUS',
-                                    meta_value='checking')
+                                    meta_value='checking', note="验收")
     insert_metas(project_status_checking)
     project_status_finished = Metas(meta_type='PROJECT_STATUS',
-                                    meta_value='checked')
+                                    meta_value='checked', note="完工")
     insert_metas(project_status_finished)
 
     # 添加议题状态
     issue_status_open = Metas(meta_type='ISSUE_STATUS',
-                              meta_value='open')
+                              meta_value='open', note="开放")
     insert_metas(issue_status_open)
     issue_status_finished = Metas(meta_type='ISSUE_STATUS',
-                                  meta_value='finished')
+                                  meta_value='finished', note="完成")
     insert_metas(issue_status_finished)
     issue_status_closed = Metas(meta_type='ISSUE_STATUS',
-                                meta_value='closed')
+                                meta_value='closed', note="关闭")
     insert_metas(issue_status_closed)
