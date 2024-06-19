@@ -38,7 +38,7 @@ async def new_user_group(user_group_model: "UserGroupReq",
     # 把自己添加入members列表
     user_group = db.find_user_group_by_code(res)
     res = db.insert_user_to_user_group(
-        UserToUserGroup(user_code=user_group_model.owner,
+        UserToUserGroup(user_code=_user.user_code,
                         group_code=user_group.group_code)
     )
     return {"success": res}
@@ -109,7 +109,7 @@ async def change_user_group(user_group_model: "UserGroupReq",
     return {"success": res}
 
 
-@router.get('/query', response_model=UserGroupRes | Dict)
+@router.get('/query', response_model=Dict[str, bool | str | UserGroupRes])
 async def query_user_group_by_code(group_code: str,
                                    current_user: Annotated[str | None, Cookie()] = None): # noqa
     '''
@@ -151,10 +151,11 @@ async def query_user_group_by_code(group_code: str,
                            avatar=owner.avatar
                        ),
                        members=users)
-    return res
+    return {"success": True, "data": res}
 
 
-@router.get('/list_users', response_model=List[UserModel] | Dict)
+@router.get('/list_users',
+            response_model=Dict[str, bool | str | List[UserModel]])
 async def list_users_by_group_code(group_code: str,
                                    page_num: int = 1,
                                    page_size: int = 10,
@@ -177,10 +178,11 @@ async def list_users_by_group_code(group_code: str,
             phone=u.phone,
             avatar=u.avatar
         ))
-    return res
+    return {"success": True, "data": res}
 
 
-@router.get('/query_group', response_model=List[UserGroupRes] | Dict)
+@router.get('/query_group',
+            response_model=Dict[str, bool | str | List[UserGroupRes]])
 async def query_user_group_by_user(user_code: str,
                                    page_num: int = 1,
                                    page_size: int = 10,
@@ -221,4 +223,16 @@ async def query_user_group_by_user(user_code: str,
                             avatar=owner.avatar),
             members=','.join(members)
         ))
-    return user_groups
+    return {"success": True, "data": user_groups}
+
+
+@router.get('/count_group', response_model=Dict[str, bool | str | int])
+def count_user_group_by_user(user_code: str,
+                             current_user: Annotated[str | None, Cookie()] = None): # noqa
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {"success": False, "reason": "Invalid token"}
+
+    user_to_user_groups = db.\
+        count_user_to_user_group_by_user(user_code=user_code)
+    return {"success": True, "data": user_to_user_groups}

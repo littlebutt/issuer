@@ -8,12 +8,14 @@ import { HoverCardContent, HoverCardTrigger } from "./components/ui/hover-card"
 import { Button } from "./components/ui/button"
 import { useNavigate } from "react-router-dom"
 import fetchUser from "./fetch"
+import { Toaster } from "./components/ui/toaster"
+import { useToast } from "./components/ui/use-toast"
 
 const Header: React.FC = () => {
     const [userInfo, setUserInfo] = useState<User>({})
 
     const navigate = useNavigate()
-
+    const { toast } = useToast()
     const cookie = useCookie()
 
     const doSignout = () => {
@@ -32,6 +34,14 @@ const Header: React.FC = () => {
     }
 
     useEffect(() => {
+        let user_code =  cookie.getCookie("current_user")
+        if (typeof user_code !== 'string') {
+            toast({
+                title: "登录过期，请重新登录"
+            })
+            navigate('/login')
+            return
+        }
         fetchUser(cookie, navigate)
         .then(res => {
             if (res.status === 200) {
@@ -42,23 +52,26 @@ const Header: React.FC = () => {
     }, [])
 
     return (
-        <div className="w-full h-[50px] bg-zinc-950">
-            <div className="w-12 float-end my-1">
-                <HoverCard>
-                    <HoverCardTrigger>
-                        <Avatar>
-                            <AvatarImage src={userInfo.avatar ? userInfo.avatar : "/statics/avatar.png"} alt="avatar"/>
-                            <AvatarFallback>{userInfo.user_name}</AvatarFallback>
-                        </Avatar>
-                    </HoverCardTrigger>
-                    <HoverCardContent className="w-30 h-30 my-1 p-0">
-                        <div className="flex flex-col items-center p-0">
-                            <span className="text-sm pb-1">{userInfo.user_name ? userInfo.user_name : "unknown"}</span>
-                            <Button variant="link" className="m-0" onClick={() => navigate('/main/settings')}>设置账户</Button>
-                            <Button variant="link" className="m-0" onClick={() => doSignout()}>退出登录</Button>
-                        </div>
-                    </HoverCardContent>
-            </HoverCard>
+        <div>
+            <Toaster/>
+            <div className="w-full h-[50px] bg-zinc-950">
+                <div className="w-12 float-end my-1">
+                    <HoverCard>
+                        <HoverCardTrigger>
+                            <Avatar>
+                                <AvatarImage src={userInfo.avatar ? userInfo.avatar : "/statics/avatar.png"} alt="avatar"/>
+                                <AvatarFallback>{userInfo.user_name}</AvatarFallback>
+                            </Avatar>
+                        </HoverCardTrigger>
+                        <HoverCardContent className="w-30 h-30 my-1 p-0">
+                            <div className="flex flex-col items-center p-0">
+                                <span className="text-sm pb-1">{userInfo.user_name ? userInfo.user_name : "unknown"}</span>
+                                <Button variant="link" className="m-0" onClick={() => navigate('/main/settings')}>设置账户</Button>
+                                <Button variant="link" className="m-0" onClick={() => doSignout()}>退出登录</Button>
+                            </div>
+                        </HoverCardContent>
+                    </HoverCard>
+                </div>
             </div>
         </div>
     )

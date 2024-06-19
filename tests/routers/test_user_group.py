@@ -108,7 +108,7 @@ def test_change_user_group():
     res = client.get(f'/user_group/query_group?user_code={user_code}',
                      cookies=cookie)
     assert len(res.json()) > 0
-    code = res.json()[0]["group_code"]
+    code = res.json()["data"][0]["group_code"]
 
     res = client.post('/user_group/change',
                       json={
@@ -122,7 +122,7 @@ def test_change_user_group():
     res = client.get(f'/user_group/query_group?user_code={user_code}',
                      cookies=cookie)
     assert len(res.json()) > 0
-    assert res.json()[0]["group_name"] == "foo"
+    assert res.json()["data"][0]["group_name"] == "foo"
 
 
 def test_query_user_group_by_code():
@@ -137,11 +137,9 @@ def test_query_user_group_by_code():
 
     res = client.get(f'/user_group/query_group?user_code={user_code}',
                      cookies=cookie)
-    print(res.json())
-    assert len(res.json()) > 0
-    code = res.json()[0]["group_code"]
+    assert res.json()["success"] is True
+    code = res.json()["data"][0]["group_code"]
 
     res = client.get(f'/user_group/query?group_code={code}',
                      cookies=cookie)
-    print(res.json())
-    assert res.json()['owner']['user_name'] == "test"
+    assert res.json()['data']['owner']['user_name'] == "test"

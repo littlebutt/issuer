@@ -13,4 +13,12 @@ type UserRole = {
     value: string
     label: string
 }
-export type { User, UserRole }
+
+type UserGroup = {
+    group_code: string
+    group_name: string
+    owner: User
+    members: string
+}
+
+export type { User, UserRole, UserGroup }

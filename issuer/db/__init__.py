@@ -24,5 +24,6 @@ from issuer.db.relationships import insert_user_to_user_group, \
     delete_all_user_to_user_group, insert_project_to_user, \
     delete_project_to_user_by_project_and_user, \
     list_project_to_user_by_project, list_project_to_user_by_user, \
-    delete_all_project_to_user, delete_project_to_user_by_project
+    delete_all_project_to_user, delete_project_to_user_by_project, \
+    count_user_to_user_group_by_user
 from issuer.db.metas import insert_metas, delete_metas, list_metas_by_type

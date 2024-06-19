@@ -1,6 +1,6 @@
-
 import logging
 from typing import Sequence
+from sqlalchemy import func
 from sqlmodel import Session, select
 from issuer.db.database import DatabaseFactory
 from issuer.db.models import ProjectToUser, UserToUserGroup
@@ -83,6 +83,17 @@ def list_user_to_user_group_by_user(user_code: str,
     except Exception as e:
         Logger.error(e)
     return list()
+
+
+def count_user_to_user_group_by_user(user_code: str) -> int:
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(func.count(UserToUserGroup.id))\
+                .where(UserToUserGroup.user_code == user_code)
+            return session.scalar(stmt)
+    except Exception as e:
+        Logger.error(e)
+    return 0
 
 
 def list_user_to_user_group_by_group(group_code: str,
