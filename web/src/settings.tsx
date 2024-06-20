@@ -1,9 +1,9 @@
 import React, { ChangeEvent, useEffect, useState } from "react"
 import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
-import useCookie from "./lib/cookies"
+import { useCookie } from "./lib/cookies"
 import { User, UserRole } from "./types"
-import fetchUser from "./fetch"
+import { fetchUser } from "./fetch"
 import { useNavigate } from "react-router-dom"
 import { PasswordInput } from "./components/ui/password"
 import { Button } from "./components/ui/button"
@@ -119,7 +119,7 @@ const Settings: React.FC = () => {
         fetchUser(cookie, navigate)
         .then(res => {
             if (res.status === 200) {
-                setUserInfo(res.data)
+                setUserInfo(res.data.data)
             }
         }).catch(err => console.log(err))
     }
@@ -155,7 +155,7 @@ const Settings: React.FC = () => {
         fetchUser(cookie, navigate)
         .then(res => {
             if (res.status === 200) {
-                setUserInfo(res.data)
+                setUserInfo(res.data.data)
             }
         }).catch(err => console.log(err))
         fetchRoles()

@@ -90,4 +90,4 @@ const useCookie: () => Cookie = () => {
     return Object.create({getCookie, setCookie})
 }
 
-export default useCookie
+export { useCookie, type Cookie }

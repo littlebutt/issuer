@@ -41,6 +41,13 @@ async def new_user_group(user_group_model: "UserGroupReq",
         UserToUserGroup(user_code=_user.user_code,
                         group_code=user_group.group_code)
     )
+    # 把其他人添加入members列表
+    if user_group_model.members is not None and user_group_model.members != "":
+        for member in user_group_model.members.split(','):
+            db.insert_user_to_user_group(
+                UserToUserGroup(user_code=member,
+                                group_code=user_group.group_code)
+            )
     return {"success": res}
 
 

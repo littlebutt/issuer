@@ -1,7 +1,7 @@
 import pytest
 
 from issuer.db import insert_user, delete_all_users, update_user_by_code, \
-    find_user_by_email, delete_user_by_code, find_user_by_code
+    find_user_by_email, delete_user_by_code, find_user_by_code, list_users
 from issuer.db import User
 
 
@@ -56,3 +56,13 @@ def test_find_user():
 
     res = find_user_by_code("test")
     assert res is not None
+
+
+def test_list_users():
+    user = User(user_code="test", user_name="test", passwd="test",
+                role="admin", email="test")
+    res = insert_user(user=user)
+    assert res is True
+
+    res = list_users()
+    assert len(res) == 1

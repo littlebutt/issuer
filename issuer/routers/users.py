@@ -1,7 +1,7 @@
 from datetime import datetime
 import hashlib
 import os
-from typing import Annotated, Dict, Optional
+from typing import Annotated, Dict, Optional, Sequence
 from fastapi import APIRouter, Cookie, UploadFile
 
 from issuer import db
@@ -219,7 +219,7 @@ async def upload_avatar(file: "UploadFile",
     return {"success": True, "filename": '/statics/' + filename}
 
 
-@router.get('/user', response_model=UserModel | Dict)
+@router.get('/user', response_model=Dict[str, str | bool | UserModel])
 async def get_user(user_code: str,
                    current_user: Annotated[str | None, Cookie()] = None):
     _user = check_cookie(cookie=current_user)
@@ -230,7 +230,7 @@ async def get_user(user_code: str,
         }
     user = db.find_user_by_code(user_code=user_code)
     if user is not None:
-        return UserModel(
+        user_model = UserModel(
             user_code=user.user_code,
             user_name=user.user_name,
             email=user.email,
@@ -239,3 +239,30 @@ async def get_user(user_code: str,
             phone=user.phone,
             avatar=user.avatar
         )
+        return {"success": True, "data": user_model}
+
+
+@router.get('/users',
+            response_model=Dict[str, str | bool | Sequence[UserModel]])
+def get_users(page_num: int = 1,
+              page_size: int = 10,
+              current_user: Annotated[str | None, Cookie()] = None):
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {
+            "success": False,
+            "reason": "Invalid token",
+        }
+    users = db.list_users(page_num, page_size)
+    res = []
+    for user in users:
+        res.append(UserModel(
+            user_code=user.user_code,
+            user_name=user.user_name,
+            email=user.email,
+            role=user.role,
+            description=user.description,
+            phone=user.phone,
+            avatar=user.avatar)
+        )
+    return {"success": True, "data": res}

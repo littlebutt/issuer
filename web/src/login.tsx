@@ -15,7 +15,7 @@ import { PasswordInput } from "./components/ui/password"
 import { useToast } from "./components/ui/use-toast"
 import { Toaster } from "./components/ui/toaster"
 import { useNavigate } from "react-router-dom"
-import useCookie from "./lib/cookies"
+import { useCookie } from "./lib/cookies"
 
 
 

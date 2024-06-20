@@ -207,4 +207,30 @@ def test_get_user():
 
     res = client.get(f'/users/user?user_code={user_code}',
                      cookies=cookie)
-    assert res.json()['user_code'] == user_code
+    assert res.json()['success'] is True
+
+
+def test_get_users():
+    res = client.post('/users/sign_up',
+                      json={
+                          "user_name": "test",
+                          "passwd": "test",
+                          "email": "test"
+                      })
+    assert res.json()['success'] is True
+
+    res = client.post('/users/sign_in',
+                      json={
+                          "user_name": "test",
+                          "passwd": "test",
+                          "email": "test"
+                      })
+    assert res.json()['success'] is True
+
+    token = res.json()['token']
+    user_code = res.json()['user']['user_code']
+    cookie = httpx.Cookies()
+    cookie.set(name="current_user", value=f"{user_code}:{token}")
+
+    res = client.get('/users/users', cookies=cookie)
+    assert res.json()["success"] is True and len(res.json()["data"]) == 1

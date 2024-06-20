@@ -16,7 +16,7 @@ interface IGroupTable {
 const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
     
     return (
-        <Table className="h-full">
+        <Table>
             <TableHeader>
                 <TableRow>
                     <TableHead className="w-[100px]">编号</TableHead>
@@ -29,7 +29,7 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
             <TableBody>
             {props.tableContent.map((content, idx) => (
                 <TableRow key={content.group_code}>
-                    <TableCell className="font-medium">#{idx}</TableCell>
+                    <TableCell className="font-medium">#{idx + 1}</TableCell>
                     <TableCell>{content.group_name}</TableCell>
                     <TableCell>{content.owner?.user_name}</TableCell>
                     <TableCell>{content.members}</TableCell>

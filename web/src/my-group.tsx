@@ -5,14 +5,15 @@ import { TableProperties, LayoutGrid } from "lucide-react"
 import GroupTable from "./group-table"
 import { User, UserGroup } from "./types"
 import axios from "axios"
-import useCookie from "./lib/cookies"
+import { useCookie } from "./lib/cookies"
 import { useToast } from "./components/ui/use-toast"
 import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "./components/ui/drawer"
 import { Input } from "./components/ui/input"
-import fetchUser from "./fetch"
+import { fetchUser, fetchUsers } from "./fetch"
 import { useNavigate } from "react-router-dom"
 import { Label } from "./components/ui/label"
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "./components/ui/dropdown-menu"
+import MultiSelect from "./components/ui/multi-select"
+import { SelectValue } from "react-tailwindcss-select/dist/components/type"
 
 
 const MyGroup: React.FC = () => {
@@ -22,6 +23,9 @@ const MyGroup: React.FC = () => {
     const [tableContent, setTableContent] = useState<UserGroup[]>([])
     const [pageNum, setPageNum] = useState<number>(1) 
     const [pageTotal, setPageTotal] = useState<number>(0)
+    const [userOptions, setUserOptions] = useState<{ value: string; label: string }[]>([])
+    const [selectedUsers, setSelectedUsers] = useState<any[]>([])
+    const [groupName, setGroupName] = useState<string>("")
 
     const cookie = useCookie()
     const { toast } = useToast()
@@ -65,20 +69,82 @@ const MyGroup: React.FC = () => {
         }).catch(err => console.log(err))
     }
 
+    const fetchUserOptions = () => {
+        // FIXME: 添加下拉菜单分页功能
+        fetchUsers(1, 999).then(res => {
+            if (res.status === 200 && res.data.success === true) {
+                res.data.data.map((user: { user_code: any; user_name: any }) => {
+                    userOptions.push({
+                        value: user.user_code,
+                        label: user.user_name
+                    })
+                    
+                })
+                setUserOptions([...userOptions])
+            } else {
+                toast({
+                    title: "获取所有用户失败",
+                    variant: 'destructive'
+                })
+            }
+        })
+        .catch(err => console.log(err))
+    }
+
+    const changeUserOptions: (value: SelectValue) => void = (value: SelectValue) => {
+        setSelectedUsers(value as any)
+    }
+
+    const submitUserGroup = () => {
+        let members = ""
+        if (selectedUsers?.length !== 0) {
+            members = selectedUsers.map(u => u.value).join(',')
+        }
+        if (groupName.trim() === "") {
+            toast({
+                title: "请填写组名"
+            })
+            return
+        }
+        axios({
+            method: 'POST',
+            url: "/user_group/new",
+            data: {
+                group_name: groupName,
+                members: members
+            }
+        }).then(res => {
+            if (res.status === 200 && res.data.success === true) {
+                toast({
+                    title: "新建成功"
+                })
+                fetchUserGroups()
+                fetchUserGroupCount()
+            } else {
+                toast({
+                    title: "新建失败",
+                    variant: "destructive"
+                })
+            }
+        }).catch(err => console.log(err))
+    }
+
     const gotoNext = () => {
-        setPageNum(() => Math.min(pageNum + 1, pageTotal))
+        // FIXME: 自增
+        setPageNum((pageNum) => Math.min(pageNum + 1, pageTotal))
         fetchUserGroups()
     }
 
     const gotoPrevious = () => {
-        setPageNum(() => Math.max(pageNum - 1, 1))
+        setPageNum((pageNum) => Math.max(pageNum - 1, 1))
         fetchUserGroups()
     }
 
     useEffect(() => {
-        fetchUser(cookie, navigate).then(res => setUserInfo(res.data)).catch(err => console.log(err))
+        fetchUser(cookie, navigate).then(res => setUserInfo(res.data.data)).catch(err => console.log(err))
         fetchUserGroups()
         fetchUserGroupCount()
+        fetchUserOptions()
     }, [])
 
     return (
@@ -102,7 +168,7 @@ const MyGroup: React.FC = () => {
                                 <div className="mt-3 h-[520px] flex flex-col space-y-2">
                                     <div className="flex flex-col space-y-1">
                                         <Label htmlFor="groupName">组名</Label>
-                                        <Input id="groupname"/>
+                                        <Input id="groupname" onChange={e => setGroupName(e.target.value)}/>
                                     </div>
                                     <div className="flex flex-col space-y-1">
                                         <Label htmlFor="owner">所有者</Label>
@@ -110,30 +176,14 @@ const MyGroup: React.FC = () => {
                                     </div>
                                     <div className="flex flex-col space-y-1">
                                         <Label htmlFor="members">组员</Label>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Input id="members"/>{//TODO: https://github.com/onesine/demo-react-tailwindcss-select
-                                                }
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent className="w-full">
-                                                <DropdownMenuCheckboxItem>
-                                                    Mock1
-                                                </DropdownMenuCheckboxItem>
-                                                <DropdownMenuCheckboxItem>
-                                                    Activity Bar
-                                                </DropdownMenuCheckboxItem>
-                                                <DropdownMenuCheckboxItem>
-                                                    Panel
-                                                </DropdownMenuCheckboxItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                                        <MultiSelect options={userOptions} value={selectedUsers} onChange={changeUserOptions}/>
                                     </div>
                                 </div>
                             </div>
                             <DrawerFooter>
-                                <Button>Submit</Button>
+                                <Button onClick={submitUserGroup}>确定</Button>
                                 <DrawerClose asChild>
-                                    <Button variant="outline">Cancel</Button>
+                                    <Button variant="outline">取消</Button>
                                 </DrawerClose>
                             </DrawerFooter>
                         </div>

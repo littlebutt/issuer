@@ -1,6 +1,6 @@
 from datetime import datetime
 import logging
-from typing import Optional
+from typing import Optional, Sequence
 from sqlmodel import Session, select
 from issuer.db.models import User
 from issuer.db.database import DatabaseFactory
@@ -90,3 +90,15 @@ def find_user_by_code(user_code: str) -> Optional["User"]:
     except Exception as e:
         Logger.error(e)
     return None
+
+
+def list_users(page_num: int = 1,
+               page_size: int = 10) -> Sequence["User"]:
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(User)\
+                .limit(page_size).offset((page_num - 1) * page_size)
+            return session.exec(stmt).all()
+    except Exception as e:
+        Logger.error(e)
+    return list()

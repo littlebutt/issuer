@@ -3,7 +3,7 @@ from issuer.db.models import User, UserGroup, UserToUserGroup, Project, \
     ProjectToUser, Issue, Metas
 from issuer.db.users import insert_user, delete_all_users, \
     find_user_by_email, update_user_by_code, delete_user_by_code, \
-    find_user_by_code
+    find_user_by_code, list_users
 from issuer.db.user_group import insert_user_group, \
     update_user_group_by_code, delete_user_group_by_code, \
     find_user_group_by_code, find_user_group_by_owner, \

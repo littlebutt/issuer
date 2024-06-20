@@ -2,12 +2,12 @@ import { HoverCard } from "@radix-ui/react-hover-card"
 import React, { useEffect, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar"
 import axios from "axios"
-import useCookie from "./lib/cookies"
+import { useCookie } from "./lib/cookies"
 import { User } from "./types"
 import { HoverCardContent, HoverCardTrigger } from "./components/ui/hover-card"
 import { Button } from "./components/ui/button"
 import { useNavigate } from "react-router-dom"
-import fetchUser from "./fetch"
+import { fetchUser } from "./fetch"
 import { Toaster } from "./components/ui/toaster"
 import { useToast } from "./components/ui/use-toast"
 
@@ -45,7 +45,7 @@ const Header: React.FC = () => {
         fetchUser(cookie, navigate)
         .then(res => {
             if (res.status === 200) {
-                setUserInfo(res.data)
+                setUserInfo(res.data.data)
             }
         })
         .catch(err => console.log(err))
