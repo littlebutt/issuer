@@ -31,12 +31,12 @@ const MyGroup: React.FC = () => {
     const { toast } = useToast()
     const navigate = useNavigate()
 
-    const fetchUserGroups = () => {
+    const fetchUserGroups = (currentPageNum?: number) => {
         let user_code =  cookie.getCookie("current_user")
         user_code = user_code as string
         user_code = user_code.split(':')[0]
         axios({
-            url: `/user_group/query_group?user_code=${user_code}&page_num=${pageNum}&page_size=10`,
+            url: `/user_group/query_group?user_code=${user_code}&page_num=${currentPageNum ?? pageNum}&page_size=10`,
             method: 'GET'
         }).then(res => {
             if (res.status === 200 && res.data?.success === true) {
@@ -130,14 +130,13 @@ const MyGroup: React.FC = () => {
     }
 
     const gotoNext = () => {
-        // FIXME: 自增
         setPageNum((pageNum) => Math.min(pageNum + 1, pageTotal))
-        fetchUserGroups()
+        fetchUserGroups(Math.min(pageNum + 1, pageTotal))
     }
 
     const gotoPrevious = () => {
         setPageNum((pageNum) => Math.max(pageNum - 1, 1))
-        fetchUserGroups()
+        fetchUserGroups(Math.max(pageNum - 1, 1))
     }
 
     useEffect(() => {
