@@ -12,7 +12,7 @@ import { Input } from "./components/ui/input"
 import { fetchUser, fetchUsers } from "./fetch"
 import { useNavigate } from "react-router-dom"
 import { Label } from "./components/ui/label"
-import MultiSelect from "./components/ui/multi-select"
+import { MultiSelect } from "./components/ui/multi-select"
 import { SelectValue } from "react-tailwindcss-select/dist/components/type"
 
 
@@ -32,8 +32,7 @@ const MyGroup: React.FC = () => {
     const navigate = useNavigate()
 
     const fetchUserGroups = (currentPageNum?: number) => {
-        let user_code =  cookie.getCookie("current_user")
-        user_code = user_code as string
+        let user_code =  cookie.getCookie("current_user") as string
         user_code = user_code.split(':')[0]
         axios({
             url: `/user_group/query_group?user_code=${user_code}&page_num=${currentPageNum ?? pageNum}&page_size=10`,
@@ -51,8 +50,7 @@ const MyGroup: React.FC = () => {
     }
 
     const fetchUserGroupCount = () => {
-        let user_code =  cookie.getCookie("current_user")
-        user_code = user_code as string
+        let user_code =  cookie.getCookie("current_user") as string
         user_code = user_code.split(':')[0]
         axios({
             url: `/user_group/count_group?user_code=${user_code}`,
@@ -129,6 +127,28 @@ const MyGroup: React.FC = () => {
         }).catch(err => console.log(err))
     }
 
+    const deleteGroup = (groupCode: string) => {
+        axios({
+            method: 'POST',
+            url: "/user_group/delete",
+            data: {
+                group_code: groupCode
+            }
+        }).then(res => {
+            if (res.status === 200 && res.data.success === true) {
+                toast({
+                    title: "删除成功"
+                })
+                fetchUserGroups()
+                fetchUserGroupCount()
+            } else {
+                toast({
+                    title: "删除失败"
+                })
+            }
+        }).catch(err => console.log(err))
+    }
+
     const gotoNext = () => {
         setPageNum((pageNum) => Math.min(pageNum + 1, pageTotal))
         fetchUserGroups(Math.min(pageNum + 1, pageTotal))
@@ -191,7 +211,13 @@ const MyGroup: React.FC = () => {
             </div>
             {tableMode ? (
             <div className="flex justify-center">
-                <GroupTable current={pageNum} total={pageTotal} gotoNext={gotoNext} gotoPrevious={gotoPrevious} tableContent={tableContent}/>
+                <GroupTable current={pageNum}
+                            total={pageTotal}
+                            gotoNext={gotoNext}
+                            gotoPrevious={gotoPrevious}
+                            tableContent={tableContent}
+                            userOptions={userOptions}
+                            deleteGroup={deleteGroup}/>
             </div>) : (
             <div></div>
                 )}

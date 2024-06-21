@@ -25,7 +25,7 @@ class UserGroupRes(BaseModel):
     group_code: str
     group_name: str
     owner: UserModel
-    members: List[UserModel] | str
+    members: List[UserModel]
 
 
 class ProjectReq(BaseModel):

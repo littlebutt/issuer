@@ -4,7 +4,7 @@ import ReactDOM from "react-dom/client"
 import "./styles/globals.css"
 import "./lib/utils"
 import router from "./routes"
-import {  RouterProvider, createBrowserRouter } from "react-router-dom"
+import {  RouterProvider, createHashRouter } from "react-router-dom"
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
@@ -12,6 +12,6 @@ const root = ReactDOM.createRoot(
 
 root.render(
     <React.StrictMode>
-        <RouterProvider router={createBrowserRouter(router)} />
+        <RouterProvider router={createHashRouter(router)} />
     </React.StrictMode>
 )

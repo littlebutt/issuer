@@ -1,7 +1,7 @@
 // copy from js-cookie
 
 type Cookie = {
-  getCookie: (key?: string) => string | {[k: string]: string}
+  getCookie: (key?: string) => string | undefined
   setCookie: (key: string, value: string, attributes: {[k: string]: any}) => void
 }
 
@@ -22,7 +22,7 @@ const useCookie: () => Cookie = () => {
         )
     }
 
-    const getCookie = (key?: string) => {
+    const getCookie = (key: string) => {
         let cookies = document.cookie ? document.cookie.split('; ') : []
         let jar: {[k: string]: string} = {}
         for (var i = 0; i < cookies.length; i++) {
@@ -42,7 +42,7 @@ const useCookie: () => Cookie = () => {
             }
         }
 
-        return key ? jar[key] : jar
+        return key in jar ? jar[key] : undefined
     }
 
     const setCookie = (key: string, value: string, attributes: {[k: string]: any}) => {

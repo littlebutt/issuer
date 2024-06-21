@@ -98,6 +98,10 @@ async def change_user_group(user_group_model: "UserGroupReq",
         return {"success": False, "reason": "Permission denied"}
     if _user.user_code not in user_group_model.members:
         return {"success": False, "reason": "Owner not in members"}
+
+    if user_group_model.owner not in user_group_model.members:
+        user_group_model.members += f",{user_group_model.owner}"
+
     if user_group_model.group_name is not None:
         user_group.group_name = user_group_model.group_name
     if user_group_model.owner is not None:
@@ -217,7 +221,14 @@ async def query_user_group_by_user(user_code: str,
         members = list()
         us = db.list_user_to_user_group_by_group(user_group.group_code)
         for u in us:
-            members.append(u.user_code)
+            user_do = db.find_user_by_code(u.user_code)
+            members.append(UserModel(user_code=user_do.user_code,
+                                     user_name=user_do.user_name,
+                                     email=user_do.email,
+                                     role=user_do.role,
+                                     description=user_do.description,
+                                     phone=user_do.phone,
+                                     avatar=user_do.avatar))
         user_groups.append(UserGroupRes(
             group_code=user_group.group_code,
             group_name=user_group.group_name,
@@ -228,7 +239,7 @@ async def query_user_group_by_user(user_code: str,
                             description=owner.description,
                             phone=owner.phone,
                             avatar=owner.avatar),
-            members=','.join(members)
+            members=members
         ))
     return {"success": True, "data": user_groups}
 

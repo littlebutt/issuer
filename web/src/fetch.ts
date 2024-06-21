@@ -26,4 +26,11 @@ const fetchUsers: (pageNum: number, pageSize: number) => Promise<AxiosResponse> 
     })
 }
 
-export { fetchUser, fetchUsers }
+const fetchUserByCode: (userCode: string) => Promise<AxiosResponse> = async (userCode) => {
+    return axios({
+        method: 'GET',
+        url: `/users/user?user_code=${userCode}`
+    })
+}
+
+export { fetchUser, fetchUsers, fetchUserByCode }

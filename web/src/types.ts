@@ -18,7 +18,7 @@ type UserGroup = {
     group_code: string
     group_name: string
     owner: User
-    members: string
+    members: User[]
 }
 
 export type { User, UserRole, UserGroup }
