@@ -13,10 +13,10 @@ import { SelectValue as Selected } from "react-tailwindcss-select/dist/component
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select"
 import { Tooltip, TooltipProvider, TooltipTrigger } from "./components/ui/tooltip"
 import { TooltipContent } from "@radix-ui/react-tooltip"
-import { Card } from "./components/ui/card"
+import { Card, CardContent } from "./components/ui/card"
+import { Popover, PopoverContent, PopoverTrigger } from "./components/ui/popover"
 
 interface IGroupTable {
-    // TODO: 将Tooltip改成Popover，在members上添加Tooltip
     tableContent: UserGroup[]
     current: number
     total: number
@@ -24,6 +24,7 @@ interface IGroupTable {
     gotoNext: () => void
     userOptions: { value: string; label: string }[]
     deleteGroup: (groupCode: string) => void
+    updateGroup: (groupCode: string, groupName: string, owner: string, members: string) => void
 }
 
 const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
@@ -32,6 +33,8 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
     const [groupName, setGroupName] = useState<string>("")
     const [owner, setOwner] = useState<string>("")
     const [selectedUsers, setSelectedUsers] = useState<any[]>([])
+
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false)
 
     const changeUserOptions: (value: Selected) => void = (value: Selected) => {
         setSelectedUsers(value as any)
@@ -47,6 +50,10 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
         res = res.substring(0, res.lastIndexOf('/'))
         res += members.length > end ? `+${members.length - end}` : ""
         return res
+    }
+
+    const users2str = (users: any[]) => {
+        return users.map(u => u.value).join(",")
     }
 
     const clearInput = () => {
@@ -73,9 +80,24 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
                     <TableCell className="font-medium">#{idx + 1}</TableCell>
                     <TableCell>{content.group_name}</TableCell>
                     <TableCell>{content.owner?.user_name}</TableCell>
-                    <TableCell>{formatMembers(content.members)}</TableCell>
+                    <TableCell>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    {formatMembers(content.members)}
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <Card className="flex items-center bg-slate-900 text-slate-200 max-w-[300px]">
+                                        <CardContent className="p-1">
+                                            {content.members.map(u => u.user_name).join('/')}
+                                        </CardContent>
+                                    </Card>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </TableCell>
                     <TableCell className="space-x-1">
-                        <Dialog>
+                        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                             <DialogTrigger asChild>
                                 <Button variant="ghost" 
                                         size="icon" 
@@ -113,30 +135,26 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
                                         </div>
                                     </div>
                                 </div>
-                                <DialogFooter className="sm:justify-start">
+                                <DialogFooter className="sm:justify-end">
                                     <DialogClose asChild className="flex justify-end space-x-1">
                                         <Button type="button" variant="secondary">取消</Button>
-                                        <Button>确认</Button>
                                     </DialogClose>
+                                    <Button onClick={() => {props.updateGroup(content.group_code, groupName, owner, users2str(selectedUsers)); setDialogOpen(false)}}>确认</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild type="button">
-                                    <Button variant="ghost" 
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="ghost" 
                                             size="icon"
                                             disabled={cookie.getCookie('current_user')?.split(":")[0] !== content.owner.user_code}>
-                                        <CircleX className="h-4 w-4"/>
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <Card className="w-[120px] h-[40px] flex flex-row justify-center space-x-1 p-1 my-1">
-                                        <p>确认删除？</p><Button size="sm" className="text-xs p-1.5" onClick={() => props.deleteGroup(content.group_code)}>确认</Button>
-                                    </Card>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                                    <CircleX className="h-4 w-4"/>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[160px] h-[50px] flex flex-row justify-center items-center text-xs space-x-1 p-1 my-1">
+                                <p>确认删除？</p><Button size="sm" className="p-1.5 [line-height:10px]" onClick={() => props.deleteGroup(content.group_code)}>确认</Button>
+                            </PopoverContent>
+                        </Popover>
                     </TableCell>
                 </TableRow>
         ))}

@@ -31,6 +31,8 @@ const MyGroup: React.FC = () => {
     const { toast } = useToast()
     const navigate = useNavigate()
 
+    const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
+
     const fetchUserGroups = (currentPageNum?: number) => {
         let user_code =  cookie.getCookie("current_user") as string
         user_code = user_code.split(':')[0]
@@ -96,7 +98,7 @@ const MyGroup: React.FC = () => {
     const submitUserGroup = () => {
         let members = ""
         if (selectedUsers?.length !== 0) {
-            members = selectedUsers.map(u => u.value).join(',')
+            members = selectedUsers?.map(u => u.value).join(',') ?? ""
         }
         if (groupName.trim() === "") {
             toast({
@@ -124,6 +126,7 @@ const MyGroup: React.FC = () => {
                     variant: "destructive"
                 })
             }
+            setDrawerOpen(false)
         }).catch(err => console.log(err))
     }
 
@@ -144,6 +147,31 @@ const MyGroup: React.FC = () => {
             } else {
                 toast({
                     title: "删除失败"
+                })
+            }
+        }).catch(err => console.log(err))
+    }
+
+    const updateGroup = (groupCode: string, groupName: string, owner: string, members: string) => {
+        axios({
+            method: 'POST',
+            url: '/user_group/change',
+            data: {
+                group_code: groupCode,
+                group_name: groupName,
+                owner: owner,
+                members: members
+            }
+        }).then(res => {
+            if (res.status === 200 && res.data.success === true) {
+                toast({
+                    title: "更新成功"
+                })
+                fetchUserGroups()
+                fetchUserGroupCount()
+            } else {
+                toast({
+                    title: "更新失败"
                 })
             }
         }).catch(err => console.log(err))
@@ -174,7 +202,7 @@ const MyGroup: React.FC = () => {
                 <Button size="icon" onClick={() => setTableMode(!tableMode)}>
                     {tableMode ? (<TableProperties className="h-4 w-4"/>) : (<LayoutGrid className="h-4 w-4"/>)}   
                 </Button>
-                <Drawer direction="right">
+                <Drawer direction="right" open={drawerOpen} onOpenChange={setDrawerOpen}>
                     <DrawerTrigger asChild>
                         <Button className="">新增</Button>
                     </DrawerTrigger>
@@ -217,7 +245,8 @@ const MyGroup: React.FC = () => {
                             gotoPrevious={gotoPrevious}
                             tableContent={tableContent}
                             userOptions={userOptions}
-                            deleteGroup={deleteGroup}/>
+                            deleteGroup={deleteGroup}
+                            updateGroup={updateGroup}/>
             </div>) : (
             <div></div>
                 )}

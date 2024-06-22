@@ -1,3 +1,4 @@
+import logging
 from typing import Annotated, Dict, List
 from fastapi import APIRouter, Cookie
 
@@ -12,6 +13,9 @@ router = APIRouter(
     tags=["user_group"],
     responses={404: {"description": "Not Found"}}
 )
+
+
+Logger = logging.getLogger(__name__)
 
 
 @router.post('/new')
@@ -96,19 +100,23 @@ async def change_user_group(user_group_model: "UserGroupReq",
     user_group = db.find_user_group_by_code(user_group_model.group_code)
     if user_group.group_owner != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
-    if _user.user_code not in user_group_model.members:
-        return {"success": False, "reason": "Owner not in members"}
 
-    if user_group_model.owner not in user_group_model.members:
-        user_group_model.members += f",{user_group_model.owner}"
-
-    if user_group_model.group_name is not None:
+    if user_group_model.group_name is not None and \
+            len(user_group_model.group_name) > 0:
         user_group.group_name = user_group_model.group_name
-    if user_group_model.owner is not None:
+
+    if user_group_model.owner is not None and len(user_group_model.owner) > 0:
         user_group.group_owner = user_group_model.owner
+
     res = db.update_user_group_by_code(user_group)
-    if user_group_model.members is not None:
+
+    if user_group_model.members is not None and \
+            len(user_group_model.members) > 0:
         db.delete_user_to_user_group_by_group(user_group_model.group_code)
+        if user_group_model.owner not in user_group_model.members:
+            tmp = user_group_model.members.split(',')
+            tmp.append(user_group_model.owner)
+            user_group_model.members = ','.join(tmp)
         users = user_group_model.members.split(',')
         for user in users:
             res = db.insert_user_to_user_group(
@@ -217,11 +225,19 @@ async def query_user_group_by_user(user_code: str,
     user_groups = list()
     for user_to_user_group in user_to_user_groups:
         user_group = db.find_user_group_by_code(user_to_user_group.group_code)
+        if user_group is None:
+            Logger.error("Cannot find UserGroup with group_code: "
+                         f"{user_to_user_group.group_code}")
+            continue
         owner = db.find_user_by_code(user_group.group_owner)
         members = list()
         us = db.list_user_to_user_group_by_group(user_group.group_code)
         for u in us:
             user_do = db.find_user_by_code(u.user_code)
+            if user_do is None:
+                Logger.error("Cannot find User with user_code: "
+                             f"{u.user_code}")
+                continue
             members.append(UserModel(user_code=user_do.user_code,
                                      user_name=user_do.user_name,
                                      email=user_do.email,

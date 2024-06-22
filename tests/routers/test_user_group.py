@@ -115,7 +115,7 @@ def test_change_user_group():
                           "group_code": code,
                           "group_name": "foo",
                           "owner": user_code,
-                          "members": f"{user_code},test"
+                          "members": f"{user_code}"
                       },
                       cookies=cookie)
     assert res.json()['success'] is True
