@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom"
 import { Label } from "./components/ui/label"
 import { MultiSelect } from "./components/ui/multi-select"
 import { SelectValue } from "react-tailwindcss-select/dist/components/type"
+import GroupCard from "./group-card"
 
 
 const MyGroup: React.FC = () => {
@@ -248,8 +249,17 @@ const MyGroup: React.FC = () => {
                             deleteGroup={deleteGroup}
                             updateGroup={updateGroup}/>
             </div>) : (
-            <div></div>
-                )}
+            <div>
+                <GroupCard cardContent={tableContent}
+                           current={pageNum}
+                           total={pageTotal}
+                           gotoPrevious={gotoPrevious}
+                           gotoNext={gotoNext}
+                           userOptions={userOptions}
+                           deleteGroup={deleteGroup}
+                           updateGroup={updateGroup}/>
+            </div>
+            )}
             </div>
         </div>
     )
