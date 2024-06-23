@@ -7,7 +7,7 @@ import { User } from "./types"
 import { HoverCardContent, HoverCardTrigger } from "./components/ui/hover-card"
 import { Button } from "./components/ui/button"
 import { useNavigate } from "react-router-dom"
-import { fetchUser } from "./fetch"
+import { fetchSelf } from "./fetch"
 import { Toaster } from "./components/ui/toaster"
 import { useToast } from "./components/ui/use-toast"
 
@@ -42,7 +42,7 @@ const Header: React.FC = () => {
             navigate('/login')
             return
         }
-        fetchUser(cookie, navigate)
+        fetchSelf(cookie, navigate)
         .then(res => {
             if (res.status === 200) {
                 setUserInfo(res.data.data)

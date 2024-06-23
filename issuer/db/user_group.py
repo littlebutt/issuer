@@ -2,6 +2,7 @@ from datetime import datetime
 import logging
 from typing import Optional, Sequence
 
+from sqlalchemy import func
 from sqlmodel import Session, or_, select
 
 from issuer.db.database import DatabaseFactory
@@ -113,6 +114,34 @@ def list_user_group_by_condition(group_code: Optional[str] = None,
     except Exception as e:
         Logger.error(e)
     return list()
+
+
+def count_user_group_by_condition(group_code: Optional[str] = None,
+                                  group_name: Optional[str] = None,
+                                  owner: Optional[str] = None,
+                                  members: Optional[Sequence[str]] = None) -> \
+        Optional[int]:
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(func.count(UserGroup.id))\
+                .where(UserGroup.group_code == UserToUserGroup.group_code)
+            if group_code is not None:
+                stmt = stmt.where(UserGroup.group_code == group_code)
+            if group_name is not None:
+                stmt = stmt.where(UserGroup.group_name == group_name)
+            if owner is not None:
+                stmt = stmt.where(UserGroup.group_owner == owner)
+            if members is not None:
+                or_clauses = []
+                for member in members:
+                    or_clauses.append(UserToUserGroup.user_code == member)
+                stmt = stmt.where(or_(True, *or_clauses))
+            stmt = stmt.distinct()
+            result = session.scalar(stmt)
+            return result
+    except Exception as e:
+        Logger.error(e)
+    return None
 
 
 def delete_all_user_groups() -> bool:

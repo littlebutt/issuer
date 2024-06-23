@@ -123,23 +123,3 @@ def test_change_user_group():
                      cookies=cookie)
     assert len(res.json()) > 0
     assert res.json()["data"][0]["group_name"] == "foo"
-
-
-def test_query_user_group_by_code():
-    cookie, user_code = get_cookie()
-    res = client.post('/user_group/new',
-                      json={
-                          "group_name": "test",
-                          "owner": user_code
-                      },
-                      cookies=cookie)
-    assert res.json()['success'] is True
-
-    res = client.get(f'/user_group/query_group?user_code={user_code}',
-                     cookies=cookie)
-    assert res.json()["success"] is True
-    code = res.json()["data"][0]["group_code"]
-
-    res = client.get(f'/user_group/query?group_code={code}',
-                     cookies=cookie)
-    assert res.json()['data']['owner']['user_name'] == "test"

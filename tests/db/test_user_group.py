@@ -3,7 +3,8 @@ import pytest
 from issuer.db import delete_all_user_groups, insert_user_group, \
     update_user_group_by_code, find_user_group_by_code, \
     delete_user_group_by_code, find_user_group_by_owner, \
-    insert_user_to_user_group, list_user_group_by_condition
+    insert_user_to_user_group, list_user_group_by_condition, \
+    count_user_group_by_condition
 from issuer.db import UserGroup, UserToUserGroup
 
 
@@ -80,3 +81,6 @@ def test_list_user_group_by_condition():
 
     res = list_user_group_by_condition(members=["A", "B"])
     assert len(res) == 1
+
+    res = count_user_group_by_condition(members=["A", "B"])
+    assert res == 2

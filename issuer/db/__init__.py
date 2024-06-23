@@ -7,7 +7,8 @@ from issuer.db.users import insert_user, delete_all_users, \
 from issuer.db.user_group import insert_user_group, \
     update_user_group_by_code, delete_user_group_by_code, \
     find_user_group_by_code, find_user_group_by_owner, \
-    delete_all_user_groups, list_user_group_by_condition
+    delete_all_user_groups, list_user_group_by_condition, \
+    count_user_group_by_condition
 from issuer.db.project import insert_project, update_project_by_code, \
     delete_project_by_code, find_project_by_code, list_project_by_owner, \
     delete_all_projects

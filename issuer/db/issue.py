@@ -48,7 +48,7 @@ def update_issue_by_code(issue: "Issue") -> bool:
     return True
 
 
-def count_issue_by_project(project_code: str) -> int:
+def count_issue_by_project(project_code: str) -> Optional[int]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             stmt = select(func.count(Issue.id)) \

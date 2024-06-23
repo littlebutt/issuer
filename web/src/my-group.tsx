@@ -9,7 +9,7 @@ import { useCookie } from "./lib/cookies"
 import { useToast } from "./components/ui/use-toast"
 import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "./components/ui/drawer"
 import { Input } from "./components/ui/input"
-import { fetchUser, fetchUsers } from "./fetch"
+import { countGroups, fetchGroups, fetchSelf, fetchUsers } from "./fetch"
 import { useNavigate } from "react-router-dom"
 import { Label } from "./components/ui/label"
 import { MultiSelect } from "./components/ui/multi-select"
@@ -37,10 +37,8 @@ const MyGroup: React.FC = () => {
     const fetchUserGroups = (currentPageNum?: number) => {
         let user_code =  cookie.getCookie("current_user") as string
         user_code = user_code.split(':')[0]
-        axios({
-            url: `/user_group/query_group?user_code=${user_code}&page_num=${currentPageNum ?? pageNum}&page_size=10`,
-            method: 'GET'
-        }).then(res => {
+        fetchGroups("", "", user_code, "", 10, currentPageNum ?? pageNum)
+        .then(res => {
             if (res.status === 200 && res.data?.success === true) {
                 setTableContent(res.data?.data)
             } else {
@@ -55,10 +53,8 @@ const MyGroup: React.FC = () => {
     const fetchUserGroupCount = () => {
         let user_code =  cookie.getCookie("current_user") as string
         user_code = user_code.split(':')[0]
-        axios({
-            url: `/user_group/count_group?user_code=${user_code}`,
-            method: 'GET'
-        }).then(res => {
+        countGroups("", "", user_code, "")
+        .then(res => {
             if (res.status === 200 && res.data?.success === true) {
                 setPageTotal(Math.ceil(res.data?.data / 10))
             } else {
@@ -96,7 +92,7 @@ const MyGroup: React.FC = () => {
         setSelectedUsers(value as any)
     }
 
-    const submitUserGroup = () => {
+    const newGroup = () => {
         let members = ""
         if (selectedUsers?.length !== 0) {
             members = selectedUsers?.map(u => u.value).join(',') ?? ""
@@ -189,7 +185,7 @@ const MyGroup: React.FC = () => {
     }
 
     useEffect(() => {
-        fetchUser(cookie, navigate).then(res => setUserInfo(res.data.data)).catch(err => console.log(err))
+        fetchSelf(cookie, navigate).then(res => setUserInfo(res.data.data)).catch(err => console.log(err))
         fetchUserGroups()
         fetchUserGroupCount()
         fetchUserOptions()
@@ -229,7 +225,7 @@ const MyGroup: React.FC = () => {
                                 </div>
                             </div>
                             <DrawerFooter>
-                                <Button onClick={submitUserGroup}>确定</Button>
+                                <Button onClick={newGroup}>确定</Button>
                                 <DrawerClose asChild>
                                     <Button variant="outline">取消</Button>
                                 </DrawerClose>

@@ -3,7 +3,7 @@ import { NavigateFunction } from "react-router-dom"
 import { Cookie } from "./lib/cookies"
 
 
-const fetchUser: (cookie: Cookie, navigate: NavigateFunction) => Promise<AxiosResponse> = async (cookie, navigate) => {
+const fetchSelf: (cookie: Cookie, navigate: NavigateFunction) => Promise<AxiosResponse> = async (cookie, navigate) => {
     let current_user = cookie.getCookie("current_user")
     if (!current_user) {
         cookie.setCookie("current_user", "", {expires: -1})
@@ -33,4 +33,26 @@ const fetchUserByCode: (userCode: string) => Promise<AxiosResponse> = async (use
     })
 }
 
-export { fetchUser, fetchUsers, fetchUserByCode }
+const fetchGroups = async (groupCode: string,
+                           groupName: string,
+                           owner: string,
+                           members: string,
+                           pageSize: number = 10,
+                           pageNum: number = 1) => {
+    return axios({
+        method: 'GET',
+        url: `/user_group/list_groups?group_code=${groupCode}&group_name=${groupName}&owner=${owner}&members=${members}&page_size=${pageSize}&page_num=${pageNum}`
+    })
+}
+
+const countGroups = async (groupCode: string,
+                           groupName: string,
+                           owner: string,
+                           members: string) => {
+    return axios({
+        method: 'GET',
+        url: `/user_group/count_groups?group_code=${groupCode}&group_name=${groupName}&owner=${owner}&members=${members}`
+    })
+}
+
+export { fetchSelf, fetchUsers, fetchUserByCode, fetchGroups, countGroups }
