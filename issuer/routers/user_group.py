@@ -1,9 +1,10 @@
 import logging
-from typing import Annotated, Dict, List
+from typing import Annotated, Dict, List, Optional
 from fastapi import APIRouter, Cookie
 
 from issuer import db
 from issuer.db import UserGroup, UserToUserGroup
+from issuer.routers.convertors import convert_user, convert_user_group
 from issuer.routers.models import UserGroupReq, UserGroupRes, UserModel
 from issuer.routers.users import check_cookie
 
@@ -145,31 +146,9 @@ async def query_user_group_by_code(group_code: str,
         return {"success": False, "reason": "Invalid token"}
 
     user_group = db.find_user_group_by_code(group_code)
-    user_to_user_groups = db.list_user_to_user_group_by_group(group_code)
-    users = list()
-    for user_to_user_group in user_to_user_groups:
-        user = db.find_user_by_code(user_to_user_group.user_code)
-        if user is not None:
-            users.append(UserModel(user_code=user.user_code,
-                                   user_name=user.user_name,
-                                   email=user.email,
-                                   role=user.role,
-                                   description=user.description,
-                                   phone=user.phone,
-                                   avatar=user.avatar))
-    owner = db.find_user_by_code(user_group.group_owner)
-    res = UserGroupRes(group_code=group_code,
-                       group_name=user_group.group_name,
-                       owner=UserModel(
-                           user_code=owner.user_code,
-                           user_name=owner.user_name,
-                           email=owner.email,
-                           role=owner.role,
-                           description=owner.description,
-                           phone=owner.phone,
-                           avatar=owner.avatar
-                       ),
-                       members=users)
+    if user_group is None:
+        Logger.error(f"Cannot find UserGroup with group_code: {group_code}")
+    res = convert_user_group(user_group)
     return {"success": True, "data": res}
 
 
@@ -179,6 +158,17 @@ async def list_users_by_group_code(group_code: str,
                                    page_num: int = 1,
                                    page_size: int = 10,
                                    current_user: Annotated[str | None, Cookie()] = None): # noqa
+    '''
+    根据:arg:`group_code`查询该组的成员。
+
+    Args:
+        group_code: 用户组码
+        page_num: 页码
+        page_size: 页容量
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+
+    '''
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
@@ -188,15 +178,7 @@ async def list_users_by_group_code(group_code: str,
     res = list()
     for u2ug in u2ugs:
         u = db.find_user_by_code(u2ug.user_code)
-        res.append(UserModel(
-            user_code=u.user_code,
-            user_name=u.user_name,
-            email=u.email,
-            role=u.role,
-            description=u.description,
-            phone=u.phone,
-            avatar=u.avatar
-        ))
+        res.append(convert_user(u))
     return {"success": True, "data": res}
 
 
@@ -224,45 +206,29 @@ async def query_user_group_by_user(user_code: str,
                                         page_num=page_num, page_size=page_size)
     user_groups = list()
     for user_to_user_group in user_to_user_groups:
-        user_group = db.find_user_group_by_code(user_to_user_group.group_code)
-        if user_group is None:
+        user_group_do = db.\
+            find_user_group_by_code(user_to_user_group.group_code)
+        if user_group_do is None:
             Logger.error("Cannot find UserGroup with group_code: "
                          f"{user_to_user_group.group_code}")
             continue
-        owner = db.find_user_by_code(user_group.group_owner)
-        members = list()
-        us = db.list_user_to_user_group_by_group(user_group.group_code)
-        for u in us:
-            user_do = db.find_user_by_code(u.user_code)
-            if user_do is None:
-                Logger.error("Cannot find User with user_code: "
-                             f"{u.user_code}")
-                continue
-            members.append(UserModel(user_code=user_do.user_code,
-                                     user_name=user_do.user_name,
-                                     email=user_do.email,
-                                     role=user_do.role,
-                                     description=user_do.description,
-                                     phone=user_do.phone,
-                                     avatar=user_do.avatar))
-        user_groups.append(UserGroupRes(
-            group_code=user_group.group_code,
-            group_name=user_group.group_name,
-            owner=UserModel(user_code=owner.user_code,
-                            user_name=owner.user_name,
-                            email=owner.email,
-                            role=owner.role,
-                            description=owner.description,
-                            phone=owner.phone,
-                            avatar=owner.avatar),
-            members=members
-        ))
+        user_group = convert_user_group(user_group_do)
+        user_groups.append(user_group)
     return {"success": True, "data": user_groups}
 
 
 @router.get('/count_group', response_model=Dict[str, bool | str | int])
 def count_user_group_by_user(user_code: str,
                              current_user: Annotated[str | None, Cookie()] = None): # noqa
+    '''
+    根据:arg:`user_code`查询参与的所有项目的个数
+
+    Args:
+        user_code: 用户码
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+
+    '''
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
@@ -270,3 +236,29 @@ def count_user_group_by_user(user_code: str,
     user_to_user_groups = db.\
         count_user_to_user_group_by_user(user_code=user_code)
     return {"success": True, "data": user_to_user_groups}
+
+
+@router.get('/list',
+            response_model=Dict[str, bool | str | List[UserGroupRes]])
+async def list_groups_by_condition(group_code: Optional[str] = None,
+                                   group_name: Optional[str] = None,
+                                   owner: Optional[str] = None,
+                                   members: Optional[str] = None,
+                                   page_num: int = 1,
+                                   page_size: int = 10,
+                                   current_user: Annotated[str | None, Cookie()] = None): # noqa
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {"success": False, "reason": "Invalid token"}
+    if members is not None:
+        members = members.split(',')
+    user_group_dos = db.list_user_group_by_condition(group_code=group_code,
+                                                     group_name=group_name,
+                                                     owner=owner,
+                                                     members=members,
+                                                     page_num=page_num,
+                                                     page_size=page_size)
+    user_groups = list()
+    for user_group_do in user_group_dos:
+        user_groups.append(convert_user_group(user_group_do))
+    return {"success": True, "data": user_groups}

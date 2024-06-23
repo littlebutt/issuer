@@ -2,8 +2,9 @@ import pytest
 
 from issuer.db import delete_all_user_groups, insert_user_group, \
     update_user_group_by_code, find_user_group_by_code, \
-    delete_user_group_by_code, find_user_group_by_owner
-from issuer.db import UserGroup
+    delete_user_group_by_code, find_user_group_by_owner, \
+    insert_user_to_user_group, list_user_group_by_condition
+from issuer.db import UserGroup, UserToUserGroup
 
 
 def setup_function(function):
@@ -60,3 +61,22 @@ def test_find_user_group_by_owner():
 
     res = find_user_group_by_owner("test")
     assert len(res) == 2
+
+
+def test_list_user_group_by_condition():
+    user_group = UserGroup(group_code="group_code", group_name="foo",
+                           group_owner="test")
+    res = insert_user_group(user_group)
+    assert res is not None
+
+    user_to_user_group_a = UserToUserGroup(group_code="group_code",
+                                           user_code="A")
+    res = insert_user_to_user_group(user_to_user_group_a)
+    assert res is True
+    user_to_user_group_b = UserToUserGroup(group_code="group_code",
+                                           user_code="B")
+    res = insert_user_to_user_group(user_to_user_group_b)
+    assert res is True
+
+    res = list_user_group_by_condition(members=["A", "B"])
+    assert len(res) == 1

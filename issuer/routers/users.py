@@ -6,6 +6,7 @@ from fastapi import APIRouter, Cookie, UploadFile
 
 from issuer import db
 from issuer.db import User
+from issuer.routers.convertors import convert_user
 from issuer.routers.models import UserModel
 
 
@@ -230,15 +231,7 @@ async def get_user(user_code: str,
         }
     user = db.find_user_by_code(user_code=user_code)
     if user is not None:
-        user_model = UserModel(
-            user_code=user.user_code,
-            user_name=user.user_name,
-            email=user.email,
-            role=user.role,
-            description=user.description,
-            phone=user.phone,
-            avatar=user.avatar
-        )
+        user_model = convert_user(user)
         return {"success": True, "data": user_model}
 
 
@@ -256,13 +249,5 @@ def get_users(page_num: int = 1,
     users = db.list_users(page_num, page_size)
     res = []
     for user in users:
-        res.append(UserModel(
-            user_code=user.user_code,
-            user_name=user.user_name,
-            email=user.email,
-            role=user.role,
-            description=user.description,
-            phone=user.phone,
-            avatar=user.avatar)
-        )
+        res.append(convert_user(user))
     return {"success": True, "data": res}

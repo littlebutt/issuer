@@ -2,11 +2,11 @@ from datetime import datetime
 import logging
 from typing import Optional, Sequence
 
-from sqlmodel import Session, select
+from sqlmodel import Session, or_, select
 
 from issuer.db.database import DatabaseFactory
 from issuer.db.gen import generate_code
-from issuer.db.models import UserGroup
+from issuer.db.models import UserGroup, UserToUserGroup
 
 
 Logger = logging.getLogger(__name__)
@@ -77,6 +77,37 @@ def find_user_group_by_owner(owner: str) -> Sequence["UserGroup"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             stmt = select(UserGroup).where(UserGroup.group_owner == owner)
+            results = session.exec(stmt)
+            return results.all()
+    except Exception as e:
+        Logger.error(e)
+    return list()
+
+
+def list_user_group_by_condition(group_code: Optional[str] = None,
+                                 group_name: Optional[str] = None,
+                                 owner: Optional[str] = None,
+                                 members: Optional[Sequence[str]] = None,
+                                 page_num: int = 1,
+                                 page_size: int = 10) -> \
+        Sequence["UserGroup"]:
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(UserGroup)\
+                .where(UserGroup.group_code == UserToUserGroup.group_code)
+            if group_code is not None:
+                stmt = stmt.where(UserGroup.group_code == group_code)
+            if group_name is not None:
+                stmt = stmt.where(UserGroup.group_name == group_name)
+            if owner is not None:
+                stmt = stmt.where(UserGroup.group_owner == owner)
+            if members is not None:
+                or_clauses = []
+                for member in members:
+                    or_clauses.append(UserToUserGroup.user_code == member)
+                stmt = stmt.where(or_(True, *or_clauses))
+            stmt = stmt.distinct()\
+                .limit(page_size).offset((page_num - 1) * page_size)
             results = session.exec(stmt)
             return results.all()
     except Exception as e:
