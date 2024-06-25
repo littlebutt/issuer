@@ -49,7 +49,7 @@ const Layout: React.FC = () => {
           groupLabel: "探索",
           menus: [
             {
-              href: "",
+              href: "/main/groups",
               label: "组织",
               icon: Users
             },

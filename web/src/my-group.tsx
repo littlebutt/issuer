@@ -13,8 +13,8 @@ import { countGroups, fetchGroups, fetchSelf, fetchUsers } from "./fetch"
 import { useNavigate } from "react-router-dom"
 import { Label } from "./components/ui/label"
 import { MultiSelect } from "./components/ui/multi-select"
-import { SelectValue } from "react-tailwindcss-select/dist/components/type"
 import GroupCard from "./group-card"
+import config from "./config"
 
 
 const MyGroup: React.FC = () => {
@@ -37,7 +37,7 @@ const MyGroup: React.FC = () => {
     const fetchUserGroups = (currentPageNum?: number) => {
         let user_code =  cookie.getCookie("current_user") as string
         user_code = user_code.split(':')[0]
-        fetchGroups("", "", user_code, "", 10, currentPageNum ?? pageNum)
+        fetchGroups("", "", "", user_code, config.pageSize, currentPageNum ?? pageNum)
         .then(res => {
             if (res.status === 200 && res.data?.success === true) {
                 setTableContent(res.data?.data)
@@ -53,10 +53,10 @@ const MyGroup: React.FC = () => {
     const fetchUserGroupCount = () => {
         let user_code =  cookie.getCookie("current_user") as string
         user_code = user_code.split(':')[0]
-        countGroups("", "", user_code, "")
+        countGroups("", "", "", user_code)
         .then(res => {
             if (res.status === 200 && res.data?.success === true) {
-                setPageTotal(Math.ceil(res.data?.data / 10))
+                setPageTotal(Math.ceil(res.data?.data / config.pageSize))
             } else {
                 toast({
                     title: "获取我的组织失败",
@@ -88,8 +88,8 @@ const MyGroup: React.FC = () => {
         .catch(err => console.log(err))
     }
 
-    const changeUserOptions: (value: SelectValue) => void = (value: SelectValue) => {
-        setSelectedUsers(value as any)
+    const changeUserOptions: (value: {label: string, value: string}[]) => void = (value) => {
+        setSelectedUsers(value)
     }
 
     const newGroup = () => {

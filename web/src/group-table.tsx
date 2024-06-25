@@ -59,7 +59,7 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
                                         {formatMembers(content.members)}
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                        <Card className="flex items-center bg-slate-900 text-slate-200 max-w-[300px]">
+                                        <Card className="flex items-center bg-slate-900 text-slate-200 max-w-[300px] h-[30px] mb-[-10px]">
                                             <CardContent className="p-1">
                                                 {content.members.map(u => u.user_name).join('/')}
                                             </CardContent>

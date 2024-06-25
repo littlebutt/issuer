@@ -99,14 +99,14 @@ def list_user_group_by_condition(group_code: Optional[str] = None,
             if group_code is not None:
                 stmt = stmt.where(UserGroup.group_code == group_code)
             if group_name is not None:
-                stmt = stmt.where(UserGroup.group_name == group_name)
+                stmt = stmt.where(UserGroup.group_name.like('%' + group_name + '%')) # noqa
             if owner is not None:
                 stmt = stmt.where(UserGroup.group_owner == owner)
             if members is not None:
                 or_clauses = []
                 for member in members:
                     or_clauses.append(UserToUserGroup.user_code == member)
-                stmt = stmt.where(or_(True, *or_clauses))
+                stmt = stmt.where(or_(False, *or_clauses))
             stmt = stmt.distinct()\
                 .limit(page_size).offset((page_num - 1) * page_size)
             results = session.exec(stmt)
@@ -128,14 +128,14 @@ def count_user_group_by_condition(group_code: Optional[str] = None,
             if group_code is not None:
                 stmt = stmt.where(UserGroup.group_code == group_code)
             if group_name is not None:
-                stmt = stmt.where(UserGroup.group_name == group_name)
+                stmt = stmt.where(UserGroup.group_name.like('%' + group_name + '%')) # noqa
             if owner is not None:
                 stmt = stmt.where(UserGroup.group_owner == owner)
             if members is not None:
                 or_clauses = []
                 for member in members:
                     or_clauses.append(UserToUserGroup.user_code == member)
-                stmt = stmt.where(or_(True, *or_clauses))
+                stmt = stmt.where(or_(False, *or_clauses))
             stmt = stmt.distinct()
             result = session.scalar(stmt)
             return result

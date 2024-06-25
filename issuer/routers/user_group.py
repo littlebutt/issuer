@@ -140,7 +140,7 @@ async def query_user_group_by_user(user_code: str,
     根据:arg:`user_code`查询参与的所有项目。
 
     Args:
-        user_code: 用户码
+        user_code: 用户码。
         current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
             形式。
 
@@ -174,6 +174,21 @@ async def list_groups_by_condition(group_code: Optional[str] = None,
                                    page_num: int = 1,
                                    page_size: int = 10,
                                    current_user: Annotated[str | None, Cookie()] = None): # noqa
+    '''
+    根据条件查询用户组列表。
+
+    Args:
+        group_code (Optional[str]): 用户组码。
+        group_name (Optional[str]): 用户组名，模糊匹配。
+        owner (Optional[str]): 该用户组组长的用户码。
+        members (Optional[str]): 用户组成员，是一个用半角逗号分隔的用户码字符串。该
+            字段在SQL中用``OR``连接。
+        page_num (int): 页码，默认为1。
+        page_size (int): 页数，默认为10。
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+
+    '''
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
@@ -202,6 +217,19 @@ async def count_groups_by_condition(group_code: Optional[str] = None,
                                     owner: Optional[str] = None,
                                     members: Optional[str] = None,
                                     current_user: Annotated[str | None, Cookie()] = None): # noqa
+    '''
+    获取根据条件查询用户组列表的总数。
+
+    Args:
+        group_code (Optional[str]): 用户组码。
+        group_name (Optional[str]): 用户组名，模糊匹配。
+        owner (Optional[str]): 该用户组组长的用户码。
+        members (Optional[str]): 用户组成员，是一个用半角逗号分隔的用户码字符串。该
+            字段在SQL中用``OR``连接。
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+
+    '''
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}

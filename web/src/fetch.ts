@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios"
 import { NavigateFunction } from "react-router-dom"
 import { Cookie } from "./lib/cookies"
+import config from "./config"
 
 
 const fetchSelf: (cookie: Cookie, navigate: NavigateFunction) => Promise<AxiosResponse> = async (cookie, navigate) => {
@@ -37,7 +38,7 @@ const fetchGroups = async (groupCode: string,
                            groupName: string,
                            owner: string,
                            members: string,
-                           pageSize: number = 10,
+                           pageSize: number = config.pageSize,
                            pageNum: number = 1) => {
     return axios({
         method: 'GET',
