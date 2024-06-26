@@ -41,7 +41,8 @@ def test_new_comment():
 
     res = client.get(f'/project/participants?user_code={user_code}',
                      cookies=cookie)
-    project_code = res.json()[0]['project_code']
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
     res = client.post('/issue/new',
                       json={
                           "project_code": project_code,
@@ -75,7 +76,8 @@ def test_fold_comment():
 
     res = client.get(f'/project/participants?user_code={user_code}',
                      cookies=cookie)
-    project_code = res.json()[0]['project_code']
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
     res = client.post('/issue/new',
                       json={
                           "project_code": project_code,
@@ -121,7 +123,8 @@ def test_list_comment():
 
     res = client.get(f'/project/participants?user_code={user_code}',
                      cookies=cookie)
-    project_code = res.json()[0]['project_code']
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
     res = client.post('/issue/new',
                       json={
                           "project_code": project_code,
@@ -158,7 +161,8 @@ def test_upload_appendix():
 
     res = client.get(f'/project/participants?user_code={user_code}',
                      cookies=cookie)
-    project_code = res.json()[0]['project_code']
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
     res = client.post('/issue/new',
                       json={
                           "project_code": project_code,

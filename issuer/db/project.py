@@ -1,10 +1,11 @@
-from datetime import datetime
+from datetime import date, datetime
 import logging
 from typing import Optional, Sequence
-from sqlmodel import Session, select
+from sqlalchemy import func
+from sqlmodel import Session, or_, select
 from issuer.db.database import DatabaseFactory
 from issuer.db.gen import generate_code
-from issuer.db.models import Project
+from issuer.db.models import Project, ProjectToUser
 
 
 Logger = logging.getLogger(__name__)
@@ -85,6 +86,91 @@ def list_project_by_owner(owner: str,
     except Exception as e:
         Logger.error(e)
     return list()
+
+
+def list_projects_by_condition(current_user: str,
+                               project_code: Optional[str] = None,
+                               project_name: Optional[str] = None,
+                               before_date: Optional[date] = None,
+                               after_date: Optional[date] = None,
+                               owner: Optional[str] = None,
+                               status: Optional[str] = None,
+                               participants: Optional[Sequence[str]] = None,
+                               page_num: int = 1,
+                               page_size: int = 10) -> Sequence["Project"]:
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(Project) \
+                .where(Project.project_code == ProjectToUser.project_code)
+            if project_code is not None:
+                stmt = stmt.where(Project.project_code == project_code)
+            if project_name is not None:
+                stmt = stmt \
+                    .where(Project.project_name.like('%' + project_name + '%'))
+            if before_date is not None:
+                stmt = stmt.where(Project.start_date < before_date)
+            if after_date is not None:
+                stmt = stmt.where(Project.start_date > after_date)
+            if owner is not None:
+                stmt = stmt.where(Project.owner == owner)
+            if status is not None:
+                stmt = stmt.where(Project.status == status)
+            if participants is not None:
+                or_clauses = []
+                for participant in participants:
+                    or_clauses.append(ProjectToUser.user_code == participant)
+                stmt = stmt.where(or_(False, *or_clauses))
+            stmt = stmt.distinct() \
+                .where(or_(Project.privilege == 'Public',
+                           Project.owner == current_user,
+                           ProjectToUser.user_code == current_user)) \
+                .limit(page_size).offset((page_num - 1) * page_size)
+            result = session.exec(stmt).all()
+            return result
+    except Exception as e:
+        Logger.error(e)
+    return list()
+
+
+def count_projects_by_condition(current_user: str,
+                                project_code: Optional[str] = None,
+                                project_name: Optional[str] = None,
+                                before_date: Optional[date] = None,
+                                after_date: Optional[date] = None,
+                                owner: Optional[str] = None,
+                                status: Optional[str] = None,
+                                participants: Optional[Sequence[str]] = None) -> Optional[int]: # noqa
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(func.count(Project.id)) \
+                .where(Project.project_code == ProjectToUser.project_code)
+            if project_code is not None:
+                stmt = stmt.where(Project.project_code == project_code)
+            if project_name is not None:
+                stmt = stmt \
+                    .where(Project.project_name.like('%' + project_name + '%'))
+            if before_date is not None:
+                stmt = stmt.where(Project.start_date < before_date)
+            if after_date is not None:
+                stmt = stmt.where(Project.start_date > after_date)
+            if owner is not None:
+                stmt = stmt.where(Project.owner == owner)
+            if status is not None:
+                stmt = stmt.where(Project.status == status)
+            if participants is not None:
+                or_clauses = []
+                for participant in participants:
+                    or_clauses.append(ProjectToUser.user_code == participant)
+                stmt = stmt.where(or_(False, *or_clauses))
+            stmt = stmt.where(or_(Project.privilege == 'Public',
+                                  Project.owner == current_user,
+                                  ProjectToUser.user_code == current_user)) \
+                       .group_by(Project.id)
+            result = session.scalar(stmt)
+            return result if result is not None else 0
+    except Exception as e:
+        Logger.error(e)
+    return None
 
 
 def delete_all_projects() -> bool:

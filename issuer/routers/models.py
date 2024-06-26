@@ -51,7 +51,7 @@ class ProjectRes(BaseModel):
     status: str
     budget: str | None = None
     privilege: str
-    participants: List[UserModel] | str
+    participants: List[UserModel]
 
 
 class ProjectPrivilegeEnum(Enum):

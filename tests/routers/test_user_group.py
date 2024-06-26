@@ -123,3 +123,75 @@ def test_change_user_group():
                      cookies=cookie)
     assert len(res.json()) > 0
     assert res.json()["data"][0]["group_name"] == "foo"
+
+
+def test_list_groups_by_condition():
+    cookie, user_code = get_cookie()
+    res = client.post('/user_group/new',
+                      json={
+                          "group_name": "test1",
+                          "owner": user_code,
+                          "members": "A,B"
+                      },
+                      cookies=cookie)
+    assert res.json()['success'] is True
+
+    res = client.post('/user_group/new',
+                      json={
+                          "group_name": "test2",
+                          "owner": user_code,
+                          "members": "B,C"
+                      },
+                      cookies=cookie)
+    assert res.json()['success'] is True
+
+    res = client.get('/user_group/list_groups?members=B',
+                     cookies=cookie)
+    assert res.json()['success'] is True
+    assert len(res.json()['data']) == 2
+
+    res = client.get('/user_group/list_groups?members=C',
+                     cookies=cookie)
+    assert res.json()['success'] is True
+    assert len(res.json()['data']) == 1
+
+    res = client.get('/user_group/list_groups?members=B&group_name=test1',
+                     cookies=cookie)
+    assert res.json()['success'] is True
+    assert len(res.json()['data']) == 1
+
+
+def test_count_groups_by_condition():
+    cookie, user_code = get_cookie()
+    res = client.post('/user_group/new',
+                      json={
+                          "group_name": "test1",
+                          "owner": user_code,
+                          "members": "A,B"
+                      },
+                      cookies=cookie)
+    assert res.json()['success'] is True
+
+    res = client.post('/user_group/new',
+                      json={
+                          "group_name": "test2",
+                          "owner": user_code,
+                          "members": "B,C"
+                      },
+                      cookies=cookie)
+    assert res.json()['success'] is True
+
+    res = client.get('/user_group/count_groups?members=B',
+                     cookies=cookie)
+    assert res.json()['success'] is True
+    assert res.json()['data'] == 2
+
+    res = client.get('/user_group/count_groups?members=C',
+                     cookies=cookie)
+    assert res.json()['success'] is True
+    assert res.json()['data'] == 1
+
+    res = client.get('/user_group/count_groups?members=B&group_name=test1',
+                     cookies=cookie)
+    assert res.json()['success'] is True
+    assert res.json()['data'] == 1

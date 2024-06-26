@@ -4,16 +4,18 @@ from issuer.db import delete_all_user_groups, insert_user_group, \
     update_user_group_by_code, find_user_group_by_code, \
     delete_user_group_by_code, find_user_group_by_owner, \
     insert_user_to_user_group, list_user_group_by_condition, \
-    count_user_group_by_condition
+    count_user_group_by_condition, delete_all_user_to_user_group
 from issuer.db import UserGroup, UserToUserGroup
 
 
 def setup_function(function):
     delete_all_user_groups()
+    delete_all_user_to_user_group()
 
 
 def teardown_function(function):
     delete_all_user_groups()
+    delete_all_user_to_user_group()
 
 
 def test_insert_user_group():
@@ -65,22 +67,62 @@ def test_find_user_group_by_owner():
 
 
 def test_list_user_group_by_condition():
-    user_group = UserGroup(group_code="group_code", group_name="foo",
-                           group_owner="test")
-    res = insert_user_group(user_group)
+    user_group1 = UserGroup(group_code="group_code1", group_name="foo",
+                            group_owner="test")
+    res = insert_user_group(user_group1)
     assert res is not None
 
-    user_to_user_group_a = UserToUserGroup(group_code="group_code",
+    user_group2 = UserGroup(group_code="group_code2", group_name="bar",
+                            group_owner="test")
+    res = insert_user_group(user_group2)
+    assert res is not None
+
+    user_to_user_group_a = UserToUserGroup(group_code="group_code1",
                                            user_code="A")
     res = insert_user_to_user_group(user_to_user_group_a)
     assert res is True
-    user_to_user_group_b = UserToUserGroup(group_code="group_code",
+    user_to_user_group_b = UserToUserGroup(group_code="group_code1",
                                            user_code="B")
     res = insert_user_to_user_group(user_to_user_group_b)
+    assert res is True
+    user_to_user_group_c = UserToUserGroup(group_code="group_code2",
+                                           user_code="C")
+    res = insert_user_to_user_group(user_to_user_group_c)
     assert res is True
 
     res = list_user_group_by_condition(members=["A", "B"])
     assert len(res) == 1
 
-    res = count_user_group_by_condition(members=["A", "B"])
+    res = list_user_group_by_condition(members=["C", "B"])
+    assert len(res) == 2
+
+
+def test_count_user_group_by_condition():
+    user_group1 = UserGroup(group_code="group_code1", group_name="foo",
+                            group_owner="test")
+    res = insert_user_group(user_group1)
+    assert res is not None
+
+    user_group2 = UserGroup(group_code="group_code2", group_name="bar",
+                            group_owner="test")
+    res = insert_user_group(user_group2)
+    assert res is not None
+
+    user_to_user_group_a = UserToUserGroup(group_code="group_code1",
+                                           user_code="A")
+    res = insert_user_to_user_group(user_to_user_group_a)
+    assert res is True
+    user_to_user_group_b = UserToUserGroup(group_code="group_code1",
+                                           user_code="B")
+    res = insert_user_to_user_group(user_to_user_group_b)
+    assert res is True
+    user_to_user_group_c = UserToUserGroup(group_code="group_code2",
+                                           user_code="C")
+    res = insert_user_to_user_group(user_to_user_group_c)
+    assert res is True
+
+    res = count_user_group_by_condition(members=["A"])
+    assert res == 1
+
+    res = count_user_group_by_condition(members=["B", "C"])
     assert res == 2

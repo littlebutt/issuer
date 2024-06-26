@@ -1,7 +1,9 @@
+from datetime import datetime
 import logging
+from typing import List
 from issuer import db
-from issuer.db import UserGroup, User
-from issuer.routers.models import UserGroupRes, UserModel
+from issuer.db import UserGroup, User, Project
+from issuer.routers.models import ProjectRes, UserGroupRes, UserModel
 
 
 Logger = logging.getLogger(__name__)
@@ -39,4 +41,32 @@ def convert_user_group(do_: UserGroup) -> "UserGroupRes":
         group_name=do_.group_name,
         owner=convert_user(user_do),
         members=members
+    )
+
+
+def convert_project(do_: Project) -> "ProjectRes":
+    user_do = db.find_user_by_code(do_.owner)
+    if user_do is None:
+        Logger.error("Cannot find User with user_code: "
+                     f"{do_.owner}")
+    p2us = db.list_project_to_user_by_project(do_.project_code)
+    participants: List["UserModel"] = list()
+    for p2u in p2us:
+        _user_do = db.find_user_by_code(p2u.user_code)
+        if _user_do is None:
+            Logger.error("Cannot find User with user_code: "
+                         f"{p2u.user_code}")
+            continue
+        participants.append(convert_user(_user_do))
+    return ProjectRes(
+        project_code=do_.project_code,
+        project_name=do_.project_name,
+        start_date=datetime.strftime(do_.start_date, '%Y-%m-%d'),
+        end_date=datetime.strftime(do_.end_date, '%Y-%m-%d') if do_.end_date is not None else None, # noqa
+        owner=convert_user(user_do),
+        description=do_.description,
+        status=do_.status,
+        budget=do_.budget,
+        privilege=do_.privilege,
+        participants=participants
     )

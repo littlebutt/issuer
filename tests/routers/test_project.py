@@ -50,8 +50,8 @@ def test_delete_project():
 
     res = client.get(f'/project/participants?user_code={user_code}',
                      cookies=cookie)
-    assert len(res.json()) > 0
-    project_code = res.json()[0]['project_code']
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
 
     res = client.post('/project/delete',
                       json={
@@ -75,8 +75,8 @@ def test_change_project():
 
     res = client.get(f'/project/participants?user_code={user_code}',
                      cookies=cookie)
-    assert len(res.json()) > 0
-    project_code = res.json()[0]['project_code']
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
 
     res = client.post('/project/change',
                       json={
@@ -91,8 +91,8 @@ def test_change_project():
 
     res = client.get(f'/project/query?project_code={project_code}',
                      cookies=cookie)
-    assert res.json()["status"] == "Processing"
-    assert res.json()["privilege"] == "Private"
+    assert res.json()["data"]["status"] == "Processing"
+    assert res.json()["data"]["privilege"] == "Private"
 
 
 def test_change_project_members():
@@ -108,8 +108,8 @@ def test_change_project_members():
 
     res = client.get(f'/project/participants?user_code={user_code}',
                      cookies=cookie)
-    assert len(res.json()) > 0
-    project_code = res.json()[0]['project_code']
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
 
     res = client.post('/project/change_members',
                       json={
@@ -117,4 +117,36 @@ def test_change_project_members():
                           "members": user_code
                       },
                       cookies=cookie)
+    assert res.json()["success"] is True
+
+
+def test_list_projects_by_condition():
+    cookie, user_code = get_cookie()
+    res = client.post('/project/new',
+                      json={
+                          "project_name": "test_project",
+                          "start_date": "2024-06-05",
+                          "privilege": "Start"
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+
+    res = client.get(f'/project/list_projects?members={user_code}',
+                     cookies=cookie)
+    assert res.json()["success"] is True
+
+
+def test_count_projects_by_condition():
+    cookie, user_code = get_cookie()
+    res = client.post('/project/new',
+                      json={
+                          "project_name": "test_project",
+                          "start_date": "2024-06-05",
+                          "privilege": "Start"
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+
+    res = client.get(f'/project/count_projects?members={user_code}',
+                     cookies=cookie)
     assert res.json()["success"] is True

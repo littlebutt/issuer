@@ -11,7 +11,8 @@ from issuer.db.user_group import insert_user_group, \
     count_user_group_by_condition
 from issuer.db.project import insert_project, update_project_by_code, \
     delete_project_by_code, find_project_by_code, list_project_by_owner, \
-    delete_all_projects
+    delete_all_projects, list_projects_by_condition, \
+    count_projects_by_condition
 from issuer.db.issue import insert_issue, update_issue_by_code, \
     delete_issue_by_code, list_issues_by_condition, delete_all_issues
 from issuer.db.issue_comment import insert_issue_comment, \

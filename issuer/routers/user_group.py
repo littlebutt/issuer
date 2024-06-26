@@ -4,10 +4,10 @@ from fastapi import APIRouter, Cookie
 
 from issuer import db
 from issuer.db import UserGroup, UserToUserGroup
-from issuer.routers.convertors import convert_user, convert_user_group
-from issuer.routers.models import UserGroupReq, UserGroupRes, UserModel
+from issuer.routers.convertors import convert_user_group
+from issuer.routers.models import UserGroupReq, UserGroupRes
 from issuer.routers.users import check_cookie
-from issuer.routers.utils import empty_string_to_none
+from issuer.routers.utils import empty_string_to_none, empty_strings_to_none
 
 
 router = APIRouter(
@@ -99,21 +99,20 @@ async def change_user_group(user_group_model: "UserGroupReq",
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
+    user_group_model = empty_strings_to_none(user_group_model)
     user_group = db.find_user_group_by_code(user_group_model.group_code)
     if user_group.group_owner != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
 
-    if user_group_model.group_name is not None and \
-            len(user_group_model.group_name) > 0:
+    if user_group_model.group_name is not None:
         user_group.group_name = user_group_model.group_name
 
-    if user_group_model.owner is not None and len(user_group_model.owner) > 0:
+    if user_group_model.owner is not None:
         user_group.group_owner = user_group_model.owner
 
     res = db.update_user_group_by_code(user_group)
 
-    if user_group_model.members is not None and \
-            len(user_group_model.members) > 0:
+    if user_group_model.members is not None:
         db.delete_user_to_user_group_by_group(user_group_model.group_code)
         if user_group_model.owner not in user_group_model.members:
             tmp = user_group_model.members.split(',')
@@ -130,6 +129,7 @@ async def change_user_group(user_group_model: "UserGroupReq",
     return {"success": res}
 
 
+@DeprecationWarning
 @router.get('/query_group',
             response_model=Dict[str, bool | str | List[UserGroupRes]])
 async def query_user_group_by_user(user_code: str,

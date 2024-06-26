@@ -37,8 +37,8 @@ def test_new_issue():
 
     res = client.get(f'/project/participants?user_code={user_code}',
                      cookies=cookie)
-    assert len(res.json()) > 0
-    project_code = res.json()[0]['project_code']
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
     res = client.post('/issue/new',
                       json={
                           "project_code": project_code,
@@ -64,8 +64,8 @@ def test_delete_issue():
 
     res = client.get(f'/project/participants?user_code={user_code}',
                      cookies=cookie)
-    assert len(res.json()) > 0
-    project_code = res.json()[0]['project_code']
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
     res = client.post('/issue/new',
                       json={
                           "project_code": project_code,
@@ -100,8 +100,8 @@ def test_change_issue():
 
     res = client.get(f'/project/participants?user_code={user_code}',
                      cookies=cookie)
-    assert len(res.json()) > 0
-    project_code = res.json()[0]['project_code']
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
     res = client.post('/issue/new',
                       json={
                           "project_code": project_code,
@@ -137,8 +137,8 @@ def test_list_issues_by_condition():
 
     res = client.get(f'/project/participants?user_code={user_code}',
                      cookies=cookie)
-    assert len(res.json()) > 0
-    project_code = res.json()[0]['project_code']
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
     res = client.post('/issue/new',
                       json={
                           "project_code": project_code,
