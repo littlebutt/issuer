@@ -1,5 +1,5 @@
 const config = {
-    pageSize: 8
+    pageSize: 12
 }
 
 export default config

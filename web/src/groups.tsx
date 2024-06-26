@@ -2,10 +2,8 @@ import React, { useEffect, useState } from "react"
 import { Toaster } from "./components/ui/toaster"
 import { useToast } from "./components/ui/use-toast"
 import { Button } from "./components/ui/button"
-import { LayoutGrid, TableProperties } from "lucide-react"
 import { UserGroup } from "./types"
 import GroupTable from "./group-table"
-import GroupCard from "./group-card"
 import { countGroups, fetchGroups, fetchUsers } from "./fetch"
 import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
@@ -15,7 +13,6 @@ import axios from "axios"
 import config from "./config"
 
 const Groups: React.FC = () => {
-    const [tableMode, setTableMode] = useState<boolean>(false)
 
     const [tableContent, setTableContent] = useState<UserGroup[]>([])
     const [pageNum, setPageNum] = useState<number>(1) 
@@ -162,19 +159,16 @@ const Groups: React.FC = () => {
     return (
         <div>
             <Toaster/>
-            <div className="grid grid-rows-[80px_555px] w-full px-5 py-0 gap-0 max-h-[618px]">
+            <div className="grid grid-rows-[45px_590px] w-full px-5 py-0 gap-0 max-h-[618px]">
                 <div className="flex justify-start space-x-2 space-y-1">
-                    <Button size="icon" onClick={() => setTableMode(!tableMode)}>
-                        {tableMode ? (<TableProperties className="h-4 w-4"/>) : (<LayoutGrid className="h-4 w-4"/>)}   
-                    </Button>
                     <div className="flex flex-row space-x-0 px-3">
-                        <Label htmlFor="group-name" className="w-[70px] pt-2 text-base font-semibold">名称</Label>
-                        <Input id="group-name" onChange={e => setGroupName(e.target.value)} value={groupName}></Input>
+                        <Label htmlFor="group-name" className="w-[70px] pt-1 text-base font-semibold">名称</Label>
+                        <Input className="h-8" id="group-name" onChange={e => setGroupName(e.target.value)} value={groupName}></Input>
                     </div>
                     <div className="flex flex-row space-x-0 px-3">
-                        <Label htmlFor="owner" className="w-[70px] pt-2 text-base font-semibold">创建者</Label>
-                        <Select onValueChange={v => setOwner(v)} value={owner}>
-                            <SelectTrigger className="md:w-[187px]">
+                        <Label htmlFor="owner" className="w-[70px] pt-1 text-base font-semibold">创建者</Label>
+                        <Select  onValueChange={v => setOwner(v)} value={owner}>
+                            <SelectTrigger className="md:w-[187px] h-8">
                                 <SelectValue/>
                             </SelectTrigger>
                             <SelectContent>
@@ -185,15 +179,14 @@ const Groups: React.FC = () => {
                         </Select>
                     </div>
                     <div className="flex flex-row space-x-0 px-3">
-                        <Label className="w-[70px] pt-2 text-base font-semibold">成员</Label>
-                        <MultiSelect className="md:w-[187px]" options={userOptions} value={selectedUsers} onChange={changeUserOptions}/>
+                        <Label className="w-[70px] pt-1 text-base font-semibold">成员</Label>
+                        <MultiSelect className="md:w-[187px] h-8" options={userOptions} value={selectedUsers} onChange={changeUserOptions}/>
                     </div>
                     <Button onClick={search}>搜索</Button>
                     <Button variant="outline" onClick={clearInput}>重置</Button>
                 </div>
-                {tableMode ? (
-            <div className="flex justify-center">
-            <GroupTable current={pageNum}
+                <div className="flex justify-center">
+                    <GroupTable current={pageNum}
                         total={pageTotal}
                         gotoNext={gotoNext}
                         gotoPrevious={gotoPrevious}
@@ -201,18 +194,7 @@ const Groups: React.FC = () => {
                         userOptions={userOptions}
                         deleteGroup={deleteGroup}
                         updateGroup={updateGroup}/>
-            </div>) : (
-            <div>
-            <GroupCard cardContent={tableContent}
-                        current={pageNum}
-                        total={pageTotal}
-                        gotoPrevious={gotoPrevious}
-                        gotoNext={gotoNext}
-                        userOptions={userOptions}
-                        deleteGroup={deleteGroup}
-                        updateGroup={updateGroup}/>
-            </div>
-            )}
+                </div>
             </div>
         </div>
     )

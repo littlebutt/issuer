@@ -35,15 +35,16 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
     }
     
     return (
-        <div className="w-full h-[555px]">
+        <div className="w-full">
+            <div className="w-full h-[562px]">
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[100px]">编号</TableHead>
-                        <TableHead>名称</TableHead>
-                        <TableHead>创建者</TableHead>
-                        <TableHead>成员</TableHead>
-                        <TableHead>操作</TableHead>
+                        <TableHead className="w-[10%]">编号</TableHead>
+                        <TableHead className="w-1/5">名称</TableHead>
+                        <TableHead className="w-1/5">创建者</TableHead>
+                        <TableHead className="w-[30%]">成员</TableHead>
+                        <TableHead className="w-1/5">操作</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -59,7 +60,7 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
                                         {formatMembers(content.members)}
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                        <Card className="flex items-center bg-slate-900 text-slate-200 max-w-[300px] h-[30px] mb-[-10px]">
+                                        <Card className="flex items-center bg-slate-900 text-slate-200 max-w-[300px] h-[30px] mb-[-5px]">
                                             <CardContent className="p-1">
                                                 {content.members.map(u => u.user_name).join('/')}
                                             </CardContent>
@@ -78,11 +79,12 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
             ))}
             </TableBody>
         </Table>
-        <div className="flex justify-start bottom-0 absolute w-fit">
+        </div>
+        <div className="flex justify-start w-fit">
             <Pagination>
                 <PaginationContent>
                     <PaginationItem>
-                        <Button onClick={props.gotoPrevious} size="icon">
+                        <Button onClick={props.gotoPrevious} size="sm">
                             <ChevronLeft />
                         </Button>
                     </PaginationItem>
@@ -90,7 +92,7 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
                         第{props.current}页/共{props.total}页
                     </PaginationItem>
                     <PaginationItem>
-                        <Button onClick={props.gotoNext} size="icon">
+                        <Button onClick={props.gotoNext} size="sm">
                             <ChevronRight />
                         </Button>
                     </PaginationItem>
