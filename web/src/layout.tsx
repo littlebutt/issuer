@@ -34,7 +34,7 @@ const Layout: React.FC = () => {
               icon: SquarePen,
             },
             {
-              href: "",
+              href: "/main/my-project",
               label: "项目",
               icon: Bookmark
             },

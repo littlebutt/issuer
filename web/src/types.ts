@@ -21,4 +21,17 @@ type UserGroup = {
     members: User[]
 }
 
-export type { User, UserRole, UserGroup }
+type Project = {
+    project_code: string
+    project_name: string
+    start_date: string
+    end_date?: string
+    owner: User
+    status: string
+    budget?: string
+    privilege: string
+    description?: string
+    participants: User[]
+}
+
+export type { User, UserRole, UserGroup, Project }

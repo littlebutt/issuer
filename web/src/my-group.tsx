@@ -205,7 +205,7 @@ const MyGroup: React.FC = () => {
                             <div className="p-4 pb-0 w-full">
                                 <div className="mt-3 h-[520px] flex flex-col space-y-2">
                                     <div className="flex flex-col space-y-1">
-                                        <Label htmlFor="groupName">组名</Label>
+                                        <Label htmlFor="groupName">名称</Label>
                                         <Input id="groupname" onChange={e => setGroupName(e.target.value)}/>
                                     </div>
                                     <div className="flex flex-col space-y-1">
