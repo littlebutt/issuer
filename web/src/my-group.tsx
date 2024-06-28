@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react"
-import { Toaster } from "./components/ui/toaster"
 import { Button } from "./components/ui/button"
 import GroupTable from "./group-table"
 import { User, UserGroup } from "./types"
@@ -190,7 +189,6 @@ const MyGroup: React.FC = () => {
 
     return (
         <div>
-            <Toaster/>
             <div className="grid grid-rows-[45px_590px] w-full px-5 py-0 gap-0 max-h-[618px]">
             <div className="flex justify-end">
                 <Drawer direction="right" open={drawerOpen} onOpenChange={setDrawerOpen}>

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react"
-import { Toaster } from "./components/ui/toaster"
 import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "./components/ui/drawer"
 import { Button } from "./components/ui/button"
 import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
-import { User } from "./types"
+import { Project, User } from "./types"
 import { fetchSelf } from "./fetch"
 import { useCookie } from "./lib/cookies"
 import { useToast } from "./components/ui/use-toast"
@@ -16,19 +15,25 @@ import { format } from "date-fns"
 import { Calendar } from "./components/ui/calendar"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select"
 import { Textarea } from "./components/ui/textarea"
+import axios from "axios"
+import ProjectTable from "./project-table"
 
 const MyProject: React.FC = () => {
 
     const [userInfo, setUserInfo] = useState<User>({})
     
+    const [tableContent, setTableContent] = useState<Project[]>([])
+    const [pageNum, setPageNum] = useState<number>(1)
+    const [pageTotal, setPageTotal] = useState<number>(0)
     const [projectName, setProjectName] = useState<string>("")
     const [startDate, setStartDate] = useState<Date>()
     const [endDate, setEndDate] = useState<Date>()
     const [status, setStatus] = useState<string>()
     const [privilege, setPrivilege] = useState<string>('Public')
+    const [budget, setBudget] = useState<number>(0)
     const [description, setDescription] = useState<string>("")
 
-    const [projectStatuses, setProjectStatuses] = useState<any[]>([])
+    const [projectStatuses, setProjectStatuses] = useState<{label: string, value: string}[]>([])
     const [projectPrivileges, setProjectPrivileges] = useState<any[]>([])
 
     const cookie = useCookie()
@@ -37,15 +42,57 @@ const MyProject: React.FC = () => {
 
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
 
+    const fetchProjectStatus = () => {
+        axios({
+            method: 'GET',
+            url: '/project/query_status'
+        }).then(res => {
+            if (res.status === 200 && res.data?.success === true) {
+                setProjectStatuses(res.data.data)
+            } else {
+                toast({
+                    title: "项目状态获取失败",
+                    variant: 'destructive'
+                })
+            }
+        }).catch(err => console.log(err))
+    }
+
+    const fetchProjectPrivileges = () => {
+        axios({
+            method: 'GET',
+            url: '/project/query_privileges'
+        }).then(res => {
+            if (res.status === 200 && res.data?.success === true) {
+                setProjectPrivileges(res.data.data)
+            } else {
+                toast({
+                    title: "项目状态获取失败",
+                    variant: 'destructive'
+                })
+            }
+        }).catch(err => console.log(err))
+    }
+
+    const gotoPrevious = () => {
+
+    }
+
+    const gotoNext = () => {
+
+    }
+
     useEffect(() => {
         fetchSelf(cookie, navigate).then(res => setUserInfo(res.data.data)).catch(err => console.log(err))
-    })
+        fetchProjectStatus()
+        fetchProjectPrivileges()
+    }, [])
     
     return (
         <div>
-            <Toaster/>
             <div className="grid grid-rows-[45px_590px] w-full px-5 py-0 gap-0 max-h-[618px]">
             <div className="flex justify-end">
+            
                 <Drawer direction="right" open={drawerOpen} onOpenChange={setDrawerOpen}>
                     <DrawerTrigger asChild>
                         <Button className="">新增</Button>
@@ -61,6 +108,7 @@ const MyProject: React.FC = () => {
                                         <Label htmlFor="projectName">名称</Label>
                                         <Input id="projectName" onChange={e => setProjectName(e.target.value)}/>
                                     </div>
+                                    <div className="flex flex-row space-x-1">
                                     <div className="flex flex-col space-y-1">
                                         <Label htmlFor="startDate">开始日期</Label>
                                         <Popover>
@@ -73,14 +121,16 @@ const MyProject: React.FC = () => {
                                                     )}
                                                 >
                                                     <CalendarIcon className="mr-2 h-4 w-4" />
-                                                        {startDate ? format(startDate, "PPP") : <span>选择日期</span>}
+                                                        {startDate ? format(startDate, "yyyy-MM-dd") : <span>选择日期</span>}
                                                 </Button>
                                             </PopoverTrigger>
                                             <PopoverContent className="w-auto p-0">
                                                 <Calendar
+                                                    className="z-50"
                                                     mode="single"
                                                     selected={startDate}
                                                     onSelect={setStartDate}
+                                                    initialFocus
                                                 />
                                             </PopoverContent>
                                         </Popover>
@@ -97,7 +147,7 @@ const MyProject: React.FC = () => {
                                                     )}
                                                 >
                                                     <CalendarIcon className="mr-2 h-4 w-4" />
-                                                        {endDate ? format(endDate, "PPP") : <span>选择日期</span>}
+                                                        {endDate ? format(endDate, "yyyy-MM-dd") : <span>选择日期</span>}
                                                 </Button>
                                             </PopoverTrigger>
                                             <PopoverContent className="w-auto p-0">
@@ -105,13 +155,15 @@ const MyProject: React.FC = () => {
                                                     mode="single"
                                                     selected={endDate}
                                                     onSelect={setEndDate}
+                                                    initialFocus
                                                 />
                                             </PopoverContent>
                                         </Popover>
                                     </div>
+                                    </div>
                                     <div className="flex flex-col space-y-1">
                                         <Label htmlFor="status">状态</Label>
-                                        <Select onValueChange={v => setStatus(v)}>
+                                        <Select onValueChange={v => setStatus(v)} value={status}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue/>
                                             </SelectTrigger>
@@ -126,11 +178,18 @@ const MyProject: React.FC = () => {
                                     </div>
                                     <div className="flex flex-col space-y-1">
                                         <Label htmlFor="budget">预算</Label>
-                                        <Input type="number" id="budget" className="after:content-['元']"/>
+                                        <div className="flex flex-row space-x-1">
+                                        <span className="text-base font-semibold">￥</span>
+                                        <Input type="number"
+                                               id="budget"
+                                               value={budget}
+                                               onChange={e => setBudget(Number(e.target.value))}
+                                        />
+                                        </div>
                                     </div>
                                     <div className="flex flex-col space-y-1">
                                         <Label htmlFor="privilege">公开性</Label>
-                                        <Select onValueChange={v => setPrivilege(v)}>
+                                        <Select onValueChange={v => setPrivilege(v)} value={privilege}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue/>
                                             </SelectTrigger>
@@ -160,14 +219,12 @@ const MyProject: React.FC = () => {
                 </Drawer>
             </div>
             <div className="flex justify-center">
-                {/* <GroupTable current={pageNum}
-                            total={pageTotal}
-                            gotoNext={gotoNext}
-                            gotoPrevious={gotoPrevious}
-                            tableContent={tableContent}
-                            userOptions={userOptions}
-                            deleteGroup={deleteGroup}
-                            updateGroup={updateGroup}/> */}
+                <ProjectTable current={pageNum}
+                    total={pageTotal}
+                    gotoNext={gotoNext}
+                    gotoPrevious={gotoPrevious}
+                    tableContent={tableContent} 
+                    projectStatuses={projectStatuses}/>
             </div>
             </div>
         </div>

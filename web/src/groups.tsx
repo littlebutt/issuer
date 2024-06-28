@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react"
-import { Toaster } from "./components/ui/toaster"
 import { useToast } from "./components/ui/use-toast"
 import { Button } from "./components/ui/button"
 import { UserGroup } from "./types"
@@ -158,7 +157,6 @@ const Groups: React.FC = () => {
 
     return (
         <div>
-            <Toaster/>
             <div className="grid grid-rows-[45px_590px] w-full px-5 py-0 gap-0 max-h-[618px]">
                 <div className="flex justify-start space-x-2 space-y-1">
                     <div className="flex flex-row space-x-0 px-3">

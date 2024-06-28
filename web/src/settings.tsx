@@ -10,7 +10,6 @@ import { Button } from "./components/ui/button"
 import { Textarea } from "./components/ui/textarea"
 import { Avatar, AvatarImage } from "./components/ui/avatar"
 import axios from "axios"
-import { Toaster } from "./components/ui/toaster"
 import { useToast } from "./components/ui/use-toast"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select"
 
@@ -163,7 +162,6 @@ const Settings: React.FC = () => {
     
     return (
         <div>
-            <Toaster />
             <div className="grid grid-rows-[repeat(6,80px)] grid-cols-2 grid-flow-col w-full px-5 py-0 gap-0">
             <div className="row-span-5 flex justify-center min-w-[400px]">
                 <Avatar className="size-96">

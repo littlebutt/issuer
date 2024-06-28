@@ -13,7 +13,6 @@ import { Input } from "./components/ui/input"
 import { Label } from "./components/ui/label"
 import { PasswordInput } from "./components/ui/password"
 import { useToast } from "./components/ui/use-toast"
-import { Toaster } from "./components/ui/toaster"
 import { useNavigate } from "react-router-dom"
 import { useCookie } from "./lib/cookies"
 
@@ -142,8 +141,7 @@ const Login:React.FC = () => {
     },[])
     
     return (
-        <div className="grid grid-cols-[0%_2fr_1fr] h-screen w-full bg-zinc-100">
-            <Toaster />
+        <div className="grid grid-cols-[2fr_1fr] h-screen w-full bg-zinc-100">
             <div className=" bg-zinc-950 dark:bg-white"></div>
             <div className='h-full grid place-items-center'>
                     {loginMode ? (

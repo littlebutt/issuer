@@ -8,7 +8,6 @@ import { HoverCardContent, HoverCardTrigger } from "./components/ui/hover-card"
 import { Button } from "./components/ui/button"
 import { useNavigate } from "react-router-dom"
 import { fetchSelf } from "./fetch"
-import { Toaster } from "./components/ui/toaster"
 import { useToast } from "./components/ui/use-toast"
 
 const Header: React.FC = () => {
@@ -53,7 +52,6 @@ const Header: React.FC = () => {
 
     return (
         <div>
-            <Toaster/>
             <div className="w-full h-[50px] bg-zinc-950">
                 <div className="w-12 float-end my-1">
                     <HoverCard>
