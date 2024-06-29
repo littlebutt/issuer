@@ -3,7 +3,7 @@ import { useToast } from "./components/ui/use-toast"
 import { Button } from "./components/ui/button"
 import { UserGroup } from "./types"
 import GroupTable from "./group-table"
-import { countGroups, fetchGroups, fetchUsers } from "./fetch"
+import { getUserGroupsCount, getUserGroups, fetchUsers } from "./fetch"
 import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select"
@@ -78,7 +78,7 @@ const Groups: React.FC = () => {
     }
 
     const fetchUserGroups = (groupName?: string, owner?: string, members?: string, currentPageNum?: number) => {
-        fetchGroups("", groupName ?? "", owner ?? "", members ?? "", config.pageSize, currentPageNum ?? pageNum)
+        getUserGroups("", groupName ?? "", owner ?? "", members ?? "", config.pageSize, currentPageNum ?? pageNum)
         .then(res => {
             if (res.status === 200 && res.data?.success === true) {
                 setTableContent(res.data?.data)
@@ -92,7 +92,7 @@ const Groups: React.FC = () => {
     }
 
     const fetchUserGroupCount = (groupName?: string, owner?: string, members?: string) => {
-        countGroups("", groupName ?? "", owner ?? "", members ?? "")
+        getUserGroupsCount("", groupName ?? "", owner ?? "", members ?? "")
         .then(res => {
             if (res.status === 200 && res.data?.success === true) {
                 setPageTotal(Math.ceil(res.data?.data / config.pageSize))

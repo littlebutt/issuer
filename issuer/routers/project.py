@@ -312,7 +312,7 @@ async def list_projects_by_condition(project_code: Optional[str] = None,
 
 
 @router.get('/count_projects',
-            response_model=Dict[str, bool | str | List[ProjectRes]])
+            response_model=Dict[str, bool | str | List[ProjectRes] | int])
 async def count_projects_by_condition(project_code: Optional[str] = None,
                                       project_name: Optional[str] = None,
                                       after_date: Optional[str] = None,

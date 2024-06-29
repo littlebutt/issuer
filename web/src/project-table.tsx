@@ -41,6 +41,7 @@ const ProjectTable: React.FC<IProjectTable> = (props) => {
         return res
     }
     
+    // TODO: 表格出血
     return (
         <div className="w-full">
             <div className="w-full h-[562px]">
@@ -52,15 +53,16 @@ const ProjectTable: React.FC<IProjectTable> = (props) => {
                         <TableHead className="w-[10%]">创建者</TableHead>
                         <TableHead className="w-[15%]">参与者</TableHead>
                         <TableHead className="w-[20%]">开始时间</TableHead>
-                        <TableHead className="w-[20%]">状态</TableHead>
-                        <TableHead className="w-[20%]">操作</TableHead>
+                        <TableHead className="w-[20%]">完成时间</TableHead>
+                        <TableHead className="w-[5%]">状态</TableHead>
+                        <TableHead className="w-[15%]">操作</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                 {props.tableContent.map((content, idx) => (
-                    <TableRow key={content.project_code} className="h-[10px]">
+                    <TableRow key={content.project_code} className="h-[45px]">
                         <TableCell className="font-semibold">#{idx + 1}</TableCell>
-                        <TableCell>{content.project_name}{content.privilege === 'Private' && (<Badge variant='outline'>私有</Badge>)}</TableCell>
+                        <TableCell>{content.project_name}{content.privilege === 'Private' && (<Badge variant='outline' className="text-xs">私有</Badge>)}</TableCell>
                         <TableCell>{content.owner?.user_name}</TableCell>
                         <TableCell>
                             <TooltipProvider>
@@ -68,8 +70,8 @@ const ProjectTable: React.FC<IProjectTable> = (props) => {
                                     <TooltipTrigger>
                                         {formatMembers(content.participants)}
                                     </TooltipTrigger>
-                                    <TooltipContent>
-                                        <Card className="flex items-center bg-slate-900 text-slate-200 max-w-[300px] h-[30px] mb-[-5px]">
+                                    <TooltipContent className="p-0 m-0">
+                                        <Card className="flex items-center bg-slate-900 text-slate-200 max-w-[300px] h-[30px]">
                                             <CardContent className="p-1">
                                                 {content.participants.map(u => u.user_name).join('/')}
                                             </CardContent>
@@ -79,6 +81,7 @@ const ProjectTable: React.FC<IProjectTable> = (props) => {
                             </TooltipProvider>
                         </TableCell>
                         <TableCell>{content.start_date}</TableCell>
+                        <TableCell>{content.end_date ?? '未设定'}</TableCell>
                         <TableCell><Badge>{statusValue2label(content.status)}</Badge></TableCell>
                         <TableCell></TableCell>
                     </TableRow>

@@ -4,7 +4,7 @@ import { Button } from "./components/ui/button"
 import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
 import { Project, User } from "./types"
-import { fetchSelf } from "./fetch"
+import { fetchSelf, getProjects, getProjectsCount } from "./fetch"
 import { useCookie } from "./lib/cookies"
 import { useToast } from "./components/ui/use-toast"
 import { useNavigate } from "react-router-dom"
@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Textarea } from "./components/ui/textarea"
 import axios from "axios"
 import ProjectTable from "./project-table"
+import { Checkbox } from "./components/ui/checkbox"
 
 const MyProject: React.FC = () => {
 
@@ -28,10 +29,10 @@ const MyProject: React.FC = () => {
     const [projectName, setProjectName] = useState<string>("")
     const [startDate, setStartDate] = useState<Date>()
     const [endDate, setEndDate] = useState<Date>()
-    const [status, setStatus] = useState<string>()
     const [privilege, setPrivilege] = useState<string>('Public')
     const [budget, setBudget] = useState<number>(0)
     const [description, setDescription] = useState<string>("")
+    const [noBudget, setNoBudget] = useState<boolean>(false)
 
     const [projectStatuses, setProjectStatuses] = useState<{label: string, value: string}[]>([])
     const [projectPrivileges, setProjectPrivileges] = useState<any[]>([])
@@ -74,16 +75,78 @@ const MyProject: React.FC = () => {
         }).catch(err => console.log(err))
     }
 
-    const gotoPrevious = () => {
+    const newProject = () => {
+        let startDateParam = startDate ? format(startDate, 'yyyy-MM-dd') : ''
+        let endDateParam = endDate ? format(endDate, 'yyyy-MM-dd') : ''
+        let budgetParam = noBudget ? '' : budget.toString()
+        axios({
+            method: 'POST',
+            url: "/project/new",
+            data: {
+                project_name: projectName,
+                start_date: startDateParam,
+                end_date: endDateParam,
+                description,
+                budget: budgetParam,
+                privilege
+            }
+        }).then(res => {
+            if (res.status === 200 && res.data.success === true) {
+                toast({
+                    content: "新增成功"
+                })
+                fetchProjects()
+                fetchProjectsCount()
+                setDrawerOpen(false)
+            } else {
+                toast({
+                    content: "新增失败",
+                    variant: 'destructive'
+                })
+            }
+        }).catch(err => console.log(err))
+    }
 
+    const fetchProjects = (currentPageNum?: number) => {
+        getProjects('', '', '', '', '', '', '', currentPageNum ?? pageNum, 12).then(res => {
+            if (res.status === 200 && res.data.success === true) {
+                setTableContent(res.data.data)
+            } else {
+                toast({
+                    title: "获取项目失败",
+                    variant: 'destructive'
+                })
+            }
+        }).catch(err => console.log(err))
+    }
+
+    const fetchProjectsCount = () => {
+        getProjectsCount('', '', '', '', '', '', '').then(res => {
+            if (res.status === 200 && res.data.success === true) {
+                setPageTotal(Math.ceil(res.data.data / 12))
+            } else {
+                toast({
+                    title: "获取项目总数失败",
+                    variant: 'destructive'
+                })
+            }
+        }).catch(err => console.log(err))
+    }
+
+    const gotoPrevious = () => {
+        setPageNum((pageNum) => Math.max(pageNum - 1, 1))
+        fetchProjects(Math.max(pageNum - 1, 1))
     }
 
     const gotoNext = () => {
-
+        setPageNum((pageNum) => Math.min(pageNum + 1, pageTotal))
+        fetchProjects(Math.min(pageNum + 1, pageTotal))
     }
 
     useEffect(() => {
         fetchSelf(cookie, navigate).then(res => setUserInfo(res.data.data)).catch(err => console.log(err))
+        fetchProjects()
+        fetchProjectsCount()
         fetchProjectStatus()
         fetchProjectPrivileges()
     }, [])
@@ -162,29 +225,22 @@ const MyProject: React.FC = () => {
                                     </div>
                                     </div>
                                     <div className="flex flex-col space-y-1">
-                                        <Label htmlFor="status">状态</Label>
-                                        <Select onValueChange={v => setStatus(v)} value={status}>
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue/>
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                {projectStatuses.map(status =>  (
-                                                    <SelectItem value={status?.value}>{status?.label}</SelectItem>
-                                                ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="flex flex-col space-y-1">
                                         <Label htmlFor="budget">预算</Label>
-                                        <div className="flex flex-row space-x-1">
-                                        <span className="text-base font-semibold">￥</span>
-                                        <Input type="number"
-                                               id="budget"
-                                               value={budget}
-                                               onChange={e => setBudget(Number(e.target.value))}
-                                        />
+                                        <div className="flex flex-row space-x-1 items-center">
+                                            <span className="text-xl font-semibold">￥</span>
+                                            <Input type="number"
+                                                   id="budget"
+                                                   value={budget}
+                                                   disabled={noBudget}
+                                                   onChange={e => setBudget(Number(e.target.value))}
+                                                   className="w-3/4"
+                                            />
+                                            &nbsp;
+                                            <Checkbox id="noBudget"
+                                                      className="peer"
+                                                      checked={noBudget}
+                                                      onCheckedChange={() => setNoBudget(!noBudget)}/>
+                                            <Label htmlFor="noBudget">未设预算</Label>
                                         </div>
                                     </div>
                                     <div className="flex flex-col space-y-1">
@@ -204,12 +260,12 @@ const MyProject: React.FC = () => {
                                     </div>
                                     <div className="flex flex-col space-y-1">
                                         <Label htmlFor="description">项目描述</Label>
-                                        <Textarea className="h-150 min-h-[150px]" placeholder={description} onChange={(e) => setDescription(e.target.value)}/>
+                                        <Textarea className="h-150 min-h-[150px]" onChange={(e) => setDescription(e.target.value)}/>
                                     </div>
                                 </div>
                             </div>
                             <DrawerFooter>
-                                <Button>确定</Button>
+                                <Button onClick={newProject}>确定</Button>
                                 <DrawerClose asChild>
                                     <Button variant="outline">取消</Button>
                                 </DrawerClose>

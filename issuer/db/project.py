@@ -119,7 +119,7 @@ def list_projects_by_condition(current_user: str,
                 or_clauses = []
                 for participant in participants:
                     or_clauses.append(ProjectToUser.user_code == participant)
-                stmt = stmt.where(or_(False, *or_clauses))
+                stmt = stmt.where(or_(*or_clauses))
             stmt = stmt.distinct() \
                 .where(or_(Project.privilege == 'Public',
                            Project.owner == current_user,
@@ -161,11 +161,10 @@ def count_projects_by_condition(current_user: str,
                 or_clauses = []
                 for participant in participants:
                     or_clauses.append(ProjectToUser.user_code == participant)
-                stmt = stmt.where(or_(False, *or_clauses))
+                stmt = stmt.where(or_(*or_clauses))
             stmt = stmt.where(or_(Project.privilege == 'Public',
                                   Project.owner == current_user,
-                                  ProjectToUser.user_code == current_user)) \
-                       .group_by(Project.id)
+                                  ProjectToUser.user_code == current_user))
             result = session.scalar(stmt)
             return result if result is not None else 0
     except Exception as e:

@@ -7,7 +7,7 @@ import { useCookie } from "./lib/cookies"
 import { useToast } from "./components/ui/use-toast"
 import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "./components/ui/drawer"
 import { Input } from "./components/ui/input"
-import { countGroups, fetchGroups, fetchSelf, fetchUsers } from "./fetch"
+import { getUserGroupsCount, getUserGroups, fetchSelf, fetchUsers } from "./fetch"
 import { useNavigate } from "react-router-dom"
 import { Label } from "./components/ui/label"
 import { MultiSelect } from "./components/ui/multi-select"
@@ -33,7 +33,7 @@ const MyGroup: React.FC = () => {
     const fetchUserGroups = (currentPageNum?: number) => {
         let user_code =  cookie.getCookie("current_user") as string
         user_code = user_code.split(':')[0]
-        fetchGroups("", "", "", user_code, config.pageSize, currentPageNum ?? pageNum)
+        getUserGroups("", "", "", user_code, config.pageSize, currentPageNum ?? pageNum)
         .then(res => {
             if (res.status === 200 && res.data?.success === true) {
                 setTableContent(res.data?.data)
@@ -49,7 +49,7 @@ const MyGroup: React.FC = () => {
     const fetchUserGroupCount = () => {
         let user_code =  cookie.getCookie("current_user") as string
         user_code = user_code.split(':')[0]
-        countGroups("", "", "", user_code)
+        getUserGroupsCount("", "", "", user_code)
         .then(res => {
             if (res.status === 200 && res.data?.success === true) {
                 setPageTotal(Math.ceil(res.data?.data / config.pageSize))
