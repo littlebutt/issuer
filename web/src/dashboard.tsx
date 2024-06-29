@@ -1,10 +1,7 @@
 import React from "react"
 
-
 const Dashboard: React.FC = () => {
-    return (
-        <>dashboard</>
-    )
+	return <>dashboard</>
 }
 
 export default Dashboard

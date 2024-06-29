@@ -9,7 +9,8 @@ import { cn } from "../../lib/utils"
 const PasswordInput = forwardRef<HTMLInputElement, InputProps>(
 	({ className, ...props }, ref) => {
 		const [showPassword, setShowPassword] = useState(false)
-		const disabled = props.value === "" || props.value === undefined || props.disabled
+		const disabled =
+			props.value === "" || props.value === undefined || props.disabled
 
 		return (
 			<div className="relative">
@@ -24,19 +25,13 @@ const PasswordInput = forwardRef<HTMLInputElement, InputProps>(
 					variant="ghost"
 					size="sm"
 					className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-					onClick={() => setShowPassword((prev) => !prev)}
+					onClick={() => setShowPassword(prev => !prev)}
 					disabled={disabled}
 				>
 					{showPassword && !disabled ? (
-						<EyeIcon
-							className="h-4 w-4"
-							aria-hidden="true"
-						/>
+						<EyeIcon className="h-4 w-4" aria-hidden="true" />
 					) : (
-						<EyeOffIcon
-							className="h-4 w-4"
-							aria-hidden="true"
-						/>
+						<EyeOffIcon className="h-4 w-4" aria-hidden="true" />
 					)}
 					<span className="sr-only">
 						{showPassword ? "Hide password" : "Show password"}
@@ -54,7 +49,7 @@ const PasswordInput = forwardRef<HTMLInputElement, InputProps>(
 				`}</style>
 			</div>
 		)
-	},
+	}
 )
 PasswordInput.displayName = "PasswordInput"
 
