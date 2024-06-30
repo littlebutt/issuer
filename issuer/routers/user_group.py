@@ -129,6 +129,31 @@ async def change_user_group(user_group_model: "UserGroupReq",
     return {"success": res}
 
 
+@router.post('/add')
+async def add_user_group(user_group_model: "UserGroupReq",
+                         current_user: Annotated[str | None, Cookie()] = None): # noqa
+    '''
+    用户组加入新成员。
+
+    Args:
+        user_group_model: 提供:attr:`group_code`和:attr:`new_member`字段，其中
+            :attr:`new_member`是新加入用户的user_code。
+
+    '''
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {"success": False, "reason": "Invalid token"}
+    user_group_model = empty_strings_to_none(user_group_model)
+    user_group = db.find_user_group_by_code(user_group_model.group_code)
+    res = db.insert_user_to_user_group(
+        UserToUserGroup(
+            user_code=user_group_model.new_member,
+            group_code=user_group.group_code
+        )
+    )
+    return {"success": res}
+
+
 @DeprecationWarning
 @router.get('/query_group',
             response_model=Dict[str, bool | str | List[UserGroupRes]])

@@ -125,6 +125,55 @@ def test_change_user_group():
     assert res.json()["data"][0]["group_name"] == "foo"
 
 
+def test_add_user_group():
+    cookie, user_code = get_cookie()
+    res = client.post('/user_group/new',
+                      json={
+                          "group_name": "test",
+                          "owner": user_code
+                      },
+                      cookies=cookie)
+    assert res.json()['success'] is True
+
+    res = client.get(f'/user_group/query_group?user_code={user_code}',
+                     cookies=cookie)
+    assert len(res.json()) > 0
+    group_code = res.json()["data"][0]["group_code"]
+
+    res = client.post('/users/sign_up',
+                      json={
+                          "user_name": "test",
+                          "passwd": "test",
+                          "email": "test2"
+                      })
+    assert res.json()['success'] is True
+
+    res = client.post('/users/sign_in',
+                      json={
+                          "user_name": "test2",
+                          "passwd": "test",
+                          "email": "test2"
+                      })
+    assert res.json()['success'] is True
+    new_member_code = res.json()['user']['user_code']
+    new_member_token = res.json()['token']
+    cookie = httpx.Cookies()
+    cookie.set(name="current_user",
+               value=f"{new_member_code}:{new_member_token}")
+    res = client.post('/user_group/add',
+                      json={
+                          "group_code": group_code,
+                          "new_member": new_member_code
+                      },
+                      cookies=cookie)
+    assert res.json()['success'] is True
+
+    res = client.get(f'/user_group/list_groups?group_code={group_code}',
+                     cookies=cookie)
+    assert res.json()['success'] is True
+    assert len(res.json()['data'][0]['members']) == 2
+
+
 def test_list_groups_by_condition():
     cookie, user_code = get_cookie()
     res = client.post('/user_group/new',

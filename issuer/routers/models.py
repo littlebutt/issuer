@@ -19,6 +19,7 @@ class UserGroupReq(BaseModel):
     group_name: str | None = None
     owner: str | None = None
     members: str | None = None
+    new_member: str | None = None
 
 
 class UserGroupRes(BaseModel):

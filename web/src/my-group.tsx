@@ -291,6 +291,7 @@ const MyGroup: React.FC = () => {
 				</div>
 				<div className="flex justify-center">
 					<GroupTable
+						isMine={true}
 						current={pageNum}
 						total={pageTotal}
 						gotoNext={gotoNext}

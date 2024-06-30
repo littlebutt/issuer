@@ -23,8 +23,10 @@ import {
 import { TooltipContent } from "@radix-ui/react-tooltip"
 import { Card, CardContent } from "./components/ui/card"
 import GroupOperation from "./group-operation"
+import { toast } from "./components/ui/use-toast"
 
 interface IGroupTable {
+	isMine: boolean
 	tableContent: UserGroup[]
 	current: number
 	total: number
@@ -38,6 +40,7 @@ interface IGroupTable {
 		owner: string,
 		members: string
 	) => void
+	addGroup?: (userCode: string, groupCode: string) => void
 }
 
 const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
@@ -101,7 +104,9 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
 								</TableCell>
 								<TableCell className="space-x-1">
 									<GroupOperation
+										isMine={props.isMine}
 										content={content}
+										addGroup={props.addGroup}
 										userOptions={props.userOptions}
 										updateGroup={props.updateGroup}
 										deleteGroup={props.deleteGroup}

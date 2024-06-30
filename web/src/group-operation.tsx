@@ -12,7 +12,7 @@ import { useCookie } from "./lib/cookies"
 import { SelectValue as Selected } from "react-tailwindcss-select/dist/components/type"
 import { UserGroup } from "./types"
 import { Button } from "./components/ui/button"
-import { CircleX, PenLine } from "lucide-react"
+import { CircleX, PenLine, Plus } from "lucide-react"
 import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
 import {
@@ -31,8 +31,10 @@ import {
 import { cn } from "./lib/utils"
 
 interface IGroupOperation {
+	isMine: boolean
 	content: UserGroup
 	userOptions: { value: string; label: string }[]
+	addGroup?: (userCode: string, groupCode: string) => void
 	updateGroup: (
 		groupCode: string,
 		groupName: string,
@@ -59,6 +61,22 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 		return users.map(u => u.value).join(",")
 	}
 
+	const isGroupMember = (content: UserGroup) => {
+		let user_code = cookie.getCookie("current_user")?.split(":")[0]
+		let res = false
+		content.members.forEach(member => {
+			if (member.user_code === user_code) {
+				res = true
+			}
+		})
+		return res
+	}
+
+	const isGroupOwner = (content: UserGroup) => {
+		let user_code = cookie.getCookie("current_user")?.split(":")[0]
+		return content.owner.user_code === user_code
+	}
+
 	const clearInput = () => {
 		setGroupName("")
 		setOwner("")
@@ -67,15 +85,44 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 
 	return (
 		<div className={cn("w-full h-full space-x-1", props.className)}>
+			{!props.isMine && (
+				<Popover>
+					<PopoverTrigger asChild>
+						<Button
+							variant="ghost"
+							size="icon"
+							disabled={isGroupMember(props.content)}
+						>
+							<Plus className="h-4 w-4" />
+						</Button>
+					</PopoverTrigger>
+					<PopoverContent className="w-[160px] h-[50px] flex flex-row justify-center items-center text-xs space-x-1 p-1 my-1">
+						<p>确认加入？</p>
+						<Button
+							size="sm"
+							className="p-1.5 [line-height:10px]"
+							onClick={() => {
+								if (props.addGroup !== undefined) {
+									props.addGroup(
+										cookie
+											.getCookie("current_user")
+											?.split(":")[0] as string,
+										props.content.group_code
+									)
+								}
+							}}
+						>
+							确认
+						</Button>
+					</PopoverContent>
+				</Popover>
+			)}
 			<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
 				<DialogTrigger asChild>
 					<Button
 						variant="ghost"
 						size="icon"
-						disabled={
-							cookie.getCookie("current_user")?.split(":")[0] !==
-							props.content.owner.user_code
-						}
+						disabled={!isGroupOwner(props.content)}
 						onClick={clearInput}
 					>
 						<PenLine className="h-4 w-4" />
@@ -152,16 +199,12 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
-			<div className="inline-block top-1 h-[120%] w-0.5 self-stretch bg-gradient-to-tr from-transparent via-zinc-500 to-transparent opacity-25 "></div>
 			<Popover>
 				<PopoverTrigger asChild>
 					<Button
 						variant="ghost"
 						size="icon"
-						disabled={
-							cookie.getCookie("current_user")?.split(":")[0] !==
-							props.content.owner.user_code
-						}
+						disabled={!isGroupOwner(props.content)}
 					>
 						<CircleX className="h-4 w-4" />
 					</Button>

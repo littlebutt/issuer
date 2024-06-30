@@ -95,6 +95,32 @@ const Groups: React.FC = () => {
 			.catch(err => console.log(err))
 	}
 
+	const addGroup = (userCode: string, groupCode: string) => {
+		axios({
+			method: "POST",
+			url: "/user_group/add",
+			data: {
+				group_code: groupCode,
+				new_member: userCode
+			}
+		})
+			.then(res => {
+				if (res.status === 200 && res.data.success === true) {
+					toast({
+						title: "加入成功"
+					})
+				} else {
+					toast({
+						title: "加入失败",
+						variant: "destructive"
+					})
+				}
+				fetchUserGroups()
+				fetchUserGroupCount()
+			})
+			.catch(err => console.log(err))
+	}
+
 	const fetchUserGroups = (
 		groupName?: string,
 		owner?: string,
@@ -202,7 +228,7 @@ const Groups: React.FC = () => {
 		<div>
 			<div className="grid grid-rows-[45px_590px] w-full px-5 py-0 gap-0 max-h-[618px]">
 				<div className="flex justify-start space-x-2 space-y-1">
-					<div className="flex flex-row space-x-0 px-3">
+					<div className="flex flex-row space-x-0">
 						<Label
 							htmlFor="group-name"
 							className="w-[70px] pt-1 text-base font-semibold"
@@ -254,6 +280,7 @@ const Groups: React.FC = () => {
 				</div>
 				<div className="flex justify-center">
 					<GroupTable
+						isMine={false}
 						current={pageNum}
 						total={pageTotal}
 						gotoNext={gotoNext}
@@ -262,6 +289,7 @@ const Groups: React.FC = () => {
 						userOptions={userOptions}
 						deleteGroup={deleteGroup}
 						updateGroup={updateGroup}
+						addGroup={addGroup}
 					/>
 				</div>
 			</div>

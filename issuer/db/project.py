@@ -1,7 +1,7 @@
 from datetime import date, datetime
 import logging
 from typing import Optional, Sequence
-from sqlalchemy import func
+from sqlalchemy import distinct, func
 from sqlmodel import Session, or_, select
 from issuer.db.database import DatabaseFactory
 from issuer.db.gen import generate_code
@@ -142,7 +142,7 @@ def count_projects_by_condition(current_user: str,
                                 participants: Optional[Sequence[str]] = None) -> Optional[int]: # noqa
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(func.count(Project.id)) \
+            stmt = select(func.count(distinct(Project.id))) \
                 .where(Project.project_code == ProjectToUser.project_code)
             if project_code is not None:
                 stmt = stmt.where(Project.project_code == project_code)
@@ -162,9 +162,10 @@ def count_projects_by_condition(current_user: str,
                 for participant in participants:
                     or_clauses.append(ProjectToUser.user_code == participant)
                 stmt = stmt.where(or_(*or_clauses))
-            stmt = stmt.where(or_(Project.privilege == 'Public',
-                                  Project.owner == current_user,
-                                  ProjectToUser.user_code == current_user))
+            stmt = stmt \
+                .where(or_(Project.privilege == 'Public',
+                           Project.owner == current_user,
+                           ProjectToUser.user_code == current_user))
             result = session.scalar(stmt)
             return result if result is not None else 0
     except Exception as e:
