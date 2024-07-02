@@ -23,7 +23,6 @@ import {
 import { TooltipContent } from "@radix-ui/react-tooltip"
 import { Card, CardContent } from "./components/ui/card"
 import GroupOperation from "./group-operation"
-import { toast } from "./components/ui/use-toast"
 
 interface IGroupTable {
 	isMine: boolean

@@ -75,8 +75,8 @@ const Groups: React.FC = () => {
 			data: {
 				group_code: groupCode,
 				group_name: groupName,
-				owner: owner,
-				members: members
+				owner,
+				members
 			}
 		})
 			.then(res => {

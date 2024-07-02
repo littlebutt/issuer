@@ -23,6 +23,7 @@ import {
 } from "./components/ui/pagination"
 import { Button } from "./components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import ProjectOperation from "./project-operation"
 
 interface IProjectTable {
 	tableContent: Project[]
@@ -31,6 +32,20 @@ interface IProjectTable {
 	total: number
 	gotoPrevious: () => void
 	gotoNext: () => void
+	userOptions: { value: string; label: string }[]
+	projectPrivileges: { value: string; label: string }[]
+	updateProject: (
+		projectCode: string,
+		projectName: string,
+		owner: string,
+		projectStatus: string,
+		noBudget: boolean,
+		privilege: string,
+		endDate?: Date,
+		budget?: number,
+		description?: string
+	) => void
+	deleteProject: (projectCode: string) => void
 }
 
 const ProjectTable: React.FC<IProjectTable> = props => {
@@ -55,7 +70,7 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 		return res
 	}
 
-	// TODO: 表格出血
+	// TODO: 表格出血 改造fetch.ts
 	return (
 		<div className="w-full">
 			<div className="w-full h-[562px]">
@@ -126,7 +141,19 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 										{statusValue2label(content.status)}
 									</Badge>
 								</TableCell>
-								<TableCell></TableCell>
+								<TableCell>
+									<ProjectOperation
+										isMine={true}
+										content={content}
+										userOptions={props.userOptions}
+										projectStatuses={props.projectStatuses}
+										projectPrivileges={
+											props.projectPrivileges
+										}
+										updateProject={props.updateProject}
+										deleteProject={props.deleteProject}
+									/>
+								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>

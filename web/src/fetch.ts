@@ -41,6 +41,32 @@ const fetchUserByCode: (
 	})
 }
 
+const fetchUserOptions: (
+	getter: { value: string; label: string }[],
+	setter: React.Dispatch<
+		React.SetStateAction<{ value: string; label: string }[]>
+	>
+) => void = (getter, setter) => {
+	// FIXME: 添加下拉菜单分页功能
+	fetchUsers(1, 999)
+		.then(res => {
+			if (res.status === 200 && res.data.success === true) {
+				res.data.data.map(
+					(user: { user_code: any; user_name: any }) => {
+						getter.push({
+							value: user.user_code,
+							label: user.user_name
+						})
+					}
+				)
+				setter([...getter])
+			} else {
+				console.log(res)
+			}
+		})
+		.catch(err => console.log(err))
+}
+
 const getUserGroups = async (
 	groupCode: string,
 	groupName: string,
@@ -107,6 +133,7 @@ export {
 	fetchSelf,
 	fetchUsers,
 	fetchUserByCode,
+	fetchUserOptions,
 	getUserGroups,
 	getUserGroupsCount,
 	getProjects,

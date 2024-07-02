@@ -11,11 +11,14 @@ import {
 import { Button } from "./components/ui/button"
 import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
-import { Project, User } from "./types"
-import { fetchSelf, getProjects, getProjectsCount } from "./fetch"
+import { Project } from "./types"
+import {
+	fetchUserOptions,
+	getProjects,
+	getProjectsCount
+} from "./fetch"
 import { useCookie } from "./lib/cookies"
 import { useToast } from "./components/ui/use-toast"
-import { useNavigate } from "react-router-dom"
 import {
 	Popover,
 	PopoverContent,
@@ -39,7 +42,9 @@ import ProjectTable from "./project-table"
 import { Checkbox } from "./components/ui/checkbox"
 
 const MyProject: React.FC = () => {
-	const [userInfo, setUserInfo] = useState<User>({})
+	const [userOptions, setUserOptions] = useState<
+		{ value: string; label: string }[]
+	>([])
 
 	const [tableContent, setTableContent] = useState<Project[]>([])
 	const [pageNum, setPageNum] = useState<number>(1)
@@ -55,11 +60,12 @@ const MyProject: React.FC = () => {
 	const [projectStatuses, setProjectStatuses] = useState<
 		{ label: string; value: string }[]
 	>([])
-	const [projectPrivileges, setProjectPrivileges] = useState<any[]>([])
+	const [projectPrivileges, setProjectPrivileges] = useState<
+		{ label: string; value: string }[]
+	>([])
 
 	const cookie = useCookie()
 	const { toast } = useToast()
-	const navigate = useNavigate()
 
 	const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
 
@@ -118,14 +124,83 @@ const MyProject: React.FC = () => {
 			.then(res => {
 				if (res.status === 200 && res.data.success === true) {
 					toast({
-						content: "新增成功"
+						title: "新增成功"
 					})
 					fetchProjects()
 					fetchProjectsCount()
 					setDrawerOpen(false)
 				} else {
 					toast({
-						content: "新增失败",
+						title: "新增失败",
+						variant: "destructive"
+					})
+				}
+			})
+			.catch(err => console.log(err))
+	}
+
+	const updateProject = (
+		projectCode: string,
+		projectName: string,
+		owner: string,
+		projectStatus: string,
+		noBudget: boolean,
+		privilege: string,
+		endDate?: Date,
+		budget?: number,
+		description?: string
+	) => {
+		let endDateParam = endDate ? format(endDate, "yyyy-MM-dd") : ""
+		let budgetParam = noBudget ? "" : (budget as number).toString()
+		axios({
+			method: "POST",
+			url: "/project/change",
+			data: {
+				project_code: projectCode,
+				project_name: projectName,
+				end_date: endDateParam,
+				status: projectStatus,
+				owner,
+				description,
+				budget: budgetParam,
+				privilege
+			}
+		})
+			.then(res => {
+				if (res.status === 200 && res.data?.success === true) {
+					toast({
+						title: "更新成功"
+					})
+					fetchProjects()
+					fetchProjectsCount()
+				} else {
+					toast({
+						title: "更新失败",
+						variant: "destructive"
+					})
+				}
+			})
+			.catch(err => console.log(err))
+	}
+
+	const deleteProject = (projectCode: string) => {
+		axios({
+			method: "POST",
+			url: "/project/delete",
+			data: {
+				project_code: projectCode
+			}
+		})
+			.then(res => {
+				if (res.status === 200 && res.data?.success === true) {
+					toast({
+						title: "删除成功"
+					})
+					fetchProjects()
+					fetchProjectsCount()
+				} else {
+					toast({
+						title: "删除失败",
 						variant: "destructive"
 					})
 				}
@@ -134,7 +209,19 @@ const MyProject: React.FC = () => {
 	}
 
 	const fetchProjects = (currentPageNum?: number) => {
-		getProjects("", "", "", "", "", "", "", currentPageNum ?? pageNum, 12)
+		let user_code = cookie.getCookie("current_user") as string
+		user_code = user_code.split(":")[0]
+		getProjects(
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			user_code,
+			currentPageNum ?? pageNum,
+			12
+		)
 			.then(res => {
 				if (res.status === 200 && res.data.success === true) {
 					setTableContent(res.data.data)
@@ -149,7 +236,9 @@ const MyProject: React.FC = () => {
 	}
 
 	const fetchProjectsCount = () => {
-		getProjectsCount("", "", "", "", "", "", "")
+		let user_code = cookie.getCookie("current_user") as string
+		user_code = user_code.split(":")[0]
+		getProjectsCount("", "", "", "", "", "", user_code)
 			.then(res => {
 				if (res.status === 200 && res.data.success === true) {
 					setPageTotal(Math.ceil(res.data.data / 12))
@@ -174,13 +263,11 @@ const MyProject: React.FC = () => {
 	}
 
 	useEffect(() => {
-		fetchSelf(cookie, navigate)
-			.then(res => setUserInfo(res.data.data))
-			.catch(err => console.log(err))
 		fetchProjects()
 		fetchProjectsCount()
 		fetchProjectStatus()
 		fetchProjectPrivileges()
+		fetchUserOptions(userOptions, setUserOptions)
 	}, [])
 
 	return (
@@ -393,6 +480,10 @@ const MyProject: React.FC = () => {
 						gotoPrevious={gotoPrevious}
 						tableContent={tableContent}
 						projectStatuses={projectStatuses}
+						userOptions={userOptions}
+						projectPrivileges={projectPrivileges}
+						updateProject={updateProject}
+						deleteProject={deleteProject}
 					/>
 				</div>
 			</div>

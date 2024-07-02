@@ -28,11 +28,6 @@ const Layout: React.FC = () => {
 			groupLabel: "我的",
 			menus: [
 				{
-					href: "/main/my-group",
-					label: "组织",
-					icon: SquarePen
-				},
-				{
 					href: "/main/my-project",
 					label: "项目",
 					icon: Bookmark
@@ -41,6 +36,11 @@ const Layout: React.FC = () => {
 					href: "",
 					label: "议题",
 					icon: Tag
+				},
+				{
+					href: "/main/my-group",
+					label: "组织",
+					icon: SquarePen
 				}
 			]
 		},
@@ -48,14 +48,14 @@ const Layout: React.FC = () => {
 			groupLabel: "探索",
 			menus: [
 				{
-					href: "/main/groups",
-					label: "组织",
-					icon: Users
-				},
-				{
 					href: "",
 					label: "项目",
 					icon: Settings
+				},
+				{
+					href: "/main/groups",
+					label: "组织",
+					icon: Users
 				}
 			]
 		},
@@ -76,7 +76,7 @@ const Layout: React.FC = () => {
 		}
 	]
 	return (
-		<div className="grid grid-cols-[1fr_5fr] h-screen w-full bg-zinc-100">
+		<div className="grid grid-cols-[1fr_8fr] h-screen w-full bg-zinc-100">
 			<SideMenu
 				className="bg-zinc-950 text-white"
 				menuList={menuList}
