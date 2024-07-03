@@ -32,6 +32,7 @@ import { format } from "date-fns"
 import { Calendar } from "./components/ui/calendar"
 import { Checkbox } from "./components/ui/checkbox"
 import { Textarea } from "./components/ui/textarea"
+import { useForm } from "react-hook-form"
 
 interface IProjectOperation {
 	isMine: boolean
@@ -78,6 +79,12 @@ const ProjectOperation: React.FC<IProjectOperation> = props => {
 	const [description, setDescription] = useState<string | undefined>(
 		props.content.description
 	)
+
+	const {
+		register,
+		formState: { errors },
+		handleSubmit
+	} = useForm()
 
 	const [dialogOpen, setDialogOpen] = useState<boolean>(false)
 
@@ -158,144 +165,172 @@ const ProjectOperation: React.FC<IProjectOperation> = props => {
 						<DialogTitle>修改项目</DialogTitle>
 					</DialogHeader>
 					<div className="p-4 pb-0 w-full">
-						<div className="mt-3 h-[520px] flex flex-col space-y-2">
-							<div className="flex flex-col space-y-1">
-								<Label htmlFor="projectName">名称</Label>
-								<Input
-									id="projectName"
-									onChange={e =>
-										setProjectName(e.target.value)
-									}
-									value={projectName}
-								/>
-							</div>
-							<div className="flex flex-col space-y-1">
-								<Label htmlFor="owner">所有者</Label>
-								<Select
-									onValueChange={v => setOwner(v)}
-									value={owner}
-								>
-									<SelectTrigger>
-										<SelectValue />
-									</SelectTrigger>
-									<SelectContent>
-										{props.userOptions.map(o => (
-											<SelectItem value={o.value}>
-												{o.label}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</div>
-							<div className="flex flex-col space-y-1">
-								<Label htmlFor="endDate">结束日期</Label>
-								<Popover>
-									<PopoverTrigger asChild>
-										<Button
-											variant={"outline"}
-											className={cn(
-												"w-full justify-start text-left font-normal",
-												!endDate &&
-													"text-muted-foreground"
-											)}
-										>
-											<CalendarIcon className="mr-2 h-4 w-4" />
-											{endDate ? (
-												format(endDate, "yyyy-MM-dd")
-											) : (
-												<span>选择日期</span>
-											)}
-										</Button>
-									</PopoverTrigger>
-									<PopoverContent className="w-auto p-0">
-										<Calendar
-											mode="single"
-											selected={endDate}
-											onSelect={setEndDate}
-											initialFocus
-										/>
-									</PopoverContent>
-								</Popover>
-							</div>
-							<div className="flex flex-col space-y-1">
-								<Label>状态</Label>
-								<Select
-									onValueChange={v => setProjectStatus(v)}
-									value={projectStatus}
-								>
-									<SelectTrigger className="w-full">
-										<SelectValue />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectGroup>
-											{props.projectStatuses.map(p => (
-												<SelectItem value={p?.value}>
-													{p?.label}
+						<form>
+							<div className="mt-3 h-[520px] flex flex-col space-y-2">
+								<div className="flex flex-col space-y-1">
+									<Label htmlFor="projectName">
+										名称
+										{errors.projectName && (
+											<span className="text-red-500">
+												{" "}
+												请填写名称
+											</span>
+										)}
+									</Label>
+									<Input
+										id="projectName"
+										{...register("projectName", {
+											required: true
+										})}
+										onChange={e =>
+											setProjectName(e.target.value)
+										}
+										value={projectName}
+									/>
+								</div>
+								<div className="flex flex-col space-y-1">
+									<Label htmlFor="owner">所有者</Label>
+									<Select
+										onValueChange={v => setOwner(v)}
+										value={owner}
+									>
+										<SelectTrigger>
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											{props.userOptions.map(o => (
+												<SelectItem value={o.value}>
+													{o.label}
 												</SelectItem>
 											))}
-										</SelectGroup>
-									</SelectContent>
-								</Select>
-							</div>
-							<div className="flex flex-col space-y-1">
-								<Label>预算</Label>
-								<div className="flex flex-row space-x-1 items-center">
-									<span className="text-xl font-semibold">
-										￥
-									</span>
-									<Input
-										type="number"
-										id="budget"
-										value={budget}
-										disabled={noBudget}
+										</SelectContent>
+									</Select>
+								</div>
+								<div className="flex flex-col space-y-1">
+									<Label htmlFor="endDate">结束日期</Label>
+									<Popover>
+										<PopoverTrigger asChild>
+											<Button
+												variant={"outline"}
+												className={cn(
+													"w-full justify-start text-left font-normal",
+													!endDate &&
+														"text-muted-foreground"
+												)}
+											>
+												<CalendarIcon className="mr-2 h-4 w-4" />
+												{endDate ? (
+													format(
+														endDate,
+														"yyyy-MM-dd"
+													)
+												) : (
+													<span>选择日期</span>
+												)}
+											</Button>
+										</PopoverTrigger>
+										<PopoverContent className="w-auto p-0">
+											<Calendar
+												mode="single"
+												selected={endDate}
+												onSelect={setEndDate}
+												initialFocus
+											/>
+										</PopoverContent>
+									</Popover>
+								</div>
+								<div className="flex flex-col space-y-1">
+									<Label>状态</Label>
+									<Select
+										onValueChange={v => setProjectStatus(v)}
+										value={projectStatus}
+									>
+										<SelectTrigger className="w-full">
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectGroup>
+												{props.projectStatuses.map(
+													p => (
+														<SelectItem
+															value={p?.value}
+														>
+															{p?.label}
+														</SelectItem>
+													)
+												)}
+											</SelectGroup>
+										</SelectContent>
+									</Select>
+								</div>
+								<div className="flex flex-col space-y-1">
+									<Label>预算</Label>
+									<div className="flex flex-row space-x-1 items-center">
+										<span className="text-xl font-semibold">
+											￥
+										</span>
+										<Input
+											type="number"
+											id="budget"
+											value={budget}
+											disabled={noBudget}
+											onChange={e =>
+												setBudget(
+													Number(e.target.value)
+												)
+											}
+											className="w-3/5"
+										/>
+										&nbsp;
+										<Checkbox
+											id="noBudget"
+											className="peer"
+											checked={noBudget}
+											onCheckedChange={() =>
+												setNoBudget(!noBudget)
+											}
+										/>
+										<Label htmlFor="noBudget">
+											未设预算
+										</Label>
+									</div>
+								</div>
+								<div className="flex flex-col space-y-1">
+									<Label>权限</Label>
+									<Select
+										onValueChange={v => setPrivilege(v)}
+										value={privilege}
+									>
+										<SelectTrigger className="w-full">
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectGroup>
+												{props.projectPrivileges.map(
+													p => (
+														<SelectItem
+															value={p?.value}
+														>
+															{p?.label}
+														</SelectItem>
+													)
+												)}
+											</SelectGroup>
+										</SelectContent>
+									</Select>
+								</div>
+								<div className="flex flex-col space-y-1">
+									<Label>项目描述</Label>
+									<Textarea
+										className="h-150 min-h-[100px]"
 										onChange={e =>
-											setBudget(Number(e.target.value))
+											setDescription(e.target.value)
 										}
-										className="w-3/5"
+										value={description}
 									/>
-									&nbsp;
-									<Checkbox
-										id="noBudget"
-										className="peer"
-										checked={noBudget}
-										onCheckedChange={() =>
-											setNoBudget(!noBudget)
-										}
-									/>
-									<Label htmlFor="noBudget">未设预算</Label>
 								</div>
 							</div>
-							<div className="flex flex-col space-y-1">
-								<Label>权限</Label>
-								<Select
-									onValueChange={v => setPrivilege(v)}
-									value={privilege}
-								>
-									<SelectTrigger className="w-full">
-										<SelectValue />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectGroup>
-											{props.projectPrivileges.map(p => (
-												<SelectItem value={p?.value}>
-													{p?.label}
-												</SelectItem>
-											))}
-										</SelectGroup>
-									</SelectContent>
-								</Select>
-							</div>
-							<div className="flex flex-col space-y-1">
-								<Label>项目描述</Label>
-								<Textarea
-									className="h-150 min-h-[100px]"
-									onChange={e =>
-										setDescription(e.target.value)
-									}
-									value={description}
-								/>
-							</div>
-						</div>
+						</form>
 					</div>
 					<DialogFooter className="sm:justify-end">
 						<DialogClose
@@ -307,7 +342,7 @@ const ProjectOperation: React.FC<IProjectOperation> = props => {
 							</Button>
 						</DialogClose>
 						<Button
-							onClick={() => {
+							onClick={handleSubmit(() => {
 								props.updateProject(
 									props.content.project_code,
 									projectName,
@@ -320,7 +355,7 @@ const ProjectOperation: React.FC<IProjectOperation> = props => {
 									description
 								)
 								setDialogOpen(false)
-							}}
+							})}
 						>
 							确认
 						</Button>
@@ -337,11 +372,12 @@ const ProjectOperation: React.FC<IProjectOperation> = props => {
 						<CircleX className="h-4 w-4" />
 					</Button>
 				</PopoverTrigger>
-				<PopoverContent className="w-[160px] h-[50px] flex flex-row justify-center items-center text-xs space-x-1 p-1 my-1">
+				<PopoverContent className="w-[140px] h-[40px] flex flex-row justify-center items-center text-xs space-x-1 p-0 my-0">
 					<p>确认删除？</p>
 					<Button
+						variant="link"
 						size="sm"
-						className="p-1.5 [line-height:10px]"
+						className="p-1.5 [line-height:10px] text-xs"
 						onClick={() =>
 							props.deleteProject(props.content.project_code)
 						}

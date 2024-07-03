@@ -3,7 +3,7 @@ import { useToast } from "./components/ui/use-toast"
 import { Button } from "./components/ui/button"
 import { UserGroup } from "./types"
 import GroupTable from "./group-table"
-import { getUserGroupsCount, getUserGroups, fetchUsers } from "./fetch"
+import { getUserGroupsCount, getUserGroups, fetchUserOptions } from "./fetch"
 import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
 import {
@@ -167,30 +167,6 @@ const Groups: React.FC = () => {
 			.catch(err => console.log(err))
 	}
 
-	const fetchUserOptions = () => {
-		// FIXME: 添加下拉菜单分页功能
-		fetchUsers(1, 999)
-			.then(res => {
-				if (res.status === 200 && res.data.success === true) {
-					res.data.data.map(
-						(user: { user_code: any; user_name: any }) => {
-							userOptions.push({
-								value: user.user_code,
-								label: user.user_name
-							})
-						}
-					)
-					setUserOptions([...userOptions])
-				} else {
-					toast({
-						title: "获取所有用户失败",
-						variant: "destructive"
-					})
-				}
-			})
-			.catch(err => console.log(err))
-	}
-
 	const gotoNext = () => {
 		setPageNum(pageNum => Math.min(pageNum + 1, pageTotal))
 		fetchUserGroups(
@@ -221,7 +197,7 @@ const Groups: React.FC = () => {
 	useEffect(() => {
 		fetchUserGroups()
 		fetchUserGroupCount()
-		fetchUserOptions()
+		fetchUserOptions(userOptions, setUserOptions)
 	}, [])
 
 	return (

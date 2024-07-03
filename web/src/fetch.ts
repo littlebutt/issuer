@@ -32,15 +32,6 @@ const fetchUsers: (
 	})
 }
 
-const fetchUserByCode: (
-	userCode: string
-) => Promise<AxiosResponse> = async userCode => {
-	return axios({
-		method: "GET",
-		url: `/users/user?user_code=${userCode}`
-	})
-}
-
 const fetchUserOptions: (
 	getter: { value: string; label: string }[],
 	setter: React.Dispatch<
@@ -131,8 +122,6 @@ const getProjectsCount = async (
 
 export {
 	fetchSelf,
-	fetchUsers,
-	fetchUserByCode,
 	fetchUserOptions,
 	getUserGroups,
 	getUserGroupsCount,

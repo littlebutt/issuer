@@ -29,6 +29,7 @@ import {
 	PopoverTrigger
 } from "./components/ui/popover"
 import { cn } from "./lib/utils"
+import { useForm } from "react-hook-form"
 
 interface IGroupOperation {
 	isMine: boolean
@@ -50,6 +51,12 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 	const [groupName, setGroupName] = useState<string>("")
 	const [owner, setOwner] = useState<string>("")
 	const [selectedUsers, setSelectedUsers] = useState<any[]>([])
+
+	const {
+		register,
+		formState: { errors },
+		handleSubmit
+	} = useForm()
 
 	const [dialogOpen, setDialogOpen] = useState<boolean>(false)
 
@@ -96,11 +103,12 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 							<Plus className="h-4 w-4" />
 						</Button>
 					</PopoverTrigger>
-					<PopoverContent className="w-[160px] h-[50px] flex flex-row justify-center items-center text-xs space-x-1 p-1 my-1">
+					<PopoverContent className="w-[140px] h-[40px] flex flex-row justify-center items-center text-xs space-x-1 p-0 my-0">
 						<p>确认加入？</p>
 						<Button
+							variant="link"
 							size="sm"
-							className="p-1.5 [line-height:10px]"
+							className="p-1.5 [line-height:10px] text-xs"
 							onClick={() => {
 								if (props.addGroup !== undefined) {
 									props.addGroup(
@@ -133,46 +141,62 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 						<DialogTitle>修改组织</DialogTitle>
 					</DialogHeader>
 					<div className="p-4 pb-0 w-full">
-						<div className="mt-3 h-[520px] flex flex-col space-y-2">
-							<div className="flex flex-col space-y-1">
-								<Label htmlFor="groupName">组名</Label>
-								<Input
-									id="groupname"
-									onChange={e => setGroupName(e.target.value)}
-									placeholder={props.content.group_name}
-								/>
+						<form>
+							<div className="mt-3 h-[520px] flex flex-col space-y-2">
+								<div className="flex flex-col space-y-1">
+									<Label htmlFor="groupName">
+										名称
+										{errors.groupName && (
+											<span className="text-red-500">
+												{" "}
+												请填写名称
+											</span>
+										)}
+									</Label>
+									<Input
+										id="groupname"
+										{...register("groupName", {
+											required: true
+										})}
+										onChange={e =>
+											setGroupName(e.target.value)
+										}
+										value={props.content.group_name}
+									/>
+								</div>
+								<div className="flex flex-col space-y-1">
+									<Label htmlFor="owner">所有者</Label>
+									<Select onValueChange={v => setOwner(v)}>
+										<SelectTrigger>
+											<SelectValue
+												placeholder={
+													props.content.owner
+														.user_name
+												}
+											/>
+										</SelectTrigger>
+										<SelectContent>
+											{props.userOptions.map(o => (
+												<SelectItem value={o.value}>
+													{o.label}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+								</div>
+								<div className="flex flex-col space-y-1">
+									<Label htmlFor="members">成员</Label>
+									<MultiSelect
+										options={props.userOptions}
+										placeholder={props.content.members
+											.map(m => m.user_name)
+											.join(",")}
+										value={selectedUsers}
+										onChange={changeUserOptions}
+									/>
+								</div>
 							</div>
-							<div className="flex flex-col space-y-1">
-								<Label htmlFor="owner">所有者</Label>
-								<Select onValueChange={v => setOwner(v)}>
-									<SelectTrigger>
-										<SelectValue
-											placeholder={
-												props.content.owner.user_name
-											}
-										/>
-									</SelectTrigger>
-									<SelectContent>
-										{props.userOptions.map(o => (
-											<SelectItem value={o.value}>
-												{o.label}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</div>
-							<div className="flex flex-col space-y-1">
-								<Label htmlFor="members">成员</Label>
-								<MultiSelect
-									options={props.userOptions}
-									placeholder={props.content.members
-										.map(m => m.user_name)
-										.join(",")}
-									value={selectedUsers}
-									onChange={changeUserOptions}
-								/>
-							</div>
-						</div>
+						</form>
 					</div>
 					<DialogFooter className="sm:justify-end">
 						<DialogClose
@@ -184,7 +208,7 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 							</Button>
 						</DialogClose>
 						<Button
-							onClick={() => {
+							onClick={handleSubmit(() => {
 								props.updateGroup(
 									props.content.group_code,
 									groupName,
@@ -192,7 +216,7 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 									users2str(selectedUsers)
 								)
 								setDialogOpen(false)
-							}}
+							})}
 						>
 							确认
 						</Button>
@@ -209,11 +233,12 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 						<CircleX className="h-4 w-4" />
 					</Button>
 				</PopoverTrigger>
-				<PopoverContent className="w-[160px] h-[50px] flex flex-row justify-center items-center text-xs space-x-1 p-1 my-1">
+				<PopoverContent className="w-[140px] h-[40px] flex flex-row justify-center items-center text-xs space-x-1 p-0 my-0">
 					<p>确认删除？</p>
 					<Button
+						variant="link"
 						size="sm"
-						className="p-1.5 [line-height:10px]"
+						className="p-1.5 [line-height:10px] text-xs"
 						onClick={() =>
 							props.deleteGroup(props.content.group_code)
 						}

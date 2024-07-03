@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Button } from "./components/ui/button"
 import GroupTable from "./group-table"
-import { User, UserGroup } from "./types"
+import { UserGroup } from "./types"
 import axios from "axios"
 import { useCookie } from "./lib/cookies"
 import { useToast } from "./components/ui/use-toast"
@@ -15,20 +15,13 @@ import {
 	DrawerTrigger
 } from "./components/ui/drawer"
 import { Input } from "./components/ui/input"
-import {
-	getUserGroupsCount,
-	getUserGroups,
-	fetchSelf,
-	fetchUsers
-} from "./fetch"
-import { useNavigate } from "react-router-dom"
+import { getUserGroupsCount, getUserGroups, fetchUserOptions } from "./fetch"
 import { Label } from "./components/ui/label"
 import { MultiSelect } from "./components/ui/multi-select"
 import config from "./config"
+import { useForm } from "react-hook-form"
 
 const MyGroup: React.FC = () => {
-	const [userInfo, setUserInfo] = useState<User>({})
-
 	const [tableContent, setTableContent] = useState<UserGroup[]>([])
 	const [pageNum, setPageNum] = useState<number>(1)
 	const [pageTotal, setPageTotal] = useState<number>(0)
@@ -40,7 +33,12 @@ const MyGroup: React.FC = () => {
 
 	const cookie = useCookie()
 	const { toast } = useToast()
-	const navigate = useNavigate()
+
+	const {
+		register,
+		formState: { errors },
+		handleSubmit
+	} = useForm()
 
 	const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
 
@@ -78,30 +76,6 @@ const MyGroup: React.FC = () => {
 				} else {
 					toast({
 						title: "获取我的组织失败",
-						variant: "destructive"
-					})
-				}
-			})
-			.catch(err => console.log(err))
-	}
-
-	const fetchUserOptions = () => {
-		// FIXME: 添加下拉菜单分页功能
-		fetchUsers(1, 999)
-			.then(res => {
-				if (res.status === 200 && res.data.success === true) {
-					res.data.data.map(
-						(user: { user_code: any; user_name: any }) => {
-							userOptions.push({
-								value: user.user_code,
-								label: user.user_name
-							})
-						}
-					)
-					setUserOptions([...userOptions])
-				} else {
-					toast({
-						title: "获取所有用户失败",
 						variant: "destructive"
 					})
 				}
@@ -219,12 +193,9 @@ const MyGroup: React.FC = () => {
 	}
 
 	useEffect(() => {
-		fetchSelf(cookie, navigate)
-			.then(res => setUserInfo(res.data.data))
-			.catch(err => console.log(err))
 		fetchUserGroups()
 		fetchUserGroupCount()
-		fetchUserOptions()
+		fetchUserOptions(userOptions, setUserOptions)
 	}, [])
 
 	return (
@@ -245,42 +216,48 @@ const MyGroup: React.FC = () => {
 									<DrawerTitle>新增组织</DrawerTitle>
 								</DrawerHeader>
 								<div className="p-4 pb-0 w-full">
-									<div className="mt-3 h-[520px] flex flex-col space-y-2">
-										<div className="flex flex-col space-y-1">
-											<Label htmlFor="groupName">
-												名称
-											</Label>
-											<Input
-												id="groupname"
-												onChange={e =>
-													setGroupName(e.target.value)
-												}
-											/>
+									<form>
+										<div className="mt-3 h-[520px] flex flex-col space-y-2">
+											<div className="flex flex-col space-y-1">
+												<Label htmlFor="groupName">
+													名称
+													{errors.groupName && (
+														<span className="text-red-500">
+															{" "}
+															请填写名称
+														</span>
+													)}
+												</Label>
+												<Input
+													id="groupname"
+													{...register("groupName", {
+														required: true
+													})}
+													onChange={e =>
+														setGroupName(
+															e.target.value
+														)
+													}
+												/>
+											</div>
+											<div className="flex flex-col space-y-1">
+												<Label htmlFor="members">
+													组员
+												</Label>
+												<MultiSelect
+													{...register("members")}
+													options={userOptions}
+													value={selectedUsers}
+													onChange={changeUserOptions}
+												/>
+											</div>
 										</div>
-										<div className="flex flex-col space-y-1">
-											<Label htmlFor="owner">
-												所有者
-											</Label>
-											<Input
-												disabled
-												id="owner"
-												value={userInfo.user_name}
-											/>
-										</div>
-										<div className="flex flex-col space-y-1">
-											<Label htmlFor="members">
-												组员
-											</Label>
-											<MultiSelect
-												options={userOptions}
-												value={selectedUsers}
-												onChange={changeUserOptions}
-											/>
-										</div>
-									</div>
+									</form>
 								</div>
 								<DrawerFooter>
-									<Button onClick={newGroup}>确定</Button>
+									<Button onClick={handleSubmit(newGroup)}>
+										确定
+									</Button>
 									<DrawerClose asChild>
 										<Button variant="outline">取消</Button>
 									</DrawerClose>

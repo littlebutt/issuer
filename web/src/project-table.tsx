@@ -70,7 +70,7 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 		return res
 	}
 
-	// TODO: 表格出血 改造fetch.ts
+	// TODO: react-hook-form
 	return (
 		<div className="w-full">
 			<div className="w-full h-[562px]">
@@ -91,7 +91,7 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 						{props.tableContent.map((content, idx) => (
 							<TableRow
 								key={content.project_code}
-								className="h-[45px]"
+								className="h-[42px]"
 							>
 								<TableCell className="font-semibold">
 									#{idx + 1}

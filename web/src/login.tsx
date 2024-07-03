@@ -15,6 +15,7 @@ import { PasswordInput } from "./components/ui/password"
 import { useToast } from "./components/ui/use-toast"
 import { useNavigate } from "react-router-dom"
 import { useCookie } from "./lib/cookies"
+import { useForm } from "react-hook-form"
 
 const Login: React.FC = () => {
 	const [loginMode, setLoginMode] = useState<boolean>(true)
@@ -23,50 +24,30 @@ const Login: React.FC = () => {
 	const [repassword, setRepassword] = useState<string>("")
 	const [username, setUsername] = useState<string>("")
 
-	const [showEmailReminder, setShowEmailReminder] = useState<boolean>(false)
-	const [showPasswordReminder, setShowPasswordReminder] =
-		useState<boolean>(false)
-	const [showRepasswordReminder, setShowRepasswordReminder] =
-		useState<boolean>(false)
-
 	const { toast } = useToast()
 
 	const navigate = useNavigate()
 
 	const cookie = useCookie()
 
-	const checkEmailFormat = (email: string) => {
-		let reg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
-		return reg.test(email)
-	}
+	const {
+		register: registerForSignin,
+		formState: { errors: errorsForSignin },
+		handleSubmit: handleSubmitForSignin
+	} = useForm()
+	const {
+		register: registerForSignup,
+		formState: { errors: errorsForSignup },
+		handleSubmit: handleSubmitForSignup
+	} = useForm()
 
-	const checkPasswordFormat = (password: string) => {
-		let reg = /^[A-Za-z0-9!@_]+$/
-		return reg.test(password)
-	}
-
-	const onChangeEmail = (email: string) => {
-		setShowEmailReminder(!checkEmailFormat(email))
-		setEmail(email)
-	}
-
-	const onChangePassword = (password: string) => {
-		setShowPasswordReminder(!checkPasswordFormat(password))
-		setPassword(password)
-	}
-
-	const onChangeRepassword = (repassword: string) => {
-		setShowRepasswordReminder(password !== repassword)
-		setRepassword(repassword)
+	const switchMode = () => {
+		setLoginMode(!loginMode)
+		setEmail("")
+		setPassword("")
 	}
 
 	const doSignin = () => {
-		if (!checkEmailFormat(email)) {
-			return
-		}
-		if (!checkPasswordFormat(password)) {
-			return
-		}
 		axios({
 			method: "POST",
 			url: "/users/sign_in",
@@ -99,12 +80,6 @@ const Login: React.FC = () => {
 	}
 
 	const doSignup = () => {
-		if (!checkEmailFormat(email)) {
-			return
-		}
-		if (!checkPasswordFormat(password)) {
-			return
-		}
 		if (password !== repassword) {
 			return
 		}
@@ -163,7 +138,7 @@ const Login: React.FC = () => {
 									<div className="flex flex-col space-y-1.5">
 										<Label htmlFor="email">
 											邮箱
-											{showEmailReminder && (
+											{errorsForSignin.email && (
 												<span className="text-red-500">
 													{" "}
 													请输入正确的邮箱
@@ -173,26 +148,37 @@ const Login: React.FC = () => {
 										<Input
 											id="email"
 											value={email}
+											{...registerForSignin("email", {
+												required: true,
+												pattern:
+													/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+											})}
 											onChange={e =>
-												onChangeEmail(e.target.value)
+												setEmail(e.target.value)
 											}
 										/>
 									</div>
 									<div className="flex flex-col space-y-1.5">
 										<Label htmlFor="password">
 											密码
-											{showPasswordReminder && (
+											{errorsForSignin.password && (
 												<span className="text-red-500">
 													{" "}
-													密码必须由数字字母和@、_和!组成
+													密码必须5-18位且由数字字母和@、_和!组成
 												</span>
 											)}
 										</Label>
 										<PasswordInput
 											id="password"
 											value={password}
+											{...registerForSignin("password", {
+												required: true,
+												pattern: /^[A-Za-z0-9!@_]+$/,
+												min: 5,
+												max: 18
+											})}
 											onChange={e =>
-												onChangePassword(e.target.value)
+												setPassword(e.target.value)
 											}
 										/>
 									</div>
@@ -200,15 +186,13 @@ const Login: React.FC = () => {
 							</form>
 						</CardContent>
 						<CardFooter className="flex justify-between">
-							<Button
-								variant="link"
-								onClick={() => {
-									setLoginMode(false)
-								}}
-							>
+							<Button variant="link" onClick={switchMode}>
 								注册
 							</Button>
-							<Button onClick={doSignin} variant="default">
+							<Button
+								onClick={handleSubmitForSignin(doSignin)}
+								variant="default"
+							>
 								登录
 							</Button>
 						</CardFooter>
@@ -225,7 +209,7 @@ const Login: React.FC = () => {
 										<div className="flex flex-col space-y-1.5">
 											<Label htmlFor="email">
 												邮箱
-												{showEmailReminder && (
+												{errorsForSignup.email && (
 													<span className="text-red-500">
 														请输入正确的邮箱
 													</span>
@@ -234,20 +218,36 @@ const Login: React.FC = () => {
 											<Input
 												id="email"
 												value={email}
+												{...registerForSignup("email", {
+													required: true,
+													pattern:
+														/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+												})}
 												onChange={e =>
-													onChangeEmail(
-														e.target.value
-													)
+													setEmail(e.target.value)
 												}
 											/>
 										</div>
 										<div className="flex flex-col space-y-1.5">
 											<Label htmlFor="username">
 												用户名
+												{errorsForSignup.username && (
+													<span className="text-red-500">
+														请填写用户名(4-8个字符)
+													</span>
+												)}
 											</Label>
 											<Input
 												id="username"
 												value={username}
+												{...registerForSignup(
+													"username",
+													{
+														required: true,
+														min: 4,
+														max: 8
+													}
+												)}
 												onChange={e =>
 													setUsername(e.target.value)
 												}
@@ -257,25 +257,31 @@ const Login: React.FC = () => {
 									<div className="flex flex-col space-y-1.5">
 										<Label htmlFor="password">
 											密码
-											{showPasswordReminder && (
+											{errorsForSignup.password && (
 												<span className="text-red-500">
 													{" "}
-													密码必须由数字字母和@、_和!组成
+													密码必须5-18位且由数字字母和@、_和!组成
 												</span>
 											)}
 										</Label>
 										<PasswordInput
 											id="password"
 											value={password}
+											{...registerForSignup("password", {
+												required: true,
+												pattern: /^[A-Za-z0-9!@_]+$/,
+												min: 5,
+												max: 18
+											})}
 											onChange={e =>
-												onChangePassword(e.target.value)
+												setPassword(e.target.value)
 											}
 										/>
 									</div>
 									<div className="flex flex-col space-y-1.5">
 										<Label htmlFor="repassword">
 											重复密码
-											{showRepasswordReminder && (
+											{errorsForSignup.repassword && (
 												<span className="text-red-500">
 													{" "}
 													重复输入密码于原密码不一致
@@ -285,10 +291,16 @@ const Login: React.FC = () => {
 										<PasswordInput
 											id="repassword"
 											value={repassword}
+											{...registerForSignup(
+												"repassword",
+												{
+													required: true,
+													min: 5,
+													max: 18
+												}
+											)}
 											onChange={e =>
-												onChangeRepassword(
-													e.target.value
-												)
+												setRepassword(e.target.value)
 											}
 										/>
 									</div>
@@ -296,13 +308,13 @@ const Login: React.FC = () => {
 							</form>
 						</CardContent>
 						<CardFooter className="flex justify-between">
-							<Button
-								variant="link"
-								onClick={() => setLoginMode(true)}
-							>
+							<Button variant="link" onClick={switchMode}>
 								已有账号，现在登录
 							</Button>
-							<Button onClick={doSignup} variant="default">
+							<Button
+								onClick={handleSubmitForSignup(doSignup)}
+								variant="default"
+							>
 								注册
 							</Button>
 						</CardFooter>
