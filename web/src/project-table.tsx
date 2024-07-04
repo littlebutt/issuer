@@ -26,6 +26,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import ProjectOperation from "./project-operation"
 
 interface IProjectTable {
+	isMine: boolean
 	tableContent: Project[]
 	projectStatuses: { label: string; value: string }[]
 	current: number
@@ -46,6 +47,7 @@ interface IProjectTable {
 		description?: string
 	) => void
 	deleteProject: (projectCode: string) => void
+	addProject?: (userCode: string, projectCode: string) => void
 }
 
 const ProjectTable: React.FC<IProjectTable> = props => {
@@ -70,7 +72,7 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 		return res
 	}
 
-	// TODO: react-hook-form
+	// TODO: 抽象project和group的api
 	return (
 		<div className="w-full">
 			<div className="w-full h-[562px]">
@@ -143,7 +145,7 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 								</TableCell>
 								<TableCell>
 									<ProjectOperation
-										isMine={true}
+										isMine={props.isMine}
 										content={content}
 										userOptions={props.userOptions}
 										projectStatuses={props.projectStatuses}
@@ -152,6 +154,7 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 										}
 										updateProject={props.updateProject}
 										deleteProject={props.deleteProject}
+										addProject={props.addProject}
 									/>
 								</TableCell>
 							</TableRow>

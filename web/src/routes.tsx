@@ -8,6 +8,7 @@ import Settings from "./settings"
 import MyGroup from "./my-group"
 import Groups from "./groups"
 import MyProject from "./my-project"
+import Projects from "./projects"
 
 const router = [
 	{
@@ -41,6 +42,10 @@ const router = [
 			{
 				path: "my-project",
 				element: <MyProject />
+			},
+			{
+				path: "projects",
+				element: <Projects />
 			}
 		]
 	}

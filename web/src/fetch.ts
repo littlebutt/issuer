@@ -1,7 +1,6 @@
 import axios, { AxiosResponse } from "axios"
 import { NavigateFunction } from "react-router-dom"
 import { Cookie } from "./lib/cookies"
-import config from "./config"
 
 const fetchSelf: (
 	cookie: Cookie,
@@ -58,12 +57,52 @@ const fetchUserOptions: (
 		.catch(err => console.log(err))
 }
 
+const fetchProjectStatuses: (
+	getter: { value: string; label: string }[],
+	setter: React.Dispatch<
+		React.SetStateAction<{ value: string; label: string }[]>
+	>
+) => void = (getter, setter) => {
+	axios({
+		method: "GET",
+		url: "/project/query_status"
+	})
+		.then(res => {
+			if (res.status === 200 && res.data?.success === true) {
+				setter(res.data.data)
+			} else {
+				console.log(res)
+			}
+		})
+		.catch(err => console.log(err))
+}
+
+const fetchProjectPrivileges: (
+	getter: { value: string; label: string }[],
+	setter: React.Dispatch<
+		React.SetStateAction<{ value: string; label: string }[]>
+	>
+) => void = (getter, setter) => {
+	axios({
+		method: "GET",
+		url: "/project/query_privileges"
+	})
+		.then(res => {
+			if (res.status === 200 && res.data?.success === true) {
+				setter(res.data.data)
+			} else {
+				console.log(res)
+			}
+		})
+		.catch(err => console.log(err))
+}
+
 const getUserGroups = async (
 	groupCode: string,
 	groupName: string,
 	owner: string,
 	members: string,
-	pageSize: number = config.pageSize,
+	pageSize: number = 12,
 	pageNum: number = 1
 ) => {
 	return axios({
@@ -123,6 +162,8 @@ const getProjectsCount = async (
 export {
 	fetchSelf,
 	fetchUserOptions,
+	fetchProjectStatuses,
+	fetchProjectPrivileges,
 	getUserGroups,
 	getUserGroupsCount,
 	getProjects,

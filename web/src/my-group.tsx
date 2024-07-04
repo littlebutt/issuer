@@ -18,7 +18,6 @@ import { Input } from "./components/ui/input"
 import { getUserGroupsCount, getUserGroups, fetchUserOptions } from "./fetch"
 import { Label } from "./components/ui/label"
 import { MultiSelect } from "./components/ui/multi-select"
-import config from "./config"
 import { useForm } from "react-hook-form"
 
 const MyGroup: React.FC = () => {
@@ -45,14 +44,7 @@ const MyGroup: React.FC = () => {
 	const fetchUserGroups = (currentPageNum?: number) => {
 		let user_code = cookie.getCookie("current_user") as string
 		user_code = user_code.split(":")[0]
-		getUserGroups(
-			"",
-			"",
-			"",
-			user_code,
-			config.pageSize,
-			currentPageNum ?? pageNum
-		)
+		getUserGroups("", "", "", user_code, 12, currentPageNum ?? pageNum)
 			.then(res => {
 				if (res.status === 200 && res.data?.success === true) {
 					setTableContent(res.data?.data)
@@ -72,7 +64,7 @@ const MyGroup: React.FC = () => {
 		getUserGroupsCount("", "", "", user_code)
 			.then(res => {
 				if (res.status === 200 && res.data?.success === true) {
-					setPageTotal(Math.ceil(res.data?.data / config.pageSize))
+					setPageTotal(Math.ceil(res.data?.data / 12))
 				} else {
 					toast({
 						title: "获取我的组织失败",
@@ -111,7 +103,8 @@ const MyGroup: React.FC = () => {
 			.then(res => {
 				if (res.status === 200 && res.data.success === true) {
 					toast({
-						title: "新建成功"
+						title: "新建成功",
+						variant: "success"
 					})
 					fetchUserGroups()
 					fetchUserGroupCount()
@@ -137,13 +130,15 @@ const MyGroup: React.FC = () => {
 			.then(res => {
 				if (res.status === 200 && res.data.success === true) {
 					toast({
-						title: "删除成功"
+						title: "删除成功",
+						variant: "success"
 					})
 					fetchUserGroups()
 					fetchUserGroupCount()
 				} else {
 					toast({
-						title: "删除失败"
+						title: "删除失败",
+						variant: "destructive"
 					})
 				}
 			})
@@ -169,13 +164,15 @@ const MyGroup: React.FC = () => {
 			.then(res => {
 				if (res.status === 200 && res.data.success === true) {
 					toast({
-						title: "更新成功"
+						title: "更新成功",
+						variant: "success"
 					})
 					fetchUserGroups()
 					fetchUserGroupCount()
 				} else {
 					toast({
-						title: "更新失败"
+						title: "更新失败",
+						variant: "destructive"
 					})
 				}
 			})

@@ -144,11 +144,10 @@ async def add_user_group(user_group_model: "UserGroupReq",
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
     user_group_model = empty_strings_to_none(user_group_model)
-    user_group = db.find_user_group_by_code(user_group_model.group_code)
     res = db.insert_user_to_user_group(
         UserToUserGroup(
             user_code=user_group_model.new_member,
-            group_code=user_group.group_code
+            group_code=user_group_model.group_code
         )
     )
     return {"success": res}

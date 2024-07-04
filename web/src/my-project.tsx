@@ -12,7 +12,13 @@ import { Button } from "./components/ui/button"
 import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
 import { Project } from "./types"
-import { fetchUserOptions, getProjects, getProjectsCount } from "./fetch"
+import {
+	fetchProjectPrivileges,
+	fetchProjectStatuses,
+	fetchUserOptions,
+	getProjects,
+	getProjectsCount
+} from "./fetch"
 import { useCookie } from "./lib/cookies"
 import { useToast } from "./components/ui/use-toast"
 import {
@@ -72,42 +78,6 @@ const MyProject: React.FC = () => {
 
 	const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
 
-	const fetchProjectStatus = () => {
-		axios({
-			method: "GET",
-			url: "/project/query_status"
-		})
-			.then(res => {
-				if (res.status === 200 && res.data?.success === true) {
-					setProjectStatuses(res.data.data)
-				} else {
-					toast({
-						title: "项目状态获取失败",
-						variant: "destructive"
-					})
-				}
-			})
-			.catch(err => console.log(err))
-	}
-
-	const fetchProjectPrivileges = () => {
-		axios({
-			method: "GET",
-			url: "/project/query_privileges"
-		})
-			.then(res => {
-				if (res.status === 200 && res.data?.success === true) {
-					setProjectPrivileges(res.data.data)
-				} else {
-					toast({
-						title: "项目状态获取失败",
-						variant: "destructive"
-					})
-				}
-			})
-			.catch(err => console.log(err))
-	}
-
 	const newProject = () => {
 		// FIXME: 用react-hook-form检查startDate
 		if (!startDate) {
@@ -132,7 +102,8 @@ const MyProject: React.FC = () => {
 			.then(res => {
 				if (res.status === 200 && res.data.success === true) {
 					toast({
-						title: "新增成功"
+						title: "新增成功",
+						variant: "success"
 					})
 					fetchProjects()
 					fetchProjectsCount()
@@ -177,7 +148,8 @@ const MyProject: React.FC = () => {
 			.then(res => {
 				if (res.status === 200 && res.data?.success === true) {
 					toast({
-						title: "更新成功"
+						title: "更新成功",
+						variant: "success"
 					})
 					fetchProjects()
 					fetchProjectsCount()
@@ -202,7 +174,8 @@ const MyProject: React.FC = () => {
 			.then(res => {
 				if (res.status === 200 && res.data?.success === true) {
 					toast({
-						title: "删除成功"
+						title: "删除成功",
+						variant: "success"
 					})
 					fetchProjects()
 					fetchProjectsCount()
@@ -273,8 +246,8 @@ const MyProject: React.FC = () => {
 	useEffect(() => {
 		fetchProjects()
 		fetchProjectsCount()
-		fetchProjectStatus()
-		fetchProjectPrivileges()
+		fetchProjectStatuses(projectStatuses, setProjectStatuses)
+		fetchProjectPrivileges(projectPrivileges, setProjectPrivileges)
 		fetchUserOptions(userOptions, setUserOptions)
 	}, [])
 
@@ -522,6 +495,7 @@ const MyProject: React.FC = () => {
 				</div>
 				<div className="flex justify-center">
 					<ProjectTable
+						isMine={true}
 						current={pageNum}
 						total={pageTotal}
 						gotoNext={gotoNext}

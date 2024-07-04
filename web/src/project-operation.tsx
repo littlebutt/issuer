@@ -128,11 +128,12 @@ const ProjectOperation: React.FC<IProjectOperation> = props => {
 							<Plus className="h-4 w-4" />
 						</Button>
 					</PopoverTrigger>
-					<PopoverContent className="w-[160px] h-[50px] flex flex-row justify-center items-center text-xs space-x-1 p-1 my-1">
+					<PopoverContent className="w-[140px] h-[40px] flex flex-row justify-center items-center text-xs space-x-1 p-0 my-0">
 						<p>确认加入？</p>
 						<Button
 							size="sm"
-							className="p-1.5 [line-height:10px]"
+							variant="link"
+							className="p-1.5 [line-height:10px] text-xs"
 							onClick={() => {
 								if (props.addProject !== undefined) {
 									props.addProject(

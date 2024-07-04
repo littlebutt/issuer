@@ -20,6 +20,7 @@ import {
 	SelectValue
 } from "./components/ui/select"
 
+// TODO react=hook-form
 const Settings: React.FC = () => {
 	const [userInfo, setUserInfo] = useState<User>({})
 	const [repassword, setRepassword] = useState<string>("")
@@ -273,7 +274,6 @@ const Settings: React.FC = () => {
 					</Label>
 					<PasswordInput
 						id="password"
-						value={userInfo.passwd}
 						onChange={e => onChangePassword(e.target.value)}
 					/>
 				</div>

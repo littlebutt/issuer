@@ -15,7 +15,6 @@ import {
 } from "./components/ui/select"
 import { MultiSelect } from "./components/ui/multi-select"
 import axios from "axios"
-import config from "./config"
 
 const Groups: React.FC = () => {
 	const [tableContent, setTableContent] = useState<UserGroup[]>([])
@@ -50,13 +49,15 @@ const Groups: React.FC = () => {
 			.then(res => {
 				if (res.status === 200 && res.data.success === true) {
 					toast({
-						title: "删除成功"
+						title: "删除成功",
+						variant: "success"
 					})
 					fetchUserGroups()
 					fetchUserGroupCount()
 				} else {
 					toast({
-						title: "删除失败"
+						title: "删除失败",
+						variant: "destructive"
 					})
 				}
 			})
@@ -82,13 +83,15 @@ const Groups: React.FC = () => {
 			.then(res => {
 				if (res.status === 200 && res.data.success === true) {
 					toast({
-						title: "更新成功"
+						title: "更新成功",
+						variant: "success"
 					})
 					fetchUserGroups()
 					fetchUserGroupCount()
 				} else {
 					toast({
-						title: "更新失败"
+						title: "更新失败",
+						variant: "destructive"
 					})
 				}
 			})
@@ -107,7 +110,8 @@ const Groups: React.FC = () => {
 			.then(res => {
 				if (res.status === 200 && res.data.success === true) {
 					toast({
-						title: "加入成功"
+						title: "加入成功",
+						variant: "success"
 					})
 				} else {
 					toast({
@@ -132,7 +136,7 @@ const Groups: React.FC = () => {
 			groupName ?? "",
 			owner ?? "",
 			members ?? "",
-			config.pageSize,
+			12,
 			currentPageNum ?? pageNum
 		)
 			.then(res => {
@@ -156,7 +160,7 @@ const Groups: React.FC = () => {
 		getUserGroupsCount("", groupName ?? "", owner ?? "", members ?? "")
 			.then(res => {
 				if (res.status === 200 && res.data?.success === true) {
-					setPageTotal(Math.ceil(res.data?.data / config.pageSize))
+					setPageTotal(Math.ceil(res.data?.data / 12))
 				} else {
 					toast({
 						title: "获取我的组织失败",

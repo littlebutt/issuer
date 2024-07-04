@@ -42,9 +42,12 @@ const Login: React.FC = () => {
 	} = useForm()
 
 	const switchMode = () => {
+		// FIXME: 切换登录和注册清除用户所有输入
 		setLoginMode(!loginMode)
 		setEmail("")
+		setUsername("")
 		setPassword("")
+		setRepassword("")
 	}
 
 	const doSignin = () => {

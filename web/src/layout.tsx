@@ -48,7 +48,7 @@ const Layout: React.FC = () => {
 			groupLabel: "探索",
 			menus: [
 				{
-					href: "",
+					href: "/main/projects",
 					label: "项目",
 					icon: Settings
 				},

@@ -95,13 +95,13 @@ def test_change_project():
     assert res.json()["data"]["privilege"] == "Private"
 
 
-def test_change_project_members():
+def test_add_project():
     cookie, user_code = get_cookie()
     res = client.post('/project/new',
                       json={
                           "project_name": "test_project",
                           "start_date": "2024-06-05",
-                          "privilege": "Start"
+                          "privilege": "start"
                       },
                       cookies=cookie)
     assert res.json()["success"] is True
@@ -111,10 +111,10 @@ def test_change_project_members():
     assert res.json()["success"] is True
     project_code = res.json()["data"][0]['project_code']
 
-    res = client.post('/project/change_members',
+    res = client.post('/project/add',
                       json={
                           "project_code": project_code,
-                          "members": user_code
+                          "new_member": "test"
                       },
                       cookies=cookie)
     assert res.json()["success"] is True

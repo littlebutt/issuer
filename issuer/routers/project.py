@@ -134,15 +134,15 @@ async def change_project(project: "ProjectReq",
     return {"success": res}
 
 
-@router.post('/change_members')
-async def change_project_members(project: "ProjectReq",
-                                 current_user: Annotated[str | None, Cookie()] = None): # noqa
+@router.post('/add')
+async def add_project(project: "ProjectReq",
+                      current_user: Annotated[str | None, Cookie()] = None): # noqa
     '''
     变更该项目参与者。
 
     Args:
         project: :class:`ProjectReq`模型，必填:attr:`project_code`和
-            :attr:`members`字段。
+            :attr:`new_member`字段。
         current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
             形式。
 
@@ -151,13 +151,10 @@ async def change_project_members(project: "ProjectReq",
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
     project = empty_strings_to_none(project)
-    db.delete_project_to_user_by_project(project.project_code)
-    members = project.members.split(',')
-    for member in members:
-        db.insert_project_to_user(ProjectToUser(
-            project_code=project.project_code,
-            user_code=member))
-    return {"success": True}
+    res = db.insert_project_to_user(ProjectToUser(
+        project_code=project.project_code,
+        user_code=project.new_member))
+    return {"success": res}
 
 
 @router.get('/query_privileges')
