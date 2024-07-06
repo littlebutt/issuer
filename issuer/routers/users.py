@@ -8,6 +8,7 @@ from issuer import db
 from issuer.db import User
 from issuer.routers.convertors import convert_user
 from issuer.routers.models import UserModel
+from issuer.routers.utils import empty_strings_to_none
 
 
 router = APIRouter(
@@ -166,6 +167,7 @@ async def change_user(user: "UserModel",
             "reason": "Invalid token",
         }
     user_do = db.find_user_by_code(user.user_code)
+    user = empty_strings_to_none(user)
     if user.user_name is not None:
         user_do.user_name = user.user_name
     if user.passwd is not None:

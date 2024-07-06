@@ -81,7 +81,7 @@ const Layout: React.FC = () => {
 				className="bg-zinc-950 text-white"
 				menuList={menuList}
 			></SideMenu>
-			<div className="grid grid-rows-[1fr_9fr]">
+			<div className="grid grid-flow-row-dense">
 				<Header />
 				<Outlet />
 			</div>

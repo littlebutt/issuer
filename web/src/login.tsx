@@ -299,7 +299,8 @@ const Login: React.FC = () => {
 												{
 													required: true,
 													min: 5,
-													max: 18
+													max: 18,
+													validate: (value) => value === password
 												}
 											)}
 											onChange={e =>

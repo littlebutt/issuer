@@ -19,8 +19,9 @@ import {
 	SelectTrigger,
 	SelectValue
 } from "./components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card"
+import { useForm } from "react-hook-form"
 
-// TODO react=hook-form
 const Settings: React.FC = () => {
 	const [userInfo, setUserInfo] = useState<User>({})
 	const [repassword, setRepassword] = useState<string>("")
@@ -37,30 +38,7 @@ const Settings: React.FC = () => {
 	const navigate = useNavigate()
 	const { toast } = useToast()
 
-	const checkEmailFormat = (email: string) => {
-		let reg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
-		return reg.test(email)
-	}
-
-	const checkPasswordFormat = (password: string) => {
-		let reg = /^[A-Za-z0-9!@_]+$/
-		return reg.test(password)
-	}
-
-	const onChangeEmail = (email: string) => {
-		setShowEmailReminder(!checkEmailFormat(email))
-		setUserInfo({ ...userInfo, email: email })
-	}
-
-	const onChangePassword = (password: string) => {
-		setShowPasswordReminder(!checkPasswordFormat(password))
-		setUserInfo({ ...userInfo, passwd: password })
-	}
-
-	const onChangeRepassword = (repassword: string) => {
-		setShowRepasswordReminder(userInfo.passwd !== repassword)
-		setRepassword(repassword)
-	}
+	const { register, formState: { errors }, handleSubmit } = useForm()
 
 	const previewAvatar = (e: ChangeEvent<HTMLInputElement>) => {
 		let files = e.currentTarget.files
@@ -167,6 +145,7 @@ const Settings: React.FC = () => {
 		fetchSelf(cookie, navigate)
 			.then(res => {
 				if (res.status === 200) {
+					res.data.data.passwd = ""
 					setUserInfo(res.data.data)
 				}
 			})
@@ -175,11 +154,19 @@ const Settings: React.FC = () => {
 	}, [])
 
 	return (
-		<div>
-			<div className="grid grid-rows-[repeat(6,80px)] grid-cols-2 grid-flow-col w-full px-5 py-0 gap-0">
-				<div className="row-span-5 flex justify-center min-w-[400px]">
-					<Avatar className="size-96">
-						<AvatarImage
+			<div className="flex flex-col items-center space-y-2 w-full py-0 max-h-[618px] overflow-y-auto">
+				<form>
+				<div className="w-[600px]">
+					<Card className="w-full">
+						<CardHeader>
+							<CardTitle>
+							头像设置
+						</CardTitle>
+						</CardHeader>
+						
+						<CardContent className="flex flex-row space-x-2 p-4">
+							<Avatar className="size-12">
+							<AvatarImage
 							id="avatar"
 							className="object-fill"
 							src={
@@ -187,26 +174,37 @@ const Settings: React.FC = () => {
 									? userInfo.avatar
 									: "/statics/avatar.png"
 							}
-						/>
+							/>
 					</Avatar>
+					<div className="flex flex-row justify-center space-x-1">
+						<Input
+							className="w-1/2"
+							type="file"
+							accept="image/png, image/jpeg"
+							onChange={e => previewAvatar(e)}
+						/>
+						<Button
+							className="w-1/4 hover:bg-zinc-200"
+							variant="outline"
+							onClick={uploadAvatar}
+						>
+							上传
+						</Button>
+					</div>
+						</CardContent>
+					</Card>
+					
 				</div>
-				<div className="row-span-1 flex justify-center space-x-2">
-					<Input
-						className="w-1/2"
-						type="file"
-						accept="image/png, image/jpeg"
-						onChange={e => previewAvatar(e)}
-					/>
-					<Button
-						className="w-1/4 hover:bg-zinc-200"
-						variant="outline"
-						onClick={uploadAvatar}
-					>
-						上传
-					</Button>
-				</div>
-				<div className="col-span-1 space-y-1 flex justify-center space-x-1">
-					<div className="w-1/2">
+				<div className="w-[600px]">
+					<Card className="w-full">
+						<CardHeader>
+							<CardTitle>
+							基本设置
+						</CardTitle>
+						</CardHeader>
+						<CardContent className="space-y-2">
+							<div className="flex flex-row space-x-2">
+								<div className="w-1/2">
 						<Label htmlFor="username">用户名</Label>
 						<Input
 							id="username"
@@ -245,11 +243,11 @@ const Settings: React.FC = () => {
 							</SelectContent>
 						</Select>
 					</div>
-				</div>
-				<div className="col-span-1 space-y-1">
+							</div>
+							<div className="flex flex-col space-y-2">
 					<Label htmlFor="email">
 						邮箱
-						{showEmailReminder && (
+						{errors.email && (
 							<span className="text-red-500">
 								{" "}
 								请输入正确的邮箱
@@ -259,13 +257,15 @@ const Settings: React.FC = () => {
 					<Input
 						id="email"
 						value={userInfo.email}
-						onChange={e => onChangeEmail(e.target.value)}
+						className="w-full"
+						{ ...register("email", { pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/})}
+						onChange={e => setUserInfo({ ...userInfo, email: e.target.value })}
 					/>
 				</div>
-				<div className="col-span-1 space-y-1">
+				<div className="flex flex-col space-y-2">
 					<Label htmlFor="password">
 						密码
-						{showPasswordReminder && (
+						{errors.password && (
 							<span className="text-red-500">
 								{" "}
 								密码必须由数字字母和@、_和!组成
@@ -274,13 +274,15 @@ const Settings: React.FC = () => {
 					</Label>
 					<PasswordInput
 						id="password"
-						onChange={e => onChangePassword(e.target.value)}
+						className="w-full"
+						{ ...register("password", { pattern: /^[A-Za-z0-9!@_]+$/, min: 5, max: 18})}
+						onChange={e => setUserInfo({ ...userInfo, passwd: e.target.value })}
 					/>
 				</div>
-				<div className="col-span-1 space-y-1">
+				<div className="flex flex-col space-y-2">
 					<Label htmlFor="repassword">
 						重复密码
-						{showRepasswordReminder && (
+						{errors.repassword && (
 							<span className="text-red-500">
 								{" "}
 								重复输入密码于原密码不一致
@@ -290,20 +292,23 @@ const Settings: React.FC = () => {
 					<PasswordInput
 						id="repassword"
 						value={repassword}
-						onChange={e => onChangeRepassword(e.target.value)}
+						className="w-full"
+						{ ...register("repassword", { validate: (value) => userInfo.passwd ? (value === userInfo.passwd) : true})}
+						onChange={e => setRepassword(e.target.value)}
 					/>
 				</div>
-				<div className="col-span-1 space-y-1">
+				<div className="flex flex-col space-y-2">
 					<Label htmlFor="phone">联系方式</Label>
 					<Input
 						id="phone"
 						value={userInfo.phone}
+						className="w-full"
 						onChange={e =>
 							setUserInfo({ ...userInfo, phone: e.target.value })
 						}
 					/>
 				</div>
-				<div className="col-span-2 space-y-1">
+				<div className="flex flex-col space-y-2">
 					<Label htmlFor="description">签名</Label>
 					<Textarea
 						className="h-150 min-h-[150px]"
@@ -315,21 +320,26 @@ const Settings: React.FC = () => {
 							})
 						}
 					/>
-					<div className="w-full flex justify-end py-2">
+				</div>
+						</CardContent>
+					</Card>
+					
+				</div>
+				
+				<div className="flex flex-row space-x-2 w-[600px]">
 						<Button
-							className="w-1/2 mx-1 hover:bg-zinc-200"
+							className="w-1/4 mx-1 hover:bg-zinc-200"
 							variant="outline"
 							onClick={resetProfile}
 						>
 							重置
 						</Button>
-						<Button className="w-1/2" onClick={changeProfile}>
+						<Button className="w-1/4" onClick={handleSubmit(changeProfile)}>
 							更新
 						</Button>
 					</div>
+					</form>
 				</div>
-			</div>
-		</div>
 	)
 }
 
