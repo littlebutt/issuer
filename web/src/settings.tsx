@@ -28,12 +28,6 @@ const Settings: React.FC = () => {
 	const [avatarFile, setAvatarFile] = useState<File | null>(null)
 	const [roles, setRoles] = useState<UserRole[]>([])
 
-	const [showEmailReminder, setShowEmailReminder] = useState<boolean>(false)
-	const [showPasswordReminder, setShowPasswordReminder] =
-		useState<boolean>(false)
-	const [showRepasswordReminder, setShowRepasswordReminder] =
-		useState<boolean>(false)
-
 	const cookie = useCookie()
 	const navigate = useNavigate()
 	const { toast } = useToast()
@@ -275,7 +269,7 @@ const Settings: React.FC = () => {
 					<PasswordInput
 						id="password"
 						className="w-full"
-						{ ...register("password", { pattern: /^[A-Za-z0-9!@_]+$/, min: 5, max: 18})}
+						{ ...register("password", { pattern: /^[A-Za-z0-9!@_]+$/, minLength: 5, maxLength: 18})}
 						onChange={e => setUserInfo({ ...userInfo, passwd: e.target.value })}
 					/>
 				</div>

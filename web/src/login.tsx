@@ -177,8 +177,8 @@ const Login: React.FC = () => {
 											{...registerForSignin("password", {
 												required: true,
 												pattern: /^[A-Za-z0-9!@_]+$/,
-												min: 5,
-												max: 18
+												minLength: 5,
+												maxLength: 18
 											})}
 											onChange={e =>
 												setPassword(e.target.value)
@@ -247,8 +247,8 @@ const Login: React.FC = () => {
 													"username",
 													{
 														required: true,
-														min: 4,
-														max: 8
+														minLength: 4,
+														maxLength: 8
 													}
 												)}
 												onChange={e =>
@@ -273,8 +273,8 @@ const Login: React.FC = () => {
 											{...registerForSignup("password", {
 												required: true,
 												pattern: /^[A-Za-z0-9!@_]+$/,
-												min: 5,
-												max: 18
+												minLength: 5,
+												maxLength: 18
 											})}
 											onChange={e =>
 												setPassword(e.target.value)
@@ -298,8 +298,8 @@ const Login: React.FC = () => {
 												"repassword",
 												{
 													required: true,
-													min: 5,
-													max: 18,
+													minLength: 5,
+													maxLength: 18,
 													validate: (value) => value === password
 												}
 											)}

@@ -43,7 +43,6 @@ import axios from "axios"
 import ProjectTable from "./project-table"
 import { Checkbox } from "./components/ui/checkbox"
 import { useForm } from "react-hook-form"
-import { updateProjectApi } from "./project-api"
 
 const MyProject: React.FC = () => {
 	const [userOptions, setUserOptions] = useState<
