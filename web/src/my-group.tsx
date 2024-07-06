@@ -129,10 +129,10 @@ const MyGroup: React.FC = () => {
 		fetchUserGroups(Math.max(pageNum - 1, 1))
 	}
 
-    const refresh = () => {
-        fetchUserGroups()
+	const refresh = () => {
+		fetchUserGroups()
 		fetchUserGroupCount()
-    }
+	}
 
 	useEffect(() => {
 		fetchUserGroups()

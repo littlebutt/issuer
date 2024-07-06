@@ -37,7 +37,7 @@ interface IGroupOperation {
 	isMine: boolean
 	content: UserGroup
 	userOptions: { value: string; label: string }[]
-	refresh: () => void,
+	refresh: () => void
 	className?: string
 }
 
@@ -93,12 +93,17 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 		owner: string,
 		members: string
 	) => {
-		updateGroupApi(toast, props.refresh, groupCode, groupName, owner, members)
+		updateGroupApi(
+			toast,
+			props.refresh,
+			groupCode,
+			groupName,
+			owner,
+			members
+		)
 	}
 
-	const deleteGroup = (
-		groupCode: string
-	) => {
+	const deleteGroup = (groupCode: string) => {
 		deleteGroupApi(toast, props.refresh, groupCode)
 	}
 
@@ -125,13 +130,13 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 							variant="link"
 							size="sm"
 							className="p-1.5 [line-height:10px] text-xs"
-							onClick={() => {addGroup(
-										cookie
-											.getCookie("current_user")
-											?.split(":")[0] as string,
-										props.content.group_code
-									)
-								
+							onClick={() => {
+								addGroup(
+									cookie
+										.getCookie("current_user")
+										?.split(":")[0] as string,
+									props.content.group_code
+								)
 							}}
 						>
 							确认
@@ -253,9 +258,7 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 						variant="link"
 						size="sm"
 						className="p-1.5 [line-height:10px] text-xs"
-						onClick={() =>
-							deleteGroup(props.content.group_code)
-						}
+						onClick={() => deleteGroup(props.content.group_code)}
 					>
 						确认
 					</Button>

@@ -50,50 +50,50 @@ const Header: React.FC = () => {
 	}, [])
 
 	return (
-			<div className="w-full h-[45px] bg-zinc-950">
-				<div className="w-12 float-end my-1">
-					<HoverCard>
-						<HoverCardTrigger>
-							<Avatar>
-								<AvatarImage
-									src={
-										userInfo.avatar
-											? userInfo.avatar
-											: "/statics/avatar.png"
-									}
-									alt="avatar"
-								/>
-								<AvatarFallback>
-									{userInfo.user_name}
-								</AvatarFallback>
-							</Avatar>
-						</HoverCardTrigger>
-						<HoverCardContent className="w-30 h-30 my-1 p-0">
-							<div className="flex flex-col items-center p-0">
-								<span className="text-sm pb-1">
-									{userInfo.user_name
-										? userInfo.user_name
-										: "unknown"}
-								</span>
-								<Button
-									variant="link"
-									className="m-0"
-									onClick={() => navigate("/main/settings")}
-								>
-									设置账户
-								</Button>
-								<Button
-									variant="link"
-									className="m-0"
-									onClick={() => doSignout()}
-								>
-									退出登录
-								</Button>
-							</div>
-						</HoverCardContent>
-					</HoverCard>
-				</div>
+		<div className="w-full h-[45px] bg-zinc-950">
+			<div className="w-12 float-end my-1">
+				<HoverCard>
+					<HoverCardTrigger>
+						<Avatar>
+							<AvatarImage
+								src={
+									userInfo.avatar
+										? userInfo.avatar
+										: "/statics/avatar.png"
+								}
+								alt="avatar"
+							/>
+							<AvatarFallback>
+								{userInfo.user_name}
+							</AvatarFallback>
+						</Avatar>
+					</HoverCardTrigger>
+					<HoverCardContent className="w-30 h-30 my-1 p-0">
+						<div className="flex flex-col items-center p-0">
+							<span className="text-sm pb-1">
+								{userInfo.user_name
+									? userInfo.user_name
+									: "unknown"}
+							</span>
+							<Button
+								variant="link"
+								className="m-0"
+								onClick={() => navigate("/main/settings")}
+							>
+								设置账户
+							</Button>
+							<Button
+								variant="link"
+								className="m-0"
+								onClick={() => doSignout()}
+							>
+								退出登录
+							</Button>
+						</div>
+					</HoverCardContent>
+				</HoverCard>
 			</div>
+		</div>
 	)
 }
 

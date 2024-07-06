@@ -99,7 +99,7 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
 										isMine={props.isMine}
 										content={content}
 										userOptions={props.userOptions}
-                                        refresh={props.refresh}
+										refresh={props.refresh}
 									/>
 								</TableCell>
 							</TableRow>

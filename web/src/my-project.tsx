@@ -118,10 +118,10 @@ const MyProject: React.FC = () => {
 			.catch(err => console.log(err))
 	}
 
-    const refresh = () => {
-        fetchProjects()
+	const refresh = () => {
+		fetchProjects()
 		fetchProjectsCount()
-    }
+	}
 
 	const fetchProjects = (currentPageNum?: number) => {
 		let user_code = cookie.getCookie("current_user") as string

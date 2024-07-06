@@ -92,10 +92,10 @@ const Projects: React.FC = () => {
 			.catch(err => console.log(err))
 	}
 
-    const refresh = () => {
-        fetchProjects()
+	const refresh = () => {
+		fetchProjects()
 		fetchProjectsCount()
-    }
+	}
 
 	const gotoPrevious = () => {
 		setPageNum(pageNum => Math.max(pageNum - 1, 1))

@@ -32,7 +32,11 @@ const Settings: React.FC = () => {
 	const navigate = useNavigate()
 	const { toast } = useToast()
 
-	const { register, formState: { errors }, handleSubmit } = useForm()
+	const {
+		register,
+		formState: { errors },
+		handleSubmit
+	} = useForm()
 
 	const previewAvatar = (e: ChangeEvent<HTMLInputElement>) => {
 		let files = e.currentTarget.files
@@ -148,192 +152,226 @@ const Settings: React.FC = () => {
 	}, [])
 
 	return (
-			<div className="flex flex-col items-center space-y-2 w-full py-0 max-h-[618px] overflow-y-auto">
-				<form>
+		<div className="flex flex-col items-center space-y-2 w-full py-0 max-h-[618px] overflow-y-auto">
+			<form>
 				<div className="w-[600px]">
 					<Card className="w-full">
 						<CardHeader>
-							<CardTitle>
-							头像设置
-						</CardTitle>
+							<CardTitle>头像设置</CardTitle>
 						</CardHeader>
-						
+
 						<CardContent className="flex flex-row space-x-2 p-4">
 							<Avatar className="size-12">
-							<AvatarImage
-							id="avatar"
-							className="object-fill"
-							src={
-								userInfo.avatar
-									? userInfo.avatar
-									: "/statics/avatar.png"
-							}
-							/>
-					</Avatar>
-					<div className="flex flex-row justify-center space-x-1">
-						<Input
-							className="w-1/2"
-							type="file"
-							accept="image/png, image/jpeg"
-							onChange={e => previewAvatar(e)}
-						/>
-						<Button
-							className="w-1/4 hover:bg-zinc-200"
-							variant="outline"
-							onClick={uploadAvatar}
-						>
-							上传
-						</Button>
-					</div>
+								<AvatarImage
+									id="avatar"
+									className="object-fill"
+									src={
+										userInfo.avatar
+											? userInfo.avatar
+											: "/statics/avatar.png"
+									}
+								/>
+							</Avatar>
+							<div className="flex flex-row justify-center space-x-1">
+								<Input
+									className="w-1/2"
+									type="file"
+									accept="image/png, image/jpeg"
+									onChange={e => previewAvatar(e)}
+								/>
+								<Button
+									className="w-1/4 hover:bg-zinc-200"
+									variant="outline"
+									onClick={uploadAvatar}
+								>
+									上传
+								</Button>
+							</div>
 						</CardContent>
 					</Card>
-					
 				</div>
 				<div className="w-[600px]">
 					<Card className="w-full">
 						<CardHeader>
-							<CardTitle>
-							基本设置
-						</CardTitle>
+							<CardTitle>基本设置</CardTitle>
 						</CardHeader>
 						<CardContent className="space-y-2">
 							<div className="flex flex-row space-x-2">
 								<div className="w-1/2">
-						<Label htmlFor="username">用户名</Label>
-						<Input
-							id="username"
-							value={userInfo.user_name}
-							onChange={e =>
-								setUserInfo({
-									...userInfo,
-									user_name: e.target.value
-								})
-							}
-						/>
-					</div>
-					<div className="w-1/2">
-						<Label htmlFor="role">角色</Label>
-						<Select
-							onValueChange={v =>
-								setUserInfo({ ...userInfo, role: v })
-							}
-						>
-							<SelectTrigger className="w-full">
-								<SelectValue
-									placeholder={value2label(userInfo.role)}
-								/>
-							</SelectTrigger>
-							<SelectContent>
-								<SelectGroup>
-									{roles.map(
-										role =>
-											role.value !== "admin" && (
-												<SelectItem value={role?.value}>
-													{role?.label}
-												</SelectItem>
-											)
-									)}
-								</SelectGroup>
-							</SelectContent>
-						</Select>
-					</div>
+									<Label htmlFor="username">用户名</Label>
+									<Input
+										id="username"
+										value={userInfo.user_name}
+										onChange={e =>
+											setUserInfo({
+												...userInfo,
+												user_name: e.target.value
+											})
+										}
+									/>
+								</div>
+								<div className="w-1/2">
+									<Label htmlFor="role">角色</Label>
+									<Select
+										onValueChange={v =>
+											setUserInfo({
+												...userInfo,
+												role: v
+											})
+										}
+									>
+										<SelectTrigger className="w-full">
+											<SelectValue
+												placeholder={value2label(
+													userInfo.role
+												)}
+											/>
+										</SelectTrigger>
+										<SelectContent>
+											<SelectGroup>
+												{roles.map(
+													role =>
+														role.value !==
+															"admin" && (
+															<SelectItem
+																value={
+																	role?.value
+																}
+															>
+																{role?.label}
+															</SelectItem>
+														)
+												)}
+											</SelectGroup>
+										</SelectContent>
+									</Select>
+								</div>
 							</div>
 							<div className="flex flex-col space-y-2">
-					<Label htmlFor="email">
-						邮箱
-						{errors.email && (
-							<span className="text-red-500">
-								{" "}
-								请输入正确的邮箱
-							</span>
-						)}
-					</Label>
-					<Input
-						id="email"
-						value={userInfo.email}
-						className="w-full"
-						{ ...register("email", { pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/})}
-						onChange={e => setUserInfo({ ...userInfo, email: e.target.value })}
-					/>
-				</div>
-				<div className="flex flex-col space-y-2">
-					<Label htmlFor="password">
-						密码
-						{errors.password && (
-							<span className="text-red-500">
-								{" "}
-								密码必须由数字字母和@、_和!组成
-							</span>
-						)}
-					</Label>
-					<PasswordInput
-						id="password"
-						className="w-full"
-						{ ...register("password", { pattern: /^[A-Za-z0-9!@_]+$/, minLength: 5, maxLength: 18})}
-						onChange={e => setUserInfo({ ...userInfo, passwd: e.target.value })}
-					/>
-				</div>
-				<div className="flex flex-col space-y-2">
-					<Label htmlFor="repassword">
-						重复密码
-						{errors.repassword && (
-							<span className="text-red-500">
-								{" "}
-								重复输入密码于原密码不一致
-							</span>
-						)}
-					</Label>
-					<PasswordInput
-						id="repassword"
-						value={repassword}
-						className="w-full"
-						{ ...register("repassword", { validate: (value) => userInfo.passwd ? (value === userInfo.passwd) : true})}
-						onChange={e => setRepassword(e.target.value)}
-					/>
-				</div>
-				<div className="flex flex-col space-y-2">
-					<Label htmlFor="phone">联系方式</Label>
-					<Input
-						id="phone"
-						value={userInfo.phone}
-						className="w-full"
-						onChange={e =>
-							setUserInfo({ ...userInfo, phone: e.target.value })
-						}
-					/>
-				</div>
-				<div className="flex flex-col space-y-2">
-					<Label htmlFor="description">签名</Label>
-					<Textarea
-						className="h-150 min-h-[150px]"
-						placeholder={userInfo.description}
-						onChange={e =>
-							setUserInfo({
-								...userInfo,
-								description: e.target.value
-							})
-						}
-					/>
-				</div>
+								<Label htmlFor="email">
+									邮箱
+									{errors.email && (
+										<span className="text-red-500">
+											{" "}
+											请输入正确的邮箱
+										</span>
+									)}
+								</Label>
+								<Input
+									id="email"
+									value={userInfo.email}
+									className="w-full"
+									{...register("email", {
+										pattern:
+											/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+									})}
+									onChange={e =>
+										setUserInfo({
+											...userInfo,
+											email: e.target.value
+										})
+									}
+								/>
+							</div>
+							<div className="flex flex-col space-y-2">
+								<Label htmlFor="password">
+									密码
+									{errors.password && (
+										<span className="text-red-500">
+											{" "}
+											密码必须由数字字母和@、_和!组成
+										</span>
+									)}
+								</Label>
+								<PasswordInput
+									id="password"
+									className="w-full"
+									{...register("password", {
+										pattern: /^[A-Za-z0-9!@_]+$/,
+										minLength: 5,
+										maxLength: 18
+									})}
+									onChange={e =>
+										setUserInfo({
+											...userInfo,
+											passwd: e.target.value
+										})
+									}
+								/>
+							</div>
+							<div className="flex flex-col space-y-2">
+								<Label htmlFor="repassword">
+									重复密码
+									{errors.repassword && (
+										<span className="text-red-500">
+											{" "}
+											重复输入密码于原密码不一致
+										</span>
+									)}
+								</Label>
+								<PasswordInput
+									id="repassword"
+									value={repassword}
+									className="w-full"
+									{...register("repassword", {
+										validate: value =>
+											userInfo.passwd
+												? value === userInfo.passwd
+												: true
+									})}
+									onChange={e =>
+										setRepassword(e.target.value)
+									}
+								/>
+							</div>
+							<div className="flex flex-col space-y-2">
+								<Label htmlFor="phone">联系方式</Label>
+								<Input
+									id="phone"
+									value={userInfo.phone}
+									className="w-full"
+									onChange={e =>
+										setUserInfo({
+											...userInfo,
+											phone: e.target.value
+										})
+									}
+								/>
+							</div>
+							<div className="flex flex-col space-y-2">
+								<Label htmlFor="description">签名</Label>
+								<Textarea
+									className="h-150 min-h-[150px]"
+									placeholder={userInfo.description}
+									onChange={e =>
+										setUserInfo({
+											...userInfo,
+											description: e.target.value
+										})
+									}
+								/>
+							</div>
 						</CardContent>
 					</Card>
-					
 				</div>
-				
+
 				<div className="flex flex-row space-x-2 w-[600px]">
-						<Button
-							className="w-1/4 mx-1 hover:bg-zinc-200"
-							variant="outline"
-							onClick={resetProfile}
-						>
-							重置
-						</Button>
-						<Button className="w-1/4" onClick={handleSubmit(changeProfile)}>
-							更新
-						</Button>
-					</div>
-					</form>
+					<Button
+						className="w-1/4 mx-1 hover:bg-zinc-200"
+						variant="outline"
+						onClick={resetProfile}
+					>
+						重置
+					</Button>
+					<Button
+						className="w-1/4"
+						onClick={handleSubmit(changeProfile)}
+					>
+						更新
+					</Button>
 				</div>
+			</form>
+		</div>
 	)
 }
 

@@ -109,11 +109,11 @@ const Groups: React.FC = () => {
 		setSelectedUsers([])
 		setMembers("")
 	}
-    
-    const refresh = () => {
-        fetchUserGroups()
+
+	const refresh = () => {
+		fetchUserGroups()
 		fetchUserGroupCount()
-    }
+	}
 
 	useEffect(() => {
 		refresh()

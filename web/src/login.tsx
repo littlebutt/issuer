@@ -300,7 +300,8 @@ const Login: React.FC = () => {
 													required: true,
 													minLength: 5,
 													maxLength: 18,
-													validate: (value) => value === password
+													validate: value =>
+														value === password
 												}
 											)}
 											onChange={e =>
