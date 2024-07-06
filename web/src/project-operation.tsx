@@ -33,6 +33,8 @@ import { Calendar } from "./components/ui/calendar"
 import { Checkbox } from "./components/ui/checkbox"
 import { Textarea } from "./components/ui/textarea"
 import { useForm } from "react-hook-form"
+import { useToast } from "./components/ui/use-toast"
+import { addProjectApi, deleteProjectApi, updateProjectApi } from "./project-api"
 
 interface IProjectOperation {
 	isMine: boolean
@@ -40,20 +42,8 @@ interface IProjectOperation {
 	userOptions: { value: string; label: string }[]
 	projectStatuses: { value: string; label: string }[]
 	projectPrivileges: { value: string; label: string }[]
-	updateProject: (
-		projectCode: string,
-		projectName: string,
-		owner: string,
-		projectStatus: string,
-		noBudget: boolean,
-		privilege: string,
-		endDate?: Date,
-		budget?: number,
-		description?: string
-	) => void
-	deleteProject: (projectCode: string) => void
+    refresh: () => void,
 	className?: string
-	addProject?: (userCode: string, projectCode: string) => void
 }
 
 const ProjectOperation: React.FC<IProjectOperation> = props => {
@@ -79,6 +69,8 @@ const ProjectOperation: React.FC<IProjectOperation> = props => {
 	const [description, setDescription] = useState<string | undefined>(
 		props.content.description
 	)
+
+    const { toast } = useToast()
 
 	const {
 		register,
@@ -115,6 +107,46 @@ const ProjectOperation: React.FC<IProjectOperation> = props => {
 		setDescription(props.content.description)
 	}
 
+    const updateProject = (
+		projectCode: string,
+		projectName: string,
+		owner: string,
+		projectStatus: string,
+		noBudget: boolean,
+		privilege: string,
+		endDate?: Date,
+		budget?: number,
+		description?: string
+	) => {
+        updateProjectApi(
+            toast,
+            props.refresh,
+            projectCode,
+		    projectName,
+            owner,
+            projectStatus,
+            noBudget,
+            privilege,
+            endDate,
+            budget,
+            description
+        )
+    }
+
+    const deleteProject = (
+        projectCode: string
+    ) => {
+        deleteProjectApi(
+            toast,
+            props.refresh,
+            projectCode
+        )
+    }
+
+    const addProject = (newMember: string, projectCode: string) => {
+        addProjectApi(toast, props.refresh, projectCode, newMember)
+    }
+
 	return (
 		<div className={cn("w-full h-full space-x-1", props.className)}>
 			{!props.isMine && (
@@ -135,14 +167,12 @@ const ProjectOperation: React.FC<IProjectOperation> = props => {
 							variant="link"
 							className="p-1.5 [line-height:10px] text-xs"
 							onClick={() => {
-								if (props.addProject !== undefined) {
-									props.addProject(
+								addProject(
 										cookie
 											.getCookie("current_user")
 											?.split(":")[0] as string,
 										props.content.project_code
 									)
-								}
 							}}
 						>
 							确认
@@ -344,7 +374,7 @@ const ProjectOperation: React.FC<IProjectOperation> = props => {
 						</DialogClose>
 						<Button
 							onClick={handleSubmit(() => {
-								props.updateProject(
+								updateProject(
 									props.content.project_code,
 									projectName,
 									owner,
@@ -380,7 +410,7 @@ const ProjectOperation: React.FC<IProjectOperation> = props => {
 						size="sm"
 						className="p-1.5 [line-height:10px] text-xs"
 						onClick={() =>
-							props.deleteProject(props.content.project_code)
+							deleteProject(props.content.project_code)
 						}
 					>
 						确认

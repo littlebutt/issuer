@@ -119,66 +119,6 @@ const MyGroup: React.FC = () => {
 			.catch(err => console.log(err))
 	}
 
-	const deleteGroup = (groupCode: string) => {
-		axios({
-			method: "POST",
-			url: "/user_group/delete",
-			data: {
-				group_code: groupCode
-			}
-		})
-			.then(res => {
-				if (res.status === 200 && res.data.success === true) {
-					toast({
-						title: "删除成功",
-						variant: "success"
-					})
-					fetchUserGroups()
-					fetchUserGroupCount()
-				} else {
-					toast({
-						title: "删除失败",
-						variant: "destructive"
-					})
-				}
-			})
-			.catch(err => console.log(err))
-	}
-
-	const updateGroup = (
-		groupCode: string,
-		groupName: string,
-		owner: string,
-		members: string
-	) => {
-		axios({
-			method: "POST",
-			url: "/user_group/change",
-			data: {
-				group_code: groupCode,
-				group_name: groupName,
-				owner: owner,
-				members: members
-			}
-		})
-			.then(res => {
-				if (res.status === 200 && res.data.success === true) {
-					toast({
-						title: "更新成功",
-						variant: "success"
-					})
-					fetchUserGroups()
-					fetchUserGroupCount()
-				} else {
-					toast({
-						title: "更新失败",
-						variant: "destructive"
-					})
-				}
-			})
-			.catch(err => console.log(err))
-	}
-
 	const gotoNext = () => {
 		setPageNum(pageNum => Math.min(pageNum + 1, pageTotal))
 		fetchUserGroups(Math.min(pageNum + 1, pageTotal))
@@ -188,6 +128,11 @@ const MyGroup: React.FC = () => {
 		setPageNum(pageNum => Math.max(pageNum - 1, 1))
 		fetchUserGroups(Math.max(pageNum - 1, 1))
 	}
+
+    const refresh = () => {
+        fetchUserGroups()
+		fetchUserGroupCount()
+    }
 
 	useEffect(() => {
 		fetchUserGroups()
@@ -272,8 +217,7 @@ const MyGroup: React.FC = () => {
 						gotoPrevious={gotoPrevious}
 						tableContent={tableContent}
 						userOptions={userOptions}
-						deleteGroup={deleteGroup}
-						updateGroup={updateGroup}
+						refresh={refresh}
 					/>
 				</div>
 			</div>

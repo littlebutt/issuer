@@ -43,6 +43,7 @@ import axios from "axios"
 import ProjectTable from "./project-table"
 import { Checkbox } from "./components/ui/checkbox"
 import { useForm } from "react-hook-form"
+import { updateProjectApi } from "./project-api"
 
 const MyProject: React.FC = () => {
 	const [userOptions, setUserOptions] = useState<
@@ -118,76 +119,10 @@ const MyProject: React.FC = () => {
 			.catch(err => console.log(err))
 	}
 
-	const updateProject = (
-		projectCode: string,
-		projectName: string,
-		owner: string,
-		projectStatus: string,
-		noBudget: boolean,
-		privilege: string,
-		endDate?: Date,
-		budget?: number,
-		description?: string
-	) => {
-		let endDateParam = endDate ? format(endDate, "yyyy-MM-dd") : ""
-		let budgetParam = noBudget ? "" : (budget as number).toString()
-		axios({
-			method: "POST",
-			url: "/project/change",
-			data: {
-				project_code: projectCode,
-				project_name: projectName,
-				end_date: endDateParam,
-				status: projectStatus,
-				owner,
-				description,
-				budget: budgetParam,
-				privilege
-			}
-		})
-			.then(res => {
-				if (res.status === 200 && res.data?.success === true) {
-					toast({
-						title: "更新成功",
-						variant: "success"
-					})
-					fetchProjects()
-					fetchProjectsCount()
-				} else {
-					toast({
-						title: "更新失败",
-						variant: "destructive"
-					})
-				}
-			})
-			.catch(err => console.log(err))
-	}
-
-	const deleteProject = (projectCode: string) => {
-		axios({
-			method: "POST",
-			url: "/project/delete",
-			data: {
-				project_code: projectCode
-			}
-		})
-			.then(res => {
-				if (res.status === 200 && res.data?.success === true) {
-					toast({
-						title: "删除成功",
-						variant: "success"
-					})
-					fetchProjects()
-					fetchProjectsCount()
-				} else {
-					toast({
-						title: "删除失败",
-						variant: "destructive"
-					})
-				}
-			})
-			.catch(err => console.log(err))
-	}
+    const refresh = () => {
+        fetchProjects()
+		fetchProjectsCount()
+    }
 
 	const fetchProjects = (currentPageNum?: number) => {
 		let user_code = cookie.getCookie("current_user") as string
@@ -504,8 +439,7 @@ const MyProject: React.FC = () => {
 						projectStatuses={projectStatuses}
 						userOptions={userOptions}
 						projectPrivileges={projectPrivileges}
-						updateProject={updateProject}
-						deleteProject={deleteProject}
+						refresh={refresh}
 					/>
 				</div>
 			</div>

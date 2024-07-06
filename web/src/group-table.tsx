@@ -32,14 +32,7 @@ interface IGroupTable {
 	gotoPrevious: () => void
 	gotoNext: () => void
 	userOptions: { value: string; label: string }[]
-	deleteGroup: (groupCode: string) => void
-	updateGroup: (
-		groupCode: string,
-		groupName: string,
-		owner: string,
-		members: string
-	) => void
-	addGroup?: (userCode: string, groupCode: string) => void
+	refresh: () => void
 }
 
 const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
@@ -105,10 +98,8 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
 									<GroupOperation
 										isMine={props.isMine}
 										content={content}
-										addGroup={props.addGroup}
 										userOptions={props.userOptions}
-										updateGroup={props.updateGroup}
-										deleteGroup={props.deleteGroup}
+                                        refresh={props.refresh}
 									/>
 								</TableCell>
 							</TableRow>

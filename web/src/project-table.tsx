@@ -35,19 +35,7 @@ interface IProjectTable {
 	gotoNext: () => void
 	userOptions: { value: string; label: string }[]
 	projectPrivileges: { value: string; label: string }[]
-	updateProject: (
-		projectCode: string,
-		projectName: string,
-		owner: string,
-		projectStatus: string,
-		noBudget: boolean,
-		privilege: string,
-		endDate?: Date,
-		budget?: number,
-		description?: string
-	) => void
-	deleteProject: (projectCode: string) => void
-	addProject?: (userCode: string, projectCode: string) => void
+	refresh: () => void
 }
 
 const ProjectTable: React.FC<IProjectTable> = props => {
@@ -72,7 +60,6 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 		return res
 	}
 
-	// TODO: 抽象project和group的api
 	return (
 		<div className="w-full">
 			<div className="w-full h-[562px]">
@@ -152,9 +139,7 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 										projectPrivileges={
 											props.projectPrivileges
 										}
-										updateProject={props.updateProject}
-										deleteProject={props.deleteProject}
-										addProject={props.addProject}
+										refresh={props.refresh}
 									/>
 								</TableCell>
 							</TableRow>

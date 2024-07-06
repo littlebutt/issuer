@@ -14,7 +14,6 @@ import {
 	SelectValue
 } from "./components/ui/select"
 import { MultiSelect } from "./components/ui/multi-select"
-import axios from "axios"
 
 const Groups: React.FC = () => {
 	const [tableContent, setTableContent] = useState<UserGroup[]>([])
@@ -36,93 +35,6 @@ const Groups: React.FC = () => {
 	) => void = options => {
 		setSelectedUsers(options)
 		setMembers(options.map(option => option.value).join(","))
-	}
-
-	const deleteGroup = (groupCode: string) => {
-		axios({
-			method: "POST",
-			url: "/user_group/delete",
-			data: {
-				group_code: groupCode
-			}
-		})
-			.then(res => {
-				if (res.status === 200 && res.data.success === true) {
-					toast({
-						title: "删除成功",
-						variant: "success"
-					})
-					fetchUserGroups()
-					fetchUserGroupCount()
-				} else {
-					toast({
-						title: "删除失败",
-						variant: "destructive"
-					})
-				}
-			})
-			.catch(err => console.log(err))
-	}
-
-	const updateGroup = (
-		groupCode: string,
-		groupName: string,
-		owner: string,
-		members: string
-	) => {
-		axios({
-			method: "POST",
-			url: "/user_group/change",
-			data: {
-				group_code: groupCode,
-				group_name: groupName,
-				owner,
-				members
-			}
-		})
-			.then(res => {
-				if (res.status === 200 && res.data.success === true) {
-					toast({
-						title: "更新成功",
-						variant: "success"
-					})
-					fetchUserGroups()
-					fetchUserGroupCount()
-				} else {
-					toast({
-						title: "更新失败",
-						variant: "destructive"
-					})
-				}
-			})
-			.catch(err => console.log(err))
-	}
-
-	const addGroup = (userCode: string, groupCode: string) => {
-		axios({
-			method: "POST",
-			url: "/user_group/add",
-			data: {
-				group_code: groupCode,
-				new_member: userCode
-			}
-		})
-			.then(res => {
-				if (res.status === 200 && res.data.success === true) {
-					toast({
-						title: "加入成功",
-						variant: "success"
-					})
-				} else {
-					toast({
-						title: "加入失败",
-						variant: "destructive"
-					})
-				}
-				fetchUserGroups()
-				fetchUserGroupCount()
-			})
-			.catch(err => console.log(err))
 	}
 
 	const fetchUserGroups = (
@@ -197,10 +109,14 @@ const Groups: React.FC = () => {
 		setSelectedUsers([])
 		setMembers("")
 	}
+    
+    const refresh = () => {
+        fetchUserGroups()
+		fetchUserGroupCount()
+    }
 
 	useEffect(() => {
-		fetchUserGroups()
-		fetchUserGroupCount()
+		refresh()
 		fetchUserOptions(userOptions, setUserOptions)
 	}, [])
 
@@ -267,9 +183,7 @@ const Groups: React.FC = () => {
 						gotoPrevious={gotoPrevious}
 						tableContent={tableContent}
 						userOptions={userOptions}
-						deleteGroup={deleteGroup}
-						updateGroup={updateGroup}
-						addGroup={addGroup}
+						refresh={refresh}
 					/>
 				</div>
 			</div>

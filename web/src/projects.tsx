@@ -19,8 +19,6 @@ import { Button } from "./components/ui/button"
 import ProjectTable from "./project-table"
 import { Project } from "./types"
 import { useToast } from "./components/ui/use-toast"
-import { format } from "date-fns"
-import axios from "axios"
 
 const Projects: React.FC = () => {
 	const [tableContent, setTableContent] = useState<Project[]>([])
@@ -94,100 +92,10 @@ const Projects: React.FC = () => {
 			.catch(err => console.log(err))
 	}
 
-	const updateProject = (
-		projectCode: string,
-		projectName: string,
-		owner: string,
-		projectStatus: string,
-		noBudget: boolean,
-		privilege: string,
-		endDate?: Date,
-		budget?: number,
-		description?: string
-	) => {
-		let endDateParam = endDate ? format(endDate, "yyyy-MM-dd") : ""
-		let budgetParam = noBudget ? "" : (budget as number).toString()
-		axios({
-			method: "POST",
-			url: "/project/change",
-			data: {
-				project_code: projectCode,
-				project_name: projectName,
-				end_date: endDateParam,
-				status: projectStatus,
-				owner,
-				description,
-				budget: budgetParam,
-				privilege
-			}
-		})
-			.then(res => {
-				if (res.status === 200 && res.data?.success === true) {
-					toast({
-						title: "更新成功",
-						variant: "success"
-					})
-					fetchProjects()
-					fetchProjectsCount()
-				} else {
-					toast({
-						title: "更新失败",
-						variant: "destructive"
-					})
-				}
-			})
-			.catch(err => console.log(err))
-	}
-
-	const deleteProject = (projectCode: string) => {
-		axios({
-			method: "POST",
-			url: "/project/delete",
-			data: {
-				project_code: projectCode
-			}
-		})
-			.then(res => {
-				if (res.status === 200 && res.data?.success === true) {
-					toast({
-						title: "删除成功",
-						variant: "success"
-					})
-					fetchProjects()
-					fetchProjectsCount()
-				} else {
-					toast({
-						title: "删除失败",
-						variant: "destructive"
-					})
-				}
-			})
-			.catch(err => console.log(err))
-	}
-
-	const addProject = (userCode: string, projectCode: string) => {
-		axios({
-			method: "POST",
-			url: "/project/add",
-			data: {
-				project_code: projectCode,
-				new_member: userCode
-			}
-		}).then(res => {
-			if (res.status === 200 && res.data.success === true) {
-				toast({
-					title: "加入成功",
-					variant: "success"
-				})
-				fetchProjects()
-			} else {
-				toast({
-					title: "加入失败",
-					variant: "destructive"
-				})
-			}
-		})
-	}
+    const refresh = () => {
+        fetchProjects()
+		fetchProjectsCount()
+    }
 
 	const gotoPrevious = () => {
 		setPageNum(pageNum => Math.max(pageNum - 1, 1))
@@ -281,9 +189,7 @@ const Projects: React.FC = () => {
 						userOptions={userOptions}
 						projectStatuses={projectStatuses}
 						projectPrivileges={projectPrivileges}
-						updateProject={updateProject}
-						deleteProject={deleteProject}
-						addProject={addProject}
+						refresh={refresh}
 					/>
 				</div>
 			</div>

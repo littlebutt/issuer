@@ -30,19 +30,14 @@ import {
 } from "./components/ui/popover"
 import { cn } from "./lib/utils"
 import { useForm } from "react-hook-form"
+import { addGroupApi, deleteGroupApi, updateGroupApi } from "./group-api"
+import { useToast } from "./components/ui/use-toast"
 
 interface IGroupOperation {
 	isMine: boolean
 	content: UserGroup
 	userOptions: { value: string; label: string }[]
-	addGroup?: (userCode: string, groupCode: string) => void
-	updateGroup: (
-		groupCode: string,
-		groupName: string,
-		owner: string,
-		members: string
-	) => void
-	deleteGroup: (groupCode: string) => void
+	refresh: () => void,
 	className?: string
 }
 
@@ -59,6 +54,8 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 	} = useForm()
 
 	const [dialogOpen, setDialogOpen] = useState<boolean>(false)
+
+	const { toast } = useToast()
 
 	const changeUserOptions: (value: Selected) => void = (value: Selected) => {
 		setSelectedUsers(value as any)
@@ -90,6 +87,25 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 		setSelectedUsers([])
 	}
 
+	const updateGroup = (
+		groupCode: string,
+		groupName: string,
+		owner: string,
+		members: string
+	) => {
+		updateGroupApi(toast, props.refresh, groupCode, groupName, owner, members)
+	}
+
+	const deleteGroup = (
+		groupCode: string
+	) => {
+		deleteGroupApi(toast, props.refresh, groupCode)
+	}
+
+	const addGroup = (newMember: string, groupCode: string) => {
+		addGroupApi(toast, props.refresh, newMember, groupCode)
+	}
+
 	return (
 		<div className={cn("w-full h-full space-x-1", props.className)}>
 			{!props.isMine && (
@@ -109,15 +125,13 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 							variant="link"
 							size="sm"
 							className="p-1.5 [line-height:10px] text-xs"
-							onClick={() => {
-								if (props.addGroup !== undefined) {
-									props.addGroup(
+							onClick={() => {addGroup(
 										cookie
 											.getCookie("current_user")
 											?.split(":")[0] as string,
 										props.content.group_code
 									)
-								}
+								
 							}}
 						>
 							确认
@@ -209,7 +223,7 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 						</DialogClose>
 						<Button
 							onClick={handleSubmit(() => {
-								props.updateGroup(
+								updateGroup(
 									props.content.group_code,
 									groupName,
 									owner,
@@ -240,7 +254,7 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 						size="sm"
 						className="p-1.5 [line-height:10px] text-xs"
 						onClick={() =>
-							props.deleteGroup(props.content.group_code)
+							deleteGroup(props.content.group_code)
 						}
 					>
 						确认
