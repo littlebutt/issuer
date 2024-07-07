@@ -17,7 +17,6 @@ import {
 import { Input } from "./components/ui/input"
 import { getUserGroupsCount, getUserGroups, fetchUserOptions } from "./fetch"
 import { Label } from "./components/ui/label"
-import { MultiSelect } from "./components/ui/multi-select"
 import { useForm } from "react-hook-form"
 
 const MyGroup: React.FC = () => {
@@ -27,7 +26,6 @@ const MyGroup: React.FC = () => {
 	const [userOptions, setUserOptions] = useState<
 		{ value: string; label: string }[]
 	>([])
-	const [selectedUsers, setSelectedUsers] = useState<any[]>([])
 	const [groupName, setGroupName] = useState<string>("")
 
 	const cookie = useCookie()
@@ -75,17 +73,8 @@ const MyGroup: React.FC = () => {
 			.catch(err => console.log(err))
 	}
 
-	const changeUserOptions: (
-		value: { label: string; value: string }[]
-	) => void = value => {
-		setSelectedUsers(value)
-	}
-
 	const newGroup = () => {
 		let members = ""
-		if (selectedUsers?.length !== 0) {
-			members = selectedUsers?.map(u => u.value).join(",") ?? ""
-		}
 		if (groupName.trim() === "") {
 			toast({
 				title: "请填写组名"
@@ -97,7 +86,7 @@ const MyGroup: React.FC = () => {
 			url: "/user_group/new",
 			data: {
 				group_name: groupName,
-				members: members
+				members
 			}
 		})
 			.then(res => {
@@ -143,7 +132,10 @@ const MyGroup: React.FC = () => {
 	return (
 		<div>
 			<div className="grid grid-rows-[45px_590px] w-full px-5 py-0 gap-0 max-h-[618px]">
-				<div className="flex justify-end">
+				<div className="flex flex-row justify-between">
+					<div className="text-2xl font-semibold leading-none tracking-tight">
+						我的组织
+					</div>
 					<Drawer
 						direction="right"
 						open={drawerOpen}
@@ -180,17 +172,6 @@ const MyGroup: React.FC = () => {
 															e.target.value
 														)
 													}
-												/>
-											</div>
-											<div className="flex flex-col space-y-1">
-												<Label htmlFor="members">
-													组员
-												</Label>
-												<MultiSelect
-													{...register("members")}
-													options={userOptions}
-													value={selectedUsers}
-													onChange={changeUserOptions}
 												/>
 											</div>
 										</div>

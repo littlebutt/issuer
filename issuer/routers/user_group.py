@@ -114,9 +114,9 @@ async def change_user_group(user_group_model: "UserGroupReq",
 
     if user_group_model.members is not None:
         db.delete_user_to_user_group_by_group(user_group_model.group_code)
-        if user_group_model.owner not in user_group_model.members:
+        if user_group.group_owner not in user_group_model.members:
             tmp = user_group_model.members.split(',')
-            tmp.append(user_group_model.owner)
+            tmp.append(user_group.group_owner)
             user_group_model.members = ','.join(tmp)
         users = user_group_model.members.split(',')
         for user in users:

@@ -91,4 +91,19 @@ const addGroupApi = (
 		.catch(err => console.log(err))
 }
 
-export { updateGroupApi, deleteGroupApi, addGroupApi }
+const values2labels = (
+	values: string[],
+	options: { value: string; label: string }[]
+) => {
+	let values_dc: string[] = JSON.parse(JSON.stringify(values))
+	return values_dc.map(v => {
+		for (let item of options) {
+			if (item.value === v) {
+				return item.label
+			}
+		}
+		return v
+	})
+}
+
+export { updateGroupApi, deleteGroupApi, addGroupApi, values2labels }

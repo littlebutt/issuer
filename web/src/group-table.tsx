@@ -111,7 +111,11 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
 				<Pagination>
 					<PaginationContent>
 						<PaginationItem>
-							<Button onClick={props.gotoPrevious} size="sm">
+							<Button
+								variant="ghost"
+								onClick={props.gotoPrevious}
+								size="sm"
+							>
 								<ChevronLeft />
 							</Button>
 						</PaginationItem>
@@ -119,7 +123,11 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
 							第{props.current}页/共{props.total}页
 						</PaginationItem>
 						<PaginationItem>
-							<Button onClick={props.gotoNext} size="sm">
+							<Button
+								variant="ghost"
+								onClick={props.gotoNext}
+								size="sm"
+							>
 								<ChevronRight />
 							</Button>
 						</PaginationItem>

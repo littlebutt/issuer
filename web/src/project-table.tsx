@@ -151,7 +151,11 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 				<Pagination>
 					<PaginationContent>
 						<PaginationItem>
-							<Button onClick={props.gotoPrevious} size="sm">
+							<Button
+								variant="ghost"
+								onClick={props.gotoPrevious}
+								size="sm"
+							>
 								<ChevronLeft />
 							</Button>
 						</PaginationItem>
@@ -159,7 +163,11 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 							第{props.current}页/共{props.total}页
 						</PaginationItem>
 						<PaginationItem>
-							<Button onClick={props.gotoNext} size="sm">
+							<Button
+								variant="ghost"
+								onClick={props.gotoNext}
+								size="sm"
+							>
 								<ChevronRight />
 							</Button>
 						</PaginationItem>

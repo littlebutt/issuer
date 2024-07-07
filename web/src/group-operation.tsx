@@ -9,7 +9,6 @@ import {
 	DialogTrigger
 } from "./components/ui/dialog"
 import { useCookie } from "./lib/cookies"
-import { SelectValue as Selected } from "react-tailwindcss-select/dist/components/type"
 import { UserGroup } from "./types"
 import { Button } from "./components/ui/button"
 import { CircleX, PenLine, Plus } from "lucide-react"
@@ -22,7 +21,6 @@ import {
 	SelectTrigger,
 	SelectValue
 } from "./components/ui/select"
-import { MultiSelect } from "./components/ui/multi-select"
 import {
 	Popover,
 	PopoverContent,
@@ -32,6 +30,14 @@ import { cn } from "./lib/utils"
 import { useForm } from "react-hook-form"
 import { addGroupApi, deleteGroupApi, updateGroupApi } from "./group-api"
 import { useToast } from "./components/ui/use-toast"
+import {
+	MultiSelector,
+	MultiSelectorContent,
+	MultiSelectorInput,
+	MultiSelectorItem,
+	MultiSelectorList,
+	MultiSelectorTrigger
+} from "./components/ui/multi-select"
 
 interface IGroupOperation {
 	isMine: boolean
@@ -45,7 +51,7 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 	const cookie = useCookie()
 	const [groupName, setGroupName] = useState<string>("")
 	const [owner, setOwner] = useState<string>("")
-	const [selectedUsers, setSelectedUsers] = useState<any[]>([])
+	const [selectedUsers, setSelectedUsers] = useState<string[]>([])
 
 	const {
 		register,
@@ -56,14 +62,6 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 	const [dialogOpen, setDialogOpen] = useState<boolean>(false)
 
 	const { toast } = useToast()
-
-	const changeUserOptions: (value: Selected) => void = (value: Selected) => {
-		setSelectedUsers(value as any)
-	}
-
-	const users2str = (users: any[]) => {
-		return users.map(u => u.value).join(",")
-	}
 
 	const isGroupMember = (content: UserGroup) => {
 		let user_code = cookie.getCookie("current_user")?.split(":")[0]
@@ -205,14 +203,33 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 								</div>
 								<div className="flex flex-col space-y-1">
 									<Label htmlFor="members">成员</Label>
-									<MultiSelect
-										options={props.userOptions}
-										placeholder={props.content.members
-											.map(m => m.user_name)
-											.join(",")}
-										value={selectedUsers}
-										onChange={changeUserOptions}
-									/>
+									<MultiSelector
+										values={selectedUsers}
+										onValuesChange={setSelectedUsers}
+										className="max-w-xs w-full"
+									>
+										<MultiSelectorTrigger>
+											<MultiSelectorInput placeholder="选择用户" />
+										</MultiSelectorTrigger>
+										<MultiSelectorContent>
+											<MultiSelectorList>
+												{props.userOptions.map(
+													userOption => (
+														<MultiSelectorItem
+															key={
+																userOption.value
+															}
+															value={
+																userOption.value
+															}
+														>
+															{userOption.label}
+														</MultiSelectorItem>
+													)
+												)}
+											</MultiSelectorList>
+										</MultiSelectorContent>
+									</MultiSelector>
 								</div>
 							</div>
 						</form>
@@ -232,7 +249,7 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 									props.content.group_code,
 									groupName,
 									owner,
-									users2str(selectedUsers)
+									selectedUsers.join(",")
 								)
 								setDialogOpen(false)
 							})}

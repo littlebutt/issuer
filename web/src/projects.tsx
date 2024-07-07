@@ -118,65 +118,73 @@ const Projects: React.FC = () => {
 	return (
 		<div>
 			<div className="grid grid-rows-[45px_590px] w-full px-5 py-0 gap-0 max-h-[618px]">
-				<div className="flex justify-start space-x-2 space-y-1">
-					<div className="flex flex-row space-x-0">
-						<Label
-							htmlFor="group-name"
-							className="w-[70px] pt-1 text-base font-semibold"
-						>
-							名称
-						</Label>
-						<Input
-							className="h-8"
-							id="group-name"
-							onChange={e => setProjectName(e.target.value)}
-							value={projectName}
-						></Input>
+				<div className="flex justify-between">
+					<div className="text-2xl font-semibold leading-none tracking-tight">
+						探索项目
 					</div>
-					<div className="flex flex-row space-x-0 px-3">
-						<Label
-							htmlFor="owner"
-							className="w-[70px] pt-1 text-base font-semibold"
-						>
-							创建者
-						</Label>
-						<Select onValueChange={v => setOwner(v)} value={owner}>
-							<SelectTrigger className="md:w-[187px] h-8">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								{userOptions.map(o => (
-									<SelectItem value={o.value}>
-										{o.label}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
+					<div className="flex flex-row space-x-2 space-y-1">
+						<div className="flex flex-row space-x-0">
+							<Label
+								htmlFor="group-name"
+								className="w-[70px] pt-1 text-base font-semibold"
+							>
+								名称
+							</Label>
+							<Input
+								className="h-8"
+								id="group-name"
+								onChange={e => setProjectName(e.target.value)}
+								value={projectName}
+							></Input>
+						</div>
+						<div className="flex flex-row space-x-0 px-3">
+							<Label
+								htmlFor="owner"
+								className="w-[70px] pt-1 text-base font-semibold"
+							>
+								创建者
+							</Label>
+							<Select
+								onValueChange={v => setOwner(v)}
+								value={owner}
+							>
+								<SelectTrigger className="md:w-[187px] h-8">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									{userOptions.map(o => (
+										<SelectItem value={o.value}>
+											{o.label}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+						<div className="flex flex-row space-x-0 px-3">
+							<Label className="w-[70px] pt-1 text-base font-semibold">
+								状态
+							</Label>
+							<Select
+								onValueChange={v => setProjectStatus(v)}
+								value={projectStatus}
+							>
+								<SelectTrigger className="md:w-[187px] h-8">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									{projectStatuses.map(o => (
+										<SelectItem value={o.value}>
+											{o.label}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+						<Button onClick={search}>搜索</Button>
+						<Button variant="outline" onClick={clearInput}>
+							重置
+						</Button>
 					</div>
-					<div className="flex flex-row space-x-0 px-3">
-						<Label className="w-[70px] pt-1 text-base font-semibold">
-							状态
-						</Label>
-						<Select
-							onValueChange={v => setProjectStatus(v)}
-							value={projectStatus}
-						>
-							<SelectTrigger className="md:w-[187px] h-8">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								{projectStatuses.map(o => (
-									<SelectItem value={o.value}>
-										{o.label}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					</div>
-					<Button onClick={search}>搜索</Button>
-					<Button variant="outline" onClick={clearInput}>
-						重置
-					</Button>
 				</div>
 				<div className="flex justify-center">
 					<ProjectTable
