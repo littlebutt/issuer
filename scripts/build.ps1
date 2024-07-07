@@ -4,4 +4,4 @@ $parentPath = Split-Path -Parent $currentPath
 
 $webPath = Join-Path -Path $parentPath -ChildPath `web`
 
-npm.ps1 --prefix $webPath run build
+npm.cmd --prefix $webPath run build
