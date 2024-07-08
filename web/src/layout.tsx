@@ -76,12 +76,12 @@ const Layout: React.FC = () => {
 		}
 	]
 	return (
-		<div className="grid grid-cols-[1fr_8fr] h-screen w-full bg-zinc-100">
+		<div className="grid grid-cols-[1fr_8fr] h-screen w-full">
 			<SideMenu
 				className="bg-zinc-950 text-white"
 				menuList={menuList}
 			></SideMenu>
-			<div className="flex flex-col space-y-2">
+			<div className="flex flex-col space-y-2 h-full">
 				<Header />
 				<Outlet />
 			</div>

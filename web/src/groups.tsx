@@ -112,7 +112,7 @@ const Groups: React.FC = () => {
 
 	return (
 		<div>
-			<div className="grid grid-rows-[45px_590px] w-full px-5 py-0 gap-0 max-h-[618px]">
+			<div className="grid grid-rows-[45px_590px] w-full px-5 py-0 gap-0 h-full">
 				<div className="flex justify-between">
 					<div className="text-2xl font-semibold leading-none tracking-tight">
 						探索组织

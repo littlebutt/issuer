@@ -3,7 +3,7 @@ import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
 import { useCookie } from "./lib/cookies"
 import { User, UserRole } from "./types"
-import { fetchSelf } from "./fetch"
+import { fetchSelf, fetchUserRoles } from "./fetch"
 import { useNavigate } from "react-router-dom"
 import { PasswordInput } from "./components/ui/password"
 import { Button } from "./components/ui/button"
@@ -110,24 +110,6 @@ const Settings: React.FC = () => {
 			.catch(err => console.log(err))
 	}
 
-	const fetchRoles = () => {
-		axios({
-			method: "GET",
-			url: "/users/roles"
-		})
-			.then(res => {
-				if (res.status === 200 && res.data.success === true) {
-					setRoles(res.data.data)
-				} else {
-					toast({
-						title: "获取角色失败",
-						variant: "destructive"
-					})
-				}
-			})
-			.catch(err => console.log(err))
-	}
-
 	const value2label = (value: string | undefined) => {
 		if (value === undefined) {
 			return undefined
@@ -148,11 +130,11 @@ const Settings: React.FC = () => {
 				}
 			})
 			.catch(err => console.log(err))
-		fetchRoles()
+		fetchUserRoles(roles, setRoles)
 	}, [])
 
 	return (
-		<div className="flex flex-col items-center space-y-2 w-full py-0 max-h-[618px] overflow-y-auto">
+		<div className="flex flex-col items-center space-y-2 w-full py-0 h-[calc(100vh-55px)] overflow-y-auto">
 			<form>
 				<div className="w-[600px]">
 					<Card className="w-full">
@@ -166,9 +148,7 @@ const Settings: React.FC = () => {
 									id="avatar"
 									className="object-fill"
 									src={
-										userInfo.avatar
-											? userInfo.avatar
-											: "/statics/avatar.png"
+										userInfo.avatar ?? "/statics/avatar.png"
 									}
 								/>
 							</Avatar>

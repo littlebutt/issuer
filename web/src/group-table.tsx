@@ -48,6 +48,8 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
 		return res
 	}
 
+	// TODO: 成员用头像表示
+
 	return (
 		<div className="w-full">
 			<div className="w-full h-[562px]">
@@ -72,7 +74,12 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
 								</TableCell>
 								<TableCell>{content.group_name}</TableCell>
 								<TableCell>
-									{content.owner?.user_name}
+									<a
+										className="hover:underline"
+										href={`/#/main/user/${content.owner.user_code}`}
+									>
+										{content.owner?.user_name}
+									</a>
 								</TableCell>
 								<TableCell>
 									<TooltipProvider>

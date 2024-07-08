@@ -97,7 +97,12 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 									)}
 								</TableCell>
 								<TableCell>
-									{content.owner?.user_name}
+									<a
+										className="hover:underline"
+										href={`/#/main/user/${content.owner.user_code}`}
+									>
+										{content.owner?.user_name}
+									</a>
 								</TableCell>
 								<TableCell>
 									<TooltipProvider>

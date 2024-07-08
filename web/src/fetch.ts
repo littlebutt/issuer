@@ -21,6 +21,13 @@ const fetchSelf: (
 	})
 }
 
+const getUser = (userCode: string) => {
+	return axios({
+		method: "GET",
+		url: `/users/user?user_code=${userCode}`
+	})
+}
+
 const fetchUsers: (
 	pageNum: number,
 	pageSize: number
@@ -97,6 +104,26 @@ const fetchProjectPrivileges: (
 		.catch(err => console.log(err))
 }
 
+const fetchUserRoles = (
+	getter: { value: string; label: string }[],
+	setter: React.Dispatch<
+		React.SetStateAction<{ value: string; label: string }[]>
+	>
+) => {
+	axios({
+		method: "GET",
+		url: "/users/roles"
+	})
+		.then(res => {
+			if (res.status === 200 && res.data.success === true) {
+				setter(res.data.data)
+			} else {
+				console.log(res)
+			}
+		})
+		.catch(err => console.log(err))
+}
+
 const getUserGroups = async (
 	groupCode: string,
 	groupName: string,
@@ -164,6 +191,8 @@ export {
 	fetchUserOptions,
 	fetchProjectStatuses,
 	fetchProjectPrivileges,
+	fetchUserRoles,
+	getUser,
 	getUserGroups,
 	getUserGroupsCount,
 	getProjects,
