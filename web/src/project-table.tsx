@@ -24,6 +24,8 @@ import {
 import { Button } from "./components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import ProjectOperation from "./project-operation"
+import { AvatarCircles } from "./components/ui/avatar-circle"
+import { Avatar, AvatarImage } from "./components/ui/avatar"
 
 interface IProjectTable {
 	isMine: boolean
@@ -48,21 +50,18 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 		return "unknown"
 	}
 
-	const formatMembers = (members: User[]): string => {
-		let end = Math.min(3, members.length)
-		let res = ""
+	const formatMembers = (members: User[]) => {
+		let end = Math.min(5, members.length)
+		let res = []
 		for (let i = 0; i < end; i++) {
-			res += members[i].user_name
-			res += "/"
+			res.push(members[i].avatar ?? "/statics/avatar.png")
 		}
-		res = res.substring(0, res.lastIndexOf("/"))
-		res += members.length > end ? `+${members.length - end}` : ""
-		return res
+		return <AvatarCircles avatarUrls={res} numPeople={members.length} />
 	}
 
 	return (
-		<div className="w-full">
-			<div className="w-full h-[562px]">
+		<div className="w-full h-full border rounded-lg border-zinc-200 p-2 shadow-sm">
+			<div className="w-full min-h-[95%]">
 				<Table>
 					<TableHeader>
 						<TableRow>
@@ -86,7 +85,13 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 									#{idx + 1}
 								</TableCell>
 								<TableCell>
-									{content.project_name}
+									<a
+										className="hover:underline"
+										href={`/#/main/project/${content.project_code}`}
+									>
+										{content.project_name}
+									</a>
+
 									{content.privilege === "Private" && (
 										<Badge
 											variant="outline"
@@ -101,7 +106,19 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 										className="hover:underline"
 										href={`/#/main/user/${content.owner.user_code}`}
 									>
-										{content.owner?.user_name}
+										<div className="flex flex-row">
+											<Avatar className="h-6 w-6">
+												<AvatarImage
+													src={
+														content.owner.avatar
+															? content.owner
+																	.avatar
+															: "/statics/avatar.png"
+													}
+												/>
+											</Avatar>
+											{content.owner?.user_name}
+										</div>
 									</a>
 								</TableCell>
 								<TableCell>
@@ -152,14 +169,14 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 					</TableBody>
 				</Table>
 			</div>
-			<div className="flex justify-start w-fit">
+			<div className="flex justify-start w-fit h-10">
 				<Pagination>
 					<PaginationContent>
 						<PaginationItem>
 							<Button
 								variant="ghost"
 								onClick={props.gotoPrevious}
-								size="sm"
+								size="xs"
 							>
 								<ChevronLeft />
 							</Button>
@@ -171,7 +188,7 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 							<Button
 								variant="ghost"
 								onClick={props.gotoNext}
-								size="sm"
+								size="xs"
 							>
 								<ChevronRight />
 							</Button>

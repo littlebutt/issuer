@@ -50,7 +50,7 @@ const Header: React.FC = () => {
 	}, [])
 
 	return (
-		<div className="w-full h-[45px] bg-zinc-950">
+		<div className="w-full h-[45px] bg-zinc-950 mb-1">
 			<div className="w-12 float-end my-1">
 				<HoverCard>
 					<HoverCardTrigger>

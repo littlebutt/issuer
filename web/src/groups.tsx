@@ -112,12 +112,12 @@ const Groups: React.FC = () => {
 
 	return (
 		<div>
-			<div className="grid grid-rows-[45px_590px] w-full px-5 py-0 gap-0 h-full">
+			<div className="flex flex-col space-y-1 w-full px-5 py-0 gap-0 h-full">
 				<div className="flex justify-between">
 					<div className="text-2xl font-semibold leading-none tracking-tight">
 						探索组织
 					</div>
-					<div className="flex flex-row space-x-2 space-y-1">
+					<div className="flex flex-row space-x-2">
 						<div className="flex flex-row space-x-0">
 							<Label
 								htmlFor="group-name"
@@ -161,7 +161,7 @@ const Groups: React.FC = () => {
 						</Button>
 					</div>
 				</div>
-				<div className="flex justify-center">
+				<div className="flex justify-center h-[86vh]">
 					<GroupTable
 						isMine={false}
 						current={pageNum}

@@ -13,8 +13,16 @@ import { useToast } from "./components/ui/use-toast"
 import { Separator } from "./components/ui/seperator"
 import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card"
-import { ChevronLeft, ChevronRight, Mail, Phone, UserRound } from "lucide-react"
+import {
+	ChevronLeft,
+	ChevronRight,
+	Circle,
+	Mail,
+	Phone,
+	UserRound
+} from "lucide-react"
 import { Button } from "./components/ui/button"
+import { AvatarCircles } from "./components/ui/avatar-circle"
 
 const User: React.FC = () => {
 	const { userCode } = useParams()
@@ -109,6 +117,14 @@ const User: React.FC = () => {
 		}
 		return undefined
 	}
+	const formatMembers = (members: UserType[]) => {
+		let end = Math.min(5, members.length)
+		let res = []
+		for (let i = 0; i < end; i++) {
+			res.push(members[i].avatar ?? "/statics/avatar.png")
+		}
+		return <AvatarCircles avatarUrls={res} numPeople={members.length} />
+	}
 
 	useEffect(() => {
 		fetchUserRoles(roles, setRoles)
@@ -153,30 +169,30 @@ const User: React.FC = () => {
 					</span>
 				</div>
 				<Separator />
-				<div className="flex space-x-8 items-start">
+				<div className="flex flex-col items-center">
 					<Avatar className="size-64">
 						<AvatarImage
 							src={userInfo.avatar ?? "/statics/avatar.png"}
 						/>
 						<AvatarFallback>{userInfo.user_name}</AvatarFallback>
 					</Avatar>
-					<div className="flex flex-col space-y-3 m-3">
-						<div className="text-base font-medium leading-none flex flex-row space-x-2">
+					<div className="flex flex-row flex-wrap space-y-2 mt-3 mb-3 w-full">
+						<div className="text-base text-muted-foreground flex flex-row space-x-2 basis-[48%] m-1">
 							<UserRound size="20"></UserRound>
 							{value2label(userInfo.role) as string}
 						</div>
-						<div className="text-base text-muted-foreground flex flex-row space-x-2">
+						<div className="text-base text-muted-foreground flex flex-row space-x-2 basis-[48%] m-1">
 							<Mail size="20" />
 							{userInfo.email}
 						</div>
 						{userInfo.phone && (
-							<div className="text-base text-muted-foreground flex flex-row space-x-2">
+							<div className="text-base text-muted-foreground flex flex-row space-x-2 basis-[48%] m-1">
 								<Phone size="20" />
 								{userInfo.phone}
 							</div>
 						)}
 						{userInfo.description && (
-							<div className="text-sm text-muted-foreground space-x-2">
+							<div className="text-base text-muted-foreground space-x-2 basis-[48%] overflow-auto m-1">
 								{userInfo.description}
 							</div>
 						)}
@@ -191,19 +207,43 @@ const User: React.FC = () => {
 						{groups.map(group => (
 							<Card className="basis-[48%] p-2 m-1">
 								<CardHeader className="p-0">
-									<CardTitle className="text-sm font-normal">
+									<CardTitle className="text-base font-semibold">
 										{group.group_name}
 									</CardTitle>
 								</CardHeader>
-								<CardContent className="p-0 text-sm font-normal text-muted-foreground">
-									{group.owner.user_name}
+								<CardContent className="p-0 text-sm font-normal text-muted-foreground flex flex-col space-y-1">
+									<div className="flex flex-row">
+										创建者&nbsp;
+										<a
+											className="hover:underline"
+											href={`/#/main/user/${group.owner.user_code}`}
+										>
+											<div className="flex flex-row">
+												<Avatar className="h-6 w-6">
+													<AvatarImage
+														src={
+															group.owner.avatar
+																? group.owner
+																		.avatar
+																: "/statics/avatar.png"
+														}
+													/>
+												</Avatar>
+												{group.owner?.user_name}
+											</div>
+										</a>
+									</div>
+									<div className="flex flex-row">
+										成员&nbsp;
+										{formatMembers(group.members)}
+									</div>
 								</CardContent>
 							</Card>
 						))}
 					</div>
 					<div className="flex flex-row">
 						<Button
-							size="xs"
+							size="xxs"
 							variant="ghost"
 							onClick={previousBatchGroups}
 							disabled={groupPage <= 1}
@@ -211,7 +251,7 @@ const User: React.FC = () => {
 							<ChevronLeft size="18" />
 						</Button>
 						<Button
-							size="xs"
+							size="xxs"
 							variant="ghost"
 							onClick={nextBatchGroups}
 							disabled={groupPage >= groupPageTotal}
@@ -229,12 +269,44 @@ const User: React.FC = () => {
 						{projects.map(project => (
 							<Card className="basis-[48%] p-2 m-1">
 								<CardHeader className="p-0">
-									<CardTitle className="text-sm font-normal">
-										{project.project_name}
+									<CardTitle className="text-base font-semibold flex flex-row items-center justify-between">
+										<div>{project.project_name}</div>
+										<Circle
+											size="12"
+											color={
+												project.status === "checked"
+													? "#71717A"
+													: "#22C55E"
+											}
+										/>
 									</CardTitle>
 								</CardHeader>
-								<CardContent className="p-0 text-sm font-normal text-muted-foreground">
-									{project.owner.user_name}
+								<CardContent className="p-0 text-sm font-normal text-muted-foreground flex flex-col space-y-1">
+									<div className="flex flex-row">
+										创建者&nbsp;
+										<a
+											className="hover:underline"
+											href={`/#/main/user/${project.owner.user_code}`}
+										>
+											<div className="flex flex-row">
+												<Avatar className="h-6 w-6">
+													<AvatarImage
+														src={
+															project.owner.avatar
+																? project.owner
+																		.avatar
+																: "/statics/avatar.png"
+														}
+													/>
+												</Avatar>
+												{project.owner?.user_name}
+											</div>
+										</a>
+									</div>
+									<div className="flex flex-row">
+										成员&nbsp;
+										{formatMembers(project.participants)}
+									</div>
 								</CardContent>
 							</Card>
 						))}

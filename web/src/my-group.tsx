@@ -131,7 +131,7 @@ const MyGroup: React.FC = () => {
 
 	return (
 		<div>
-			<div className="grid grid-rows-[45px_590px] w-full px-5 py-0 gap-0 h-full">
+			<div className="flex flex-col space-y-1 w-full px-5 py-0 gap-0 h-full">
 				<div className="flex flex-row justify-between">
 					<div className="text-2xl font-semibold leading-none tracking-tight">
 						我的组织
@@ -189,7 +189,7 @@ const MyGroup: React.FC = () => {
 						</DrawerContent>
 					</Drawer>
 				</div>
-				<div className="flex justify-center">
+				<div className="flex justify-center h-[86vh]">
 					<GroupTable
 						isMine={true}
 						current={pageNum}

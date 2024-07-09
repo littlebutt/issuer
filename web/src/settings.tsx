@@ -136,7 +136,12 @@ const Settings: React.FC = () => {
 	return (
 		<div className="flex flex-col items-center space-y-2 w-full py-0 h-[calc(100vh-55px)] overflow-y-auto">
 			<form>
-				<div className="w-[600px]">
+				<div className="w-[600px] space-y-2">
+					<div className="w-full">
+						<span className="text-3xl font-semibold leading-none tracking-tight">
+							设置
+						</span>
+					</div>
 					<Card className="w-full">
 						<CardHeader>
 							<CardTitle>头像设置</CardTitle>

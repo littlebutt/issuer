@@ -23,6 +23,8 @@ import {
 import { TooltipContent } from "@radix-ui/react-tooltip"
 import { Card, CardContent } from "./components/ui/card"
 import GroupOperation from "./group-operation"
+import { AvatarCircles } from "./components/ui/avatar-circle"
+import { Avatar, AvatarImage } from "./components/ui/avatar"
 
 interface IGroupTable {
 	isMine: boolean
@@ -36,23 +38,18 @@ interface IGroupTable {
 }
 
 const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
-	const formatMembers = (members: User[]): string => {
+	const formatMembers = (members: User[]) => {
 		let end = Math.min(5, members.length)
-		let res = ""
+		let res = []
 		for (let i = 0; i < end; i++) {
-			res += members[i].user_name
-			res += "/"
+			res.push(members[i].avatar ?? "/statics/avatar.png")
 		}
-		res = res.substring(0, res.lastIndexOf("/"))
-		res += members.length > end ? `+${members.length - end}` : ""
-		return res
+		return <AvatarCircles avatarUrls={res} numPeople={members.length} />
 	}
 
-	// TODO: 成员用头像表示
-
 	return (
-		<div className="w-full">
-			<div className="w-full h-[562px]">
+		<div className="w-full border rounded-lg border-zinc-200 p-2 shadow-sm">
+			<div className="w-full min-h-[95%]">
 				<Table>
 					<TableHeader>
 						<TableRow>
@@ -78,7 +75,19 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
 										className="hover:underline"
 										href={`/#/main/user/${content.owner.user_code}`}
 									>
-										{content.owner?.user_name}
+										<div className="flex flex-row">
+											<Avatar className="h-6 w-6">
+												<AvatarImage
+													src={
+														content.owner.avatar
+															? content.owner
+																	.avatar
+															: "/statics/avatar.png"
+													}
+												/>
+											</Avatar>
+											{content.owner?.user_name}
+										</div>
 									</a>
 								</TableCell>
 								<TableCell>
@@ -114,14 +123,14 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
 					</TableBody>
 				</Table>
 			</div>
-			<div className="flex justify-start w-fit">
+			<div className="flex justify-start w-fit h-10">
 				<Pagination>
 					<PaginationContent>
 						<PaginationItem>
 							<Button
 								variant="ghost"
 								onClick={props.gotoPrevious}
-								size="sm"
+								size="xs"
 							>
 								<ChevronLeft />
 							</Button>
@@ -133,7 +142,7 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
 							<Button
 								variant="ghost"
 								onClick={props.gotoNext}
-								size="sm"
+								size="xs"
 							>
 								<ChevronRight />
 							</Button>

@@ -10,6 +10,7 @@ import Groups from "./groups"
 import MyProject from "./my-project"
 import Projects from "./projects"
 import User from "./user"
+import Project from "./project"
 
 const router = [
 	{
@@ -51,6 +52,10 @@ const router = [
 			{
 				path: "user/:userCode",
 				element: <User />
+			},
+			{
+				path: "project/:projectCode",
+				element: <Project />
 			}
 		]
 	}
