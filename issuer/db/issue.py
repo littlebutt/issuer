@@ -14,7 +14,7 @@ Logger = logging.getLogger(__name__)
 def insert_issue(issue: "Issue") -> str | None:
     if issue.issue_code is None:
         issue.issue_code = generate_code('IS')
-    issue_id = count_issue_by_project(issue.project_code)
+    issue_id = count_issues_by_condition(project_code=issue.project_code)
     issue.issue_id = issue_id + 1
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
@@ -48,18 +48,6 @@ def update_issue_by_code(issue: "Issue") -> bool:
     return True
 
 
-def count_issue_by_project(project_code: str) -> Optional[int]:
-    try:
-        with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(func.count(Issue.id)) \
-                .where(Issue.project_code == project_code)
-            result = session.scalar(stmt)
-            return result
-    except Exception as e:
-        Logger.error(e)
-    return None
-
-
 def delete_issue_by_code(issue_code: str) -> bool:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
@@ -80,6 +68,7 @@ def list_issues_by_condition(issue_code: Optional[str] = None,
                              status: Optional[str] = None,
                              issue_id: Optional[int] = None,
                              title: Optional[str] = None,
+                             description: Optional[str] = None,
                              start_date: Optional[date] = None,
                              end_date: Optional[date] = None,
                              follower: Optional[str] = None,
@@ -102,6 +91,9 @@ def list_issues_by_condition(issue_code: Optional[str] = None,
                 stmt = stmt.where(Issue.issue_id == issue_id)
             if title is not None:
                 stmt = stmt.where(Issue.title.like('%' + title + '%'))
+            if description is not None:
+                stmt = stmt\
+                    .where(Issue.description.like('%' + description + '%'))
             if start_date is not None:
                 stmt = stmt.where(Issue.propose_date >= start_date)
             if end_date is not None:
@@ -119,6 +111,54 @@ def list_issues_by_condition(issue_code: Optional[str] = None,
     except Exception as e:
         Logger.error(e)
     return list()
+
+
+def count_issues_by_condition(issue_code: Optional[str] = None,
+                              project_code: Optional[str] = None,
+                              owner: Optional[str] = None,
+                              status: Optional[str] = None,
+                              issue_id: Optional[int] = None,
+                              title: Optional[str] = None,
+                              description: Optional[str] = None,
+                              start_date: Optional[date] = None,
+                              end_date: Optional[date] = None,
+                              follower: Optional[str] = None,
+                              assigned: Optional[str] = None,
+                              tags: Optional[List[str]] = None) -> Optional[int]: # noqa
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(func.count(Issue.id))
+            if issue_code is not None:
+                stmt = stmt.where(Issue.issue_code == issue_code)
+            if project_code is not None:
+                stmt = stmt.where(Issue.project_code == project_code)
+            if owner is not None:
+                stmt = stmt.where(Issue.owner == owner)
+            if status is not None:
+                stmt - stmt.where(Issue.status == status)
+            if issue_id is not None:
+                stmt = stmt.where(Issue.issue_id == issue_id)
+            if title is not None:
+                stmt = stmt.where(Issue.title.like('%' + title + '%'))
+            if description is not None:
+                stmt = stmt\
+                    .where(Issue.description.like('%' + description + '%'))
+            if start_date is not None:
+                stmt = stmt.where(Issue.propose_date >= start_date)
+            if end_date is not None:
+                stmt = stmt.where(Issue.propose_date <= end_date)
+            if follower is not None:
+                stmt = stmt.where(Issue.followers.like('%' + follower + '%'))
+            if assigned is not None:
+                stmt = stmt.where(Issue.assigned.like('%' + assigned + '%'))
+            if tags is not None:
+                for tag in tags:
+                    stmt = stmt.where(Issue.tags.like('%' + tag + '%'))
+            result = session.scalar(stmt)
+            return result if result is not None else 0
+    except Exception as e:
+        Logger.error(e)
+    return None
 
 
 def delete_all_issues() -> bool:

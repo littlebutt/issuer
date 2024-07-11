@@ -2,8 +2,8 @@ from datetime import datetime
 import logging
 from typing import List
 from issuer import db
-from issuer.db import UserGroup, User, Project
-from issuer.routers.models import ProjectRes, UserGroupRes, UserModel
+from issuer.db import UserGroup, User, Project, Issue
+from issuer.routers.models import IssueRes, ProjectRes, UserGroupRes, UserModel
 
 
 Logger = logging.getLogger(__name__)
@@ -70,3 +70,42 @@ def convert_project(do_: Project) -> "ProjectRes":
         privilege=do_.privilege,
         participants=participants
     )
+
+
+def convert_issue(do_: Issue) -> "IssueRes":
+    owner_do = db.find_user_by_code(do_.owner)
+    if owner_do is None:
+        Logger.error("Cannot find User with user_code: "
+                     f"{do_.owner}")
+    followers: List[User] = list()
+    if do_.followers is not None:
+        for follower in do_.followers.split(','):
+            f = db.find_user_by_code(follower)
+            if f is None:
+                Logger.error("Cannot find User with user_code: "
+                             f"{follower}")
+                continue
+            followers.append(convert_user(f))
+    assigneds = list()
+    if do_.assigned is not None:
+        for assigned in do_.assigned.split(','):
+            a = db.find_user_by_code(assigned)
+            if a is None:
+                Logger.error("Cannot find User with user_code: "
+                             f"{assigned}")
+                continue
+            assigneds.append(convert_user(a))
+    res = IssueRes(
+        issue_code=do_.issue_code,
+        project_code=do_.project_code,
+        issue_id=do_.issue_id,
+        title=do_.title,
+        description=do_.description,
+        owner=convert_user(owner_do),
+        propose_date=datetime.strftime(do_.propose_date, '%Y-%m-%d'),
+        status=do_.status,
+        tags=do_.tags,
+        followers=followers,
+        assigned=assigneds
+    )
+    return res

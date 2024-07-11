@@ -149,18 +149,68 @@ def test_list_issues_by_condition():
                       cookies=cookie)
     assert res.json()["success"] is True
 
-    res = client.get('/issue/list?title=te',
+    res = client.get('/issue/list_issues?title=te',
                      cookies=cookie)
-    assert len(res.json()) > 0
+    assert res.json()['success'] is True
+    assert len(res.json()['data']) > 0
 
-    res = client.get('/issue/list?tags=new,test',
+    res = client.get('/issue/list_issues?tags=new,test',
                      cookies=cookie)
-    assert len(res.json()) > 0
+    assert res.json()['success'] is True
+    assert len(res.json()['data']) > 0
 
-    res = client.get(f'/issue/list?follower={user_code}',
+    res = client.get(f'/issue/list_issues?follower={user_code}',
                      cookies=cookie)
-    assert len(res.json()) > 0
+    assert res.json()['success'] is True
+    assert len(res.json()['data']) > 0
 
-    res = client.get(f'/issue/list?assigned={user_code}',
+    res = client.get(f'/issue/list_issues?assigned={user_code}',
                      cookies=cookie)
-    assert len(res.json()) > 0
+    assert res.json()['success'] is True
+    assert len(res.json()['data']) > 0
+
+
+def test_count_issues_by_condition():
+    cookie, user_code = get_cookie()
+    res = client.post('/project/new',
+                      json={
+                          "project_name": "test_project",
+                          "start_date": "2024-06-05",
+                          "privilege": "Start"
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+
+    res = client.get(f'/project/participants?user_code={user_code}',
+                     cookies=cookie)
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
+    res = client.post('/issue/new',
+                      json={
+                          "project_code": project_code,
+                          "title": "test_issue",
+                          "tags": "test,new",
+                          "assigned": user_code
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+
+    res = client.get('/issue/count_issues?title=te',
+                     cookies=cookie)
+    assert res.json()['success'] is True
+    assert res.json()['data'] == 1
+
+    res = client.get('/issue/count_issues?tags=new,test',
+                     cookies=cookie)
+    assert res.json()['success'] is True
+    assert res.json()['data'] == 1
+
+    res = client.get(f'/issue/count_issues?follower={user_code}',
+                     cookies=cookie)
+    assert res.json()['success'] is True
+    assert res.json()['data'] == 1
+
+    res = client.get(f'/issue/count_issues?assigned={user_code}',
+                     cookies=cookie)
+    assert res.json()['success'] is True
+    assert res.json()['data'] == 1

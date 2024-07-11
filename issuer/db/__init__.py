@@ -14,7 +14,8 @@ from issuer.db.project import insert_project, update_project_by_code, \
     delete_all_projects, list_projects_by_condition, \
     count_projects_by_condition
 from issuer.db.issue import insert_issue, update_issue_by_code, \
-    delete_issue_by_code, list_issues_by_condition, delete_all_issues
+    delete_issue_by_code, list_issues_by_condition, delete_all_issues, \
+    count_issues_by_condition
 from issuer.db.issue_comment import insert_issue_comment, \
     delete_all_issue_comments, change_issue_comment_by_code, \
     delete_issue_comment_by_issue, list_issue_comment_by_commenter, \

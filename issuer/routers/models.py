@@ -66,6 +66,7 @@ class IssueReq(BaseModel):
     project_code: str | None = None
     issue_id: int | None = None
     title: str | None = None
+    description: str | None = None
     owner: str | None = None
     propose_date: str | None = None
     status: str | None = None
@@ -79,6 +80,7 @@ class IssueRes(BaseModel):
     project_code: str
     issue_id: int
     title: str
+    description: str | None
     owner: UserModel
     propose_date: str
     status: str

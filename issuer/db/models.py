@@ -175,6 +175,9 @@ class Issue(SQLModel, table=True):
     title: str
     '''议题标题'''
 
+    description: Optional[str]
+    '''议题内容'''
+
     owner: str
     '''议题作者，用户码标识'''
 
@@ -192,10 +195,10 @@ class Issue(SQLModel, table=True):
     '''
 
     followers: Optional[str]
-    '''议题关注者'''
+    '''议题关注者，用半角逗号分隔的用户码'''
 
     assigned: Optional[str]
-    '''议题被指派者'''
+    '''议题被指派者，用半角逗号分隔的用户码'''
 
 
 class IssueComment(SQLModel, table=True):

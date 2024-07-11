@@ -4,8 +4,10 @@ from fastapi import APIRouter, Cookie
 
 from issuer import db
 from issuer.db import Issue
-from issuer.routers.models import IssueReq, IssueRes, UserModel
+from issuer.routers.convertors import convert_issue
+from issuer.routers.models import IssueReq, IssueRes
 from issuer.routers.users import check_cookie
+from issuer.routers.utils import empty_string_to_none, empty_strings_to_none
 
 
 router = APIRouter(
@@ -18,11 +20,23 @@ router = APIRouter(
 @router.post('/new')
 async def new_issue(issue: "IssueReq",
                     current_user: Annotated[str | None, Cookie()] = None):
+    '''
+    新增议题
+
+    Args:
+        issue: :class:`IssueReq`类型，必填字段:attr:`project_code`，:attr:`title`
+            。
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+
+    '''
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
+    issue = empty_strings_to_none(issue)
     issue_do = Issue(project_code=issue.project_code,
                      title=issue.title,
+                     description=issue.description,
                      owner=_user.user_code,
                      propose_date=datetime.now().date(),
                      status='open',
@@ -38,10 +52,23 @@ async def new_issue(issue: "IssueReq",
 @router.post('/delete')
 async def delete_issue(issue: "IssueReq",
                        current_user: Annotated[str | None, Cookie()] = None):
+    '''
+    删除议题，必须由owner删除，且会删除对应的评论。
+
+    Args:
+        issue: :class:`IssueReq`类型，必填字段:attr:`issue_code`。
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+
+    '''
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
-    issue_do = db.list_issues_by_condition(issue_code=issue.issue_code)[0]
+    issue = empty_strings_to_none(issue)
+    issue_dos = db.list_issues_by_condition(issue_code=issue.issue_code)
+    if len(issue_dos) == 0:
+        return {"success": False, "reason": "Cannot find issue"}
+    issue_do = issue_dos[0]
     if issue_do.owner != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
     db.delete_issue_by_code(issue.issue_code)
@@ -52,10 +79,22 @@ async def delete_issue(issue: "IssueReq",
 @router.post('/change')
 async def change_issue(issue: "IssueReq",
                        current_user: Annotated[str | None, Cookie()] = None):
+    '''
+    修改议题，必须由owner修改。
+
+    Args:
+        issue: :class:`IssueReq`类型，必填字段:attr:`issue_code`。
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+    '''
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
-    issue_do = db.list_issues_by_condition(issue_code=issue.issue_code)[0]
+    issue = empty_strings_to_none(issue)
+    issue_dos = db.list_issues_by_condition(issue_code=issue.issue_code)
+    if len(issue_dos) == 0:
+        return {"success": False, "reason": "Cannot find issue"}
+    issue_do = issue_dos[0]
     if issue_do.owner != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
     issue_do.title = issue.title if issue.title is not None else issue_do.title
@@ -66,17 +105,21 @@ async def change_issue(issue: "IssueReq",
         if issue.followers is not None else issue_do.followers
     issue_do.assigned = issue.assigned \
         if issue.assigned is not None else issue_do.assigned
+    issue_do.description = issue.description \
+        if issue.description is not None else issue_do.description
     res = db.update_issue_by_code(issue_do)
     return {"success": res}
 
 
-@router.get('/list', response_model=List[IssueRes] | Dict)
+@router.get('/list_issues',
+            response_model=Dict[str, bool | str | List[IssueRes]])
 async def list_issues_by_condition(issue_code: Optional[str] = None,
                                    project_code: Optional[str] = None,
                                    owner: Optional[str] = None,
                                    status: Optional[str] = None,
                                    issue_id: Optional[int] = None,
                                    title: Optional[str] = None,
+                                   description: Optional[str] = None,
                                    start_date: Optional[str] = None,
                                    end_date: Optional[str] = None,
                                    follower: Optional[str] = None,
@@ -85,9 +128,43 @@ async def list_issues_by_condition(issue_code: Optional[str] = None,
                                    page_num: int = 1,
                                    page_size: int = 10,
                                    current_user: Annotated[str | None, Cookie()] = None): # noqa
+    '''
+    根据条件查询议题。
+
+    Args:
+        issue_code: 议题码。
+        project_code: 所属的项目码。
+        owner: 创建者，用户码表示。
+        status: 状态，包括open，finished和closed。
+        issue_id: 议题的序号。
+        title: 议题标题。
+        description: 议题描述。
+        start_date: 计划开始日期。
+        end_date: 计划完成时间。
+        follower: 关注者，半角逗号分隔的用户码。
+        assigned: 被指派，半角逗号分隔的用户码。
+        tags: 标签，用逗号分隔。
+        page_num: 页码。
+        page_size: 页数。
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+
+    '''
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
+    issue_code = empty_string_to_none(issue_code)
+    project_code = empty_string_to_none(project_code)
+    owner = empty_string_to_none(owner)
+    status = empty_string_to_none(status)
+    issue_id = empty_string_to_none(issue_id)
+    title = empty_string_to_none(title)
+    description = empty_string_to_none(description)
+    start_date = empty_string_to_none(start_date)
+    end_date = empty_string_to_none(end_date)
+    follower = empty_string_to_none(follower)
+    assigned = empty_string_to_none(assigned)
+    tags = empty_string_to_none(tags)
     if start_date is not None:
         start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
     if end_date is not None:
@@ -95,63 +172,95 @@ async def list_issues_by_condition(issue_code: Optional[str] = None,
     if tags is not None:
         tags = tags.split(',')
     issues = db.list_issues_by_condition(issue_code, project_code, owner,
-                                         status, issue_id, title, start_date,
-                                         end_date, follower, assigned, tags,
-                                         page_num, page_size)
+                                         status, issue_id, title, description,
+                                         start_date, end_date, follower,
+                                         assigned, tags, page_num, page_size)
     res = list()
     for issue in issues:
-        owner = db.find_user_by_code(issue.owner)
-        followers = list()
-        if issue.followers is not None:
-            for _follower in issue.followers.split(','):
-                _f = db.find_user_by_code(_follower)
-                followers.append(UserModel(
-                    user_code=_f.user_code,
-                    user_name=_f.user_name,
-                    email=_f.email,
-                    role=_f.role,
-                    description=_f.description,
-                    phone=_f.phone,
-                    avatar=_f.avatar
-                ))
-        assigneds = list()
-        if issue.assigned is not None:
-            for _assigned in issue.assigned.split(','):
-                _a = db.find_user_by_code(_assigned)
-                assigneds.append(UserModel(
-                    user_code=_a.user_code,
-                    user_name=_a.user_name,
-                    email=_a.email,
-                    role=_a.role,
-                    description=_a.description,
-                    phone=_a.phone,
-                    avatar=_a.avatar
-                ))
-        res.append(IssueRes(
-            issue_code=issue.issue_code,
-            project_code=issue.project_code,
-            issue_id=issue.issue_id,
-            title=issue.title,
-            owner=UserModel(user_code=owner.user_code,
-                            user_name=owner.user_name,
-                            email=owner.email,
-                            role=owner.role,
-                            description=owner.description,
-                            phone=owner.phone,
-                            avatar=owner.avatar),
-            propose_date=datetime.strftime(issue.propose_date, '%Y-%m-%d'),
-            status=issue.status,
-            tags=issue.tags,
-            followers=followers,
-            assigned=assigneds
-        ))
-    return res
+        issue_res = convert_issue(issue)
+        res.append(issue_res)
+    return {"success": True, "data": res}
+
+
+@router.get('/count_issues', response_model=Dict[str, bool | str | int])
+async def count_issues_by_condition(issue_code: Optional[str] = None,
+                                    project_code: Optional[str] = None,
+                                    owner: Optional[str] = None,
+                                    status: Optional[str] = None,
+                                    issue_id: Optional[int] = None,
+                                    title: Optional[str] = None,
+                                    description: Optional[str] = None,
+                                    start_date: Optional[str] = None,
+                                    end_date: Optional[str] = None,
+                                    follower: Optional[str] = None,
+                                    assigned: Optional[str] = None,
+                                    tags: Optional[str] = None,
+                                    current_user: Annotated[str | None, Cookie()] = None): # noqa
+    '''
+    根据条件查询议题数量。
+
+    Args:
+        issue_code: 议题码。
+        project_code: 所属的项目码。
+        owner: 创建者，用户码表示。
+        status: 状态，包括open，finished和closed。
+        issue_id: 议题的序号。
+        title: 议题标题。
+        description: 议题描述。
+        start_date: 计划开始日期。
+        end_date: 计划完成时间。
+        follower: 关注者，半角逗号分隔的用户码。
+        assigned: 被指派，半角逗号分隔的用户码。
+        tags: 标签，用逗号分隔。
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+
+    '''
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {"success": False, "reason": "Invalid token"}
+    issue_code = empty_string_to_none(issue_code)
+    project_code = empty_string_to_none(project_code)
+    owner = empty_string_to_none(owner)
+    status = empty_string_to_none(status)
+    issue_id = empty_string_to_none(issue_id)
+    title = empty_string_to_none(title)
+    description = empty_string_to_none(description)
+    start_date = empty_string_to_none(start_date)
+    end_date = empty_string_to_none(end_date)
+    follower = empty_string_to_none(follower)
+    assigned = empty_string_to_none(assigned)
+    tags = empty_string_to_none(tags)
+    if start_date is not None:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+    if end_date is not None:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+    if tags is not None:
+        tags = tags.split(',')
+    res = db.count_issues_by_condition(issue_code=issue_code,
+                                       project_code=project_code,
+                                       owner=owner,
+                                       status=status,
+                                       issue_id=issue_id,
+                                       title=title,
+                                       description=description,
+                                       start_date=start_date,
+                                       end_date=end_date,
+                                       follower=follower,
+                                       assigned=assigned,
+                                       tags=tags)
+    if res is not None:
+        return {"success": True, "data": res}
+    else:
+        return {"success": False}
 
 
 @router.get('/query_status')
 async def query_status():
+    '''获取议题状态'''
     metas = db.list_metas_by_type('ISSUE_STATUS')
     return {
         "success": True,
-        "data": [meta.meta_value for meta in metas]
+        "data": [{"value": meta.meta_value, "label": meta.note}
+                 for meta in metas]
     }
