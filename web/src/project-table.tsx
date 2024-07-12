@@ -24,8 +24,7 @@ import {
 import { Button } from "./components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import ProjectOperation from "./project-operation"
-import { AvatarCircles } from "./components/ui/avatar-circle"
-import { Avatar, AvatarImage } from "./components/ui/avatar"
+import { formatMembers, formatOwner, statusValue2label } from "./utils"
 
 interface IProjectTable {
 	isMine: boolean
@@ -41,23 +40,7 @@ interface IProjectTable {
 }
 
 const ProjectTable: React.FC<IProjectTable> = props => {
-	const statusValue2label = (value: string) => {
-		for (let item of props.projectStatuses) {
-			if (item.value === value) {
-				return item.label
-			}
-		}
-		return "unknown"
-	}
-
-	const formatMembers = (members: User[]) => {
-		let end = Math.min(5, members.length)
-		let res = []
-		for (let i = 0; i < end; i++) {
-			res.push(members[i].avatar ?? "/statics/avatar.png")
-		}
-		return <AvatarCircles avatarUrls={res} numPeople={members.length} />
-	}
+	
 
 	return (
 		<div className="w-full h-full border rounded-lg border-zinc-200 p-2 shadow-sm">
@@ -102,24 +85,7 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 									)}
 								</TableCell>
 								<TableCell>
-									<a
-										className="hover:underline"
-										href={`/#/main/user/${content.owner.user_code}`}
-									>
-										<div className="flex flex-row">
-											<Avatar className="h-6 w-6">
-												<AvatarImage
-													src={
-														content.owner.avatar
-															? content.owner
-																	.avatar
-															: "/statics/avatar.png"
-													}
-												/>
-											</Avatar>
-											{content.owner?.user_name}
-										</div>
-									</a>
+									{formatOwner(content.owner)}
 								</TableCell>
 								<TableCell>
 									<TooltipProvider>
@@ -148,9 +114,7 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 									{content.end_date ?? "未设定"}
 								</TableCell>
 								<TableCell>
-									<Badge>
-										{statusValue2label(content.status)}
-									</Badge>
+									{statusValue2label(content.status, props.projectStatuses)}
 								</TableCell>
 								<TableCell>
 									<ProjectOperation

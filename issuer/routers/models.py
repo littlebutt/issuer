@@ -64,7 +64,7 @@ class ProjectPrivilegeEnum(Enum):
 class IssueReq(BaseModel):
     issue_code: str | None = None
     project_code: str | None = None
-    issue_id: int | None = None
+    issue_id: str | None = None
     title: str | None = None
     description: str | None = None
     owner: str | None = None

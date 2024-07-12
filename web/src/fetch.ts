@@ -186,6 +186,46 @@ const getProjectsCount = async (
 	})
 }
 
+const getIssues = async (
+	issue_code: string,
+    project_code: string,
+    issue_id: string,
+    title: string,
+	description: string,
+    owner: string,
+    propose_date: string,
+    status: string,
+    tags: string,
+    followers: string,
+    assigned: string,
+	pageNum: number = 1,
+	pageSize: number = 10
+) => {
+	return axios({
+		method: 'GET',
+		url: `/issue/list_issues?issue_code=${issue_code}&project_code=${project_code}&issue_id=${issue_id}&title=${title}&description=${description}&owner=${owner}&propose_date=${propose_date}&status=${status}&tags=${tags}&followers=${followers}&assigned=${assigned}&page_num=${pageNum}&page_size=${pageSize}`
+	})
+}
+
+const getIssuesCount = async (
+	issue_code: string,
+    project_code: string,
+    issue_id: string,
+    title: string,
+	description: string,
+    owner: string,
+    propose_date: string,
+    status: string,
+    tags: string,
+    followers: string,
+    assigned: string
+) => {
+	return axios({
+		method: 'GET',
+		url: `/issue/count_issues?issue_code=${issue_code}&project_code=${project_code}&issue_id=${issue_id}&title=${title}&description=${description}&owner=${owner}&propose_date=${propose_date}&status=${status}&tags=${tags}&followers=${followers}&assigned=${assigned}`
+	})
+}
+
 export {
 	fetchSelf,
 	fetchUserOptions,
@@ -196,5 +236,7 @@ export {
 	getUserGroups,
 	getUserGroupsCount,
 	getProjects,
-	getProjectsCount
+	getProjectsCount,
+	getIssues,
+	getIssuesCount
 }

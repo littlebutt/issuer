@@ -25,6 +25,7 @@ import { Card, CardContent } from "./components/ui/card"
 import GroupOperation from "./group-operation"
 import { AvatarCircles } from "./components/ui/avatar-circle"
 import { Avatar, AvatarImage } from "./components/ui/avatar"
+import { formatMembers, formatOwner } from "./utils"
 
 interface IGroupTable {
 	isMine: boolean
@@ -38,14 +39,6 @@ interface IGroupTable {
 }
 
 const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
-	const formatMembers = (members: User[]) => {
-		let end = Math.min(5, members.length)
-		let res = []
-		for (let i = 0; i < end; i++) {
-			res.push(members[i].avatar ?? "/statics/avatar.png")
-		}
-		return <AvatarCircles avatarUrls={res} numPeople={members.length} />
-	}
 
 	return (
 		<div className="w-full border rounded-lg border-zinc-200 p-2 shadow-sm">
@@ -71,24 +64,7 @@ const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
 								</TableCell>
 								<TableCell>{content.group_name}</TableCell>
 								<TableCell>
-									<a
-										className="hover:underline"
-										href={`/#/main/user/${content.owner.user_code}`}
-									>
-										<div className="flex flex-row">
-											<Avatar className="h-6 w-6">
-												<AvatarImage
-													src={
-														content.owner.avatar
-															? content.owner
-																	.avatar
-															: "/statics/avatar.png"
-													}
-												/>
-											</Avatar>
-											{content.owner?.user_name}
-										</div>
-									</a>
+									{formatOwner(content.owner)}
 								</TableCell>
 								<TableCell>
 									<TooltipProvider>

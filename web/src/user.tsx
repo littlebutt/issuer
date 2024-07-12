@@ -23,6 +23,7 @@ import {
 } from "lucide-react"
 import { Button } from "./components/ui/button"
 import { AvatarCircles } from "./components/ui/avatar-circle"
+import { formatMembers, formatOwner } from "./utils"
 
 const User: React.FC = () => {
 	const { userCode } = useParams()
@@ -117,14 +118,6 @@ const User: React.FC = () => {
 		}
 		return undefined
 	}
-	const formatMembers = (members: UserType[]) => {
-		let end = Math.min(5, members.length)
-		let res = []
-		for (let i = 0; i < end; i++) {
-			res.push(members[i].avatar ?? "/statics/avatar.png")
-		}
-		return <AvatarCircles avatarUrls={res} numPeople={members.length} />
-	}
 
 	useEffect(() => {
 		fetchUserRoles(roles, setRoles)
@@ -214,24 +207,7 @@ const User: React.FC = () => {
 								<CardContent className="p-0 text-sm font-normal text-muted-foreground flex flex-col space-y-1">
 									<div className="flex flex-row">
 										创建者&nbsp;
-										<a
-											className="hover:underline"
-											href={`/#/main/user/${group.owner.user_code}`}
-										>
-											<div className="flex flex-row">
-												<Avatar className="h-6 w-6">
-													<AvatarImage
-														src={
-															group.owner.avatar
-																? group.owner
-																		.avatar
-																: "/statics/avatar.png"
-														}
-													/>
-												</Avatar>
-												{group.owner?.user_name}
-											</div>
-										</a>
+										{formatOwner(group.owner)}
 									</div>
 									<div className="flex flex-row">
 										成员&nbsp;
@@ -284,24 +260,7 @@ const User: React.FC = () => {
 								<CardContent className="p-0 text-sm font-normal text-muted-foreground flex flex-col space-y-1">
 									<div className="flex flex-row">
 										创建者&nbsp;
-										<a
-											className="hover:underline"
-											href={`/#/main/user/${project.owner.user_code}`}
-										>
-											<div className="flex flex-row">
-												<Avatar className="h-6 w-6">
-													<AvatarImage
-														src={
-															project.owner.avatar
-																? project.owner
-																		.avatar
-																: "/statics/avatar.png"
-														}
-													/>
-												</Avatar>
-												{project.owner?.user_name}
-											</div>
-										</a>
+										{formatOwner(project.owner)}
 									</div>
 									<div className="flex flex-row">
 										成员&nbsp;

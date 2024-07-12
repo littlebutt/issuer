@@ -117,7 +117,7 @@ async def list_issues_by_condition(issue_code: Optional[str] = None,
                                    project_code: Optional[str] = None,
                                    owner: Optional[str] = None,
                                    status: Optional[str] = None,
-                                   issue_id: Optional[int] = None,
+                                   issue_id: Optional[str] = None,
                                    title: Optional[str] = None,
                                    description: Optional[str] = None,
                                    start_date: Optional[str] = None,
@@ -165,6 +165,8 @@ async def list_issues_by_condition(issue_code: Optional[str] = None,
     follower = empty_string_to_none(follower)
     assigned = empty_string_to_none(assigned)
     tags = empty_string_to_none(tags)
+    if issue_id is not None:
+        issue_id = int(issue_id)
     if start_date is not None:
         start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
     if end_date is not None:
@@ -187,7 +189,7 @@ async def count_issues_by_condition(issue_code: Optional[str] = None,
                                     project_code: Optional[str] = None,
                                     owner: Optional[str] = None,
                                     status: Optional[str] = None,
-                                    issue_id: Optional[int] = None,
+                                    issue_id: Optional[str] = None,
                                     title: Optional[str] = None,
                                     description: Optional[str] = None,
                                     start_date: Optional[str] = None,
@@ -231,6 +233,8 @@ async def count_issues_by_condition(issue_code: Optional[str] = None,
     follower = empty_string_to_none(follower)
     assigned = empty_string_to_none(assigned)
     tags = empty_string_to_none(tags)
+    if issue_id is not None:
+        issue_id = int(issue_id)
     if start_date is not None:
         start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
     if end_date is not None:
