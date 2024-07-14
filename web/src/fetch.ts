@@ -124,6 +124,26 @@ const fetchUserRoles = (
 		.catch(err => console.log(err))
 }
 
+const fetchIssueStatuses = (
+	getter: { value: string; label: string }[],
+	setter: React.Dispatch<
+		React.SetStateAction<{ value: string; label: string }[]>
+	>
+) => {
+	axios({
+		method: "GET",
+		url: "/issue/query_status"
+	})
+		.then(res => {
+			if (res.status === 200 && res.data.success === true) {
+				setter(res.data.data)
+			} else {
+				console.log(res)
+			}
+		})
+		.catch(err => console.log(err))
+}
+
 const getUserGroups = async (
 	groupCode: string,
 	groupName: string,
@@ -188,40 +208,40 @@ const getProjectsCount = async (
 
 const getIssues = async (
 	issue_code: string,
-    project_code: string,
-    issue_id: string,
-    title: string,
+	project_code: string,
+	issue_id: string,
+	title: string,
 	description: string,
-    owner: string,
-    propose_date: string,
-    status: string,
-    tags: string,
-    followers: string,
-    assigned: string,
+	owner: string,
+	propose_date: string,
+	status: string,
+	tags: string,
+	followers: string,
+	assigned: string,
 	pageNum: number = 1,
 	pageSize: number = 10
 ) => {
 	return axios({
-		method: 'GET',
+		method: "GET",
 		url: `/issue/list_issues?issue_code=${issue_code}&project_code=${project_code}&issue_id=${issue_id}&title=${title}&description=${description}&owner=${owner}&propose_date=${propose_date}&status=${status}&tags=${tags}&followers=${followers}&assigned=${assigned}&page_num=${pageNum}&page_size=${pageSize}`
 	})
 }
 
 const getIssuesCount = async (
 	issue_code: string,
-    project_code: string,
-    issue_id: string,
-    title: string,
+	project_code: string,
+	issue_id: string,
+	title: string,
 	description: string,
-    owner: string,
-    propose_date: string,
-    status: string,
-    tags: string,
-    followers: string,
-    assigned: string
+	owner: string,
+	propose_date: string,
+	status: string,
+	tags: string,
+	followers: string,
+	assigned: string
 ) => {
 	return axios({
-		method: 'GET',
+		method: "GET",
 		url: `/issue/count_issues?issue_code=${issue_code}&project_code=${project_code}&issue_id=${issue_id}&title=${title}&description=${description}&owner=${owner}&propose_date=${propose_date}&status=${status}&tags=${tags}&followers=${followers}&assigned=${assigned}`
 	})
 }
@@ -232,6 +252,7 @@ export {
 	fetchProjectStatuses,
 	fetchProjectPrivileges,
 	fetchUserRoles,
+	fetchIssueStatuses,
 	getUser,
 	getUserGroups,
 	getUserGroupsCount,

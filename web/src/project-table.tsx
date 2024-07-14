@@ -7,7 +7,7 @@ import {
 	TableHeader,
 	TableRow
 } from "./components/ui/table"
-import { Project, User } from "./types"
+import { Project } from "./types"
 import {
 	Tooltip,
 	TooltipContent,
@@ -40,8 +40,6 @@ interface IProjectTable {
 }
 
 const ProjectTable: React.FC<IProjectTable> = props => {
-	
-
 	return (
 		<div className="w-full h-full border rounded-lg border-zinc-200 p-2 shadow-sm">
 			<div className="w-full min-h-[95%]">
@@ -114,7 +112,10 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 									{content.end_date ?? "未设定"}
 								</TableCell>
 								<TableCell>
-									{statusValue2label(content.status, props.projectStatuses)}
+									{statusValue2label(
+										content.status,
+										props.projectStatuses
+									)}
 								</TableCell>
 								<TableCell>
 									<ProjectOperation

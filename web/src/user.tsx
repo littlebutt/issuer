@@ -22,10 +22,10 @@ import {
 	UserRound
 } from "lucide-react"
 import { Button } from "./components/ui/button"
-import { AvatarCircles } from "./components/ui/avatar-circle"
 import { formatMembers, formatOwner } from "./utils"
 
 const User: React.FC = () => {
+	// TODO: 更改布局
 	const { userCode } = useParams()
 
 	const { toast } = useToast()
@@ -250,6 +250,11 @@ const User: React.FC = () => {
 										<Circle
 											size="12"
 											color={
+												project.status === "checked"
+													? "#71717A"
+													: "#22C55E"
+											}
+											fill={
 												project.status === "checked"
 													? "#71717A"
 													: "#22C55E"

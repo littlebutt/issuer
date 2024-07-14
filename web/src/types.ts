@@ -36,16 +36,16 @@ type Project = {
 
 type Issue = {
 	issue_code: string
-    project_code: string
-    issue_id: number
-    title: string
+	project_code: string
+	issue_id: number
+	title: string
 	description?: string
-    owner: User
-    propose_date: string
-    status: string
-    tags?: string
-    followers: User[]
-    assigned?: User[]
+	owner: User
+	propose_date: string
+	status: string
+	tags?: string
+	followers: User[]
+	assigned?: User[]
 }
 
 export type { User, UserRole, UserGroup, Project, Issue }

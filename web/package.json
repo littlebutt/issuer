@@ -58,7 +58,8 @@
 			"jsx-a11y/heading-has-content": "off",
 			"react-hooks/exhaustive-deps": "off",
 			"jsx-a11y/anchor-has-content": "off",
-			"array-callback-return": "off"
+			"array-callback-return": "off",
+			"jsx-a11y/anchor-is-valid": "off"
 		}
 	},
 	"browserslist": {

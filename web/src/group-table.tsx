@@ -1,4 +1,4 @@
-import Reacr from "react"
+import React from "react"
 import {
 	Table,
 	TableBody,
@@ -7,7 +7,7 @@ import {
 	TableHeader,
 	TableRow
 } from "./components/ui/table"
-import { User, UserGroup } from "./types"
+import { UserGroup } from "./types"
 import {
 	Pagination,
 	PaginationContent,
@@ -23,8 +23,6 @@ import {
 import { TooltipContent } from "@radix-ui/react-tooltip"
 import { Card, CardContent } from "./components/ui/card"
 import GroupOperation from "./group-operation"
-import { AvatarCircles } from "./components/ui/avatar-circle"
-import { Avatar, AvatarImage } from "./components/ui/avatar"
 import { formatMembers, formatOwner } from "./utils"
 
 interface IGroupTable {
@@ -38,8 +36,7 @@ interface IGroupTable {
 	refresh: () => void
 }
 
-const GroupTable: Reacr.FC<IGroupTable> = (props: IGroupTable) => {
-
+const GroupTable: React.FC<IGroupTable> = (props: IGroupTable) => {
 	return (
 		<div className="w-full border rounded-lg border-zinc-200 p-2 shadow-sm">
 			<div className="w-full min-h-[95%]">
