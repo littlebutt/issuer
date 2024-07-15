@@ -84,7 +84,7 @@ class IssueRes(BaseModel):
     owner: UserModel
     propose_date: str
     status: str
-    tags: str
+    tags: str | None
     followers: List[UserModel]
     assigned: List[UserModel]
 

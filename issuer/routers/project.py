@@ -1,10 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
-from typing import Annotated, Dict, List, Optional
+from typing import Annotated, Dict, List, Optional, Sequence
 from fastapi import APIRouter, Cookie
 
 from issuer import db
-from issuer.db.models import Project, ProjectToUser
+from issuer.db.models import Issue, Project, ProjectToUser
 from issuer.routers.convertors import convert_project
 from issuer.routers.models import ProjectPrivilegeEnum, ProjectReq, \
     ProjectRes
@@ -362,4 +362,69 @@ async def count_projects_by_condition(project_code: Optional[str] = None,
                                          participants=participants)
     if res is None:
         return {"success": False, "reason": "Internal error"}
+    return {"success": True, "data": res}
+
+
+@router.get('/stat_status',
+            response_model=Dict[str, str | bool | Dict[str, int]])
+async def stat_issue_state(project_code: str,
+                           before_date: str, after_date: str,
+                           current_user: Annotated[str | None, Cookie()] = None): # noqa
+    '''
+    统计给定时间范围内不同议题的状态占比。
+
+    Args:
+        project_code: 项目码。
+        before_date: 统计结束日期。
+        after_date: 统计开始日期。
+    '''
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {"success": False, "reason": "Invalid token"}
+    project_code = empty_string_to_none(project_code)
+    after_date = empty_string_to_none(after_date)
+    before_date = empty_string_to_none(before_date)
+    issues: Sequence["Issue"] = db.list_issues_by_condition(
+        project_code=project_code,
+        start_date=after_date,
+        end_date=before_date)
+    issue_status = map(lambda meta: meta.meta_value,
+                       db.list_metas_by_type('ISSUE_STATUS'))
+    res = dict.fromkeys(issue_status, 0)
+    for issue in issues:
+        res[issue.status] += 1
+    return {"success": True, "data": res}
+
+
+@router.get('/stat_date',
+            response_model=Dict[str, str | bool | Dict[str, int]])
+async def stat_issue_date(project_code: str,
+                          before_date: str, after_date: str,
+                          current_user: Annotated[str | None, Cookie()] = None): # noqa
+    '''
+    统计给定时间每日提出的议题的个数。
+
+    Args:
+        project_code: 项目码。
+        before_date: 统计结束日期。
+        after_date: 统计开始日期。
+    '''
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {"success": False, "reason": "Invalid token"}
+    project_code = empty_string_to_none(project_code)
+    after_date = empty_string_to_none(after_date)
+    before_date = empty_string_to_none(before_date)
+    issues: Sequence["Issue"] = db.list_issues_by_condition(
+        project_code=project_code,
+        start_date=after_date,
+        end_date=before_date)
+    start_date = datetime.strptime(after_date, "%Y-%m-%d")
+    end_date = datetime.strptime(before_date, "%Y-%m-%d")
+    delta_days = (end_date - start_date).days
+    keys = [start_date + timedelta(days=day + 1) for day in range(delta_days)]
+    keys = [key_date.strftime("%Y-%m-%d") for key_date in keys]
+    res = dict.fromkeys(keys, 0)
+    for issue in issues:
+        res[issue.propose_date.strftime("%Y-%m-%d")] += 1
     return {"success": True, "data": res}

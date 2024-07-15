@@ -1,9 +1,10 @@
+from datetime import datetime, timedelta
 from fastapi.testclient import TestClient
 import pytest
 
 from issuer import db
 from issuer.db import delete_all_projects, delete_all_project_to_user, \
-    delete_all_users
+    delete_all_users, delete_all_issues
 from issuer.main import app
 from tests.routers.test_user_group import get_cookie
 
@@ -14,12 +15,14 @@ client = TestClient(app)
 def setup_function(function):
     delete_all_users()
     delete_all_projects()
+    delete_all_issues()
     delete_all_project_to_user()
 
 
 def teardown_function(function):
     delete_all_users()
     delete_all_projects()
+    delete_all_issues()
     delete_all_project_to_user()
 
 
@@ -150,3 +153,93 @@ def test_count_projects_by_condition():
     res = client.get(f'/project/count_projects?members={user_code}',
                      cookies=cookie)
     assert res.json()["success"] is True
+
+
+def test_stat_issue_state():
+    cookie, user_code = get_cookie()
+    res = client.post('/project/new',
+                      json={
+                          "project_name": "test_project",
+                          "start_date": "2024-06-05",
+                          "privilege": "Start"
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+
+    res = client.get(f'/project/participants?user_code={user_code}',
+                     cookies=cookie)
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
+
+    res = client.post('/issue/new',
+                      json={
+                          "project_code": project_code,
+                          "title": "test_issue",
+                          "tags": "test,new"
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+
+    res = client.post('/issue/new',
+                      json={
+                          "project_code": project_code,
+                          "title": "test_issue",
+                          "tags": "test,new"
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+
+    after_date = datetime.now() - timedelta(days=5)
+    before_date = datetime.now()
+    res = client.get(f'/project/stat_status?project_code={project_code}&'
+                     f'after_date={after_date.strftime("%Y-%m-%d")}&'
+                     f'before_date={before_date.strftime("%Y-%m-%d")}',
+                     cookies=cookie)
+    assert res.json()["success"] is True
+    assert len(res.json()["data"]) == 3
+    assert res.json()["data"]["open"] == 2
+
+
+def test_stat_issue_date():
+    cookie, user_code = get_cookie()
+    res = client.post('/project/new',
+                      json={
+                          "project_name": "test_project",
+                          "start_date": "2024-06-05",
+                          "privilege": "Start"
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+
+    res = client.get(f'/project/participants?user_code={user_code}',
+                     cookies=cookie)
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
+
+    res = client.post('/issue/new',
+                      json={
+                          "project_code": project_code,
+                          "title": "test_issue",
+                          "tags": "test,new"
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+
+    res = client.post('/issue/new',
+                      json={
+                          "project_code": project_code,
+                          "title": "test_issue",
+                          "tags": "test,new"
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+
+    after_date = datetime.now() - timedelta(days=5)
+    before_date = datetime.now()
+    res = client.get(f'/project/stat_date?project_code={project_code}&'
+                     f'after_date={after_date.strftime("%Y-%m-%d")}&'
+                     f'before_date={before_date.strftime("%Y-%m-%d")}',
+                     cookies=cookie)
+    assert res.json()["success"] is True
+    assert len(res.json()["data"]) == 5
+    assert res.json()["data"][before_date.strftime("%Y-%m-%d")] == 2

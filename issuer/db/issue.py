@@ -86,7 +86,7 @@ def list_issues_by_condition(issue_code: Optional[str] = None,
             if owner is not None:
                 stmt = stmt.where(Issue.owner == owner)
             if status is not None:
-                stmt - stmt.where(Issue.status == status)
+                stmt = stmt.where(Issue.status == status)
             if issue_id is not None:
                 stmt = stmt.where(Issue.issue_id == issue_id)
             if title is not None:
@@ -135,7 +135,7 @@ def count_issues_by_condition(issue_code: Optional[str] = None,
             if owner is not None:
                 stmt = stmt.where(Issue.owner == owner)
             if status is not None:
-                stmt - stmt.where(Issue.status == status)
+                stmt = stmt.where(Issue.status == status)
             if issue_id is not None:
                 stmt = stmt.where(Issue.issue_id == issue_id)
             if title is not None:
