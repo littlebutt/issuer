@@ -37,6 +37,7 @@
 		"react-hook-form": "^7.52.1",
 		"react-scripts": "5.0.1",
 		"react-tailwindcss-select": "^1.8.5",
+		"recharts": "^2.12.7",
 		"tailwind-merge": "^2.3.0",
 		"tailwindcss-animate": "^1.0.7",
 		"typescript": "^4.9.5",

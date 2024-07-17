@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react"
 import { Label } from "./components/ui/label"
-import { fetchIssueStatuses, fetchUserOptions, getIssues } from "./fetch"
+import {
+	fetchIssueStatuses,
+	fetchUserOptions,
+	getIssues,
+	getIssuesCount
+} from "./fetch"
 import { useToast } from "./components/ui/use-toast"
 import { Input } from "./components/ui/input"
 import { Issue } from "./types"
@@ -12,8 +17,13 @@ import {
 	SelectValue
 } from "./components/ui/select"
 import { Button } from "./components/ui/button"
-import { Circle } from "lucide-react"
+import { ChevronLeft, ChevronRight, Circle, Eraser, Search } from "lucide-react"
 import { Badge } from "./components/ui/badge"
+import {
+	Pagination,
+	PaginationContent,
+	PaginationItem
+} from "./components/ui/pagination"
 
 interface IIssueTable {
 	projectCode: string
@@ -23,6 +33,18 @@ const IssueTable: React.FC<IIssueTable> = props => {
 	const [isAdvancedSearch, setIsAdvancedSearch] = useState<boolean>(false)
 
 	const [issues, setIssues] = useState<Issue[]>([])
+	const [title, setTitle] = useState<string>("")
+	const [issueStatus, setIssueStatus] = useState<string>("")
+	const [owner, setOwner] = useState<string>("")
+	const [id, setId] = useState<string>("")
+	const [proposeDate, setProposeDate] = useState<string>("")
+	const [desc, setDesc] = useState<string>("")
+	const [tags, setTags] = useState<string[]>([])
+
+	const [advancedInput, setAdvancedInput] = useState<string>("")
+
+	const [current, setCurrent] = useState<number>(1)
+	const [total, setTotal] = useState<number>(1)
 
 	const [issueStatusOptions, setIssueStatusOptions] = useState<
 		{ value: string; label: string }[]
@@ -48,8 +70,30 @@ const IssueTable: React.FC<IIssueTable> = props => {
 		return circle
 	}
 
-	useEffect(() => {
-		getIssues("", props.projectCode, "", "", "", "", "", "", "", "", "")
+	const lable2val = (label: string) => {
+		for (let opt of issueStatusOptions) {
+			if (opt.label === label) {
+				return opt.value
+			}
+		}
+		return "unknown"
+	}
+
+	const fetchIssue = (pageNum?: number) => {
+		getIssues(
+			"",
+			props.projectCode,
+			id,
+			title,
+			desc,
+			owner,
+			proposeDate,
+			issueStatus,
+			tags.join(","),
+			"",
+			"",
+			pageNum ?? current
+		)
 			.then(res => {
 				if (res.status === 200 && res.data.success === true) {
 					setIssues(res.data.data)
@@ -61,6 +105,86 @@ const IssueTable: React.FC<IIssueTable> = props => {
 				}
 			})
 			.catch(err => console.log(err))
+	}
+
+	const refresh = () => {
+		fetchIssue()
+
+		getIssuesCount(
+			"",
+			props.projectCode,
+			id,
+			title,
+			desc,
+			owner,
+			proposeDate,
+			issueStatus,
+			tags.join(","),
+			"",
+			""
+		)
+			.then(res => {
+				if (res.status === 200 && res.data.success === true) {
+					setTotal(Math.ceil(res.data?.data / 10))
+				} else {
+					toast({
+						title: "获取议题列表数量失败",
+						variant: "destructive"
+					})
+				}
+			})
+			.catch(err => console.log(err))
+	}
+
+	const gotoNext = () => {
+		setCurrent(current => Math.min(current + 1, total))
+		fetchIssue(Math.min(current + 1, total))
+	}
+
+	const gotoPrevious = () => {
+		setCurrent(current => Math.max(current - 1, 1))
+		fetchIssue(Math.max(current - 1, 1))
+	}
+
+	const parseAdvancedInput = () => {
+		advancedInput.split(" ").forEach(input => {
+			if (input.startsWith("序号")) {
+				setId(input.substring(2))
+			}
+			if (input.startsWith("日期")) {
+				setProposeDate(input.substring(2))
+			}
+			if (input.startsWith("描述")) {
+				setDesc(input.substring(2))
+			}
+			if (input.startsWith("标签")) {
+				setTags([input.substring(2), ...tags])
+			}
+			if (input.startsWith("标题")) {
+				setTitle(input.substring(2))
+			}
+			if (input.startsWith("作者")) {
+				setOwner(input.substring(2))
+			}
+			if (input.startsWith("状态")) {
+				setIssueStatus(lable2val(input.substring(2)))
+			}
+		})
+	}
+
+	const clearInput = () => {
+		setTitle("")
+		setIssueStatus("")
+		setOwner("")
+		setAdvancedInput("")
+		setId("")
+		setProposeDate("")
+		setDesc("")
+		setTags([])
+	}
+
+	useEffect(() => {
+		refresh()
 		fetchIssueStatuses(issueStatusOptions, setIssueStatusOptions)
 		fetchUserOptions(userOptions, setUserOptions)
 	}, [])
@@ -77,13 +201,21 @@ const IssueTable: React.FC<IIssueTable> = props => {
 							>
 								标题
 							</Label>
-							<Input id="title" className="h-8 w-[150px]" />
+							<Input
+								id="title"
+								className="h-8 w-[150px]"
+								onChange={e => setTitle(e.target.value)}
+								value={title}
+							/>
 						</div>
 						<div className="flex flex-row space-x-1">
 							<Label className="text-base font-semibold">
 								状态
 							</Label>
-							<Select>
+							<Select
+								value={issueStatus}
+								onValueChange={v => setIssueStatus(v)}
+							>
 								<SelectTrigger className="h-8 w-[150px]">
 									<SelectValue />
 								</SelectTrigger>
@@ -100,7 +232,10 @@ const IssueTable: React.FC<IIssueTable> = props => {
 							<Label className="text-base font-semibold">
 								创建者
 							</Label>
-							<Select>
+							<Select
+								value={owner}
+								onValueChange={v => setOwner(v)}
+							>
 								<SelectTrigger className="h-8 w-[150px]">
 									<SelectValue />
 								</SelectTrigger>
@@ -118,7 +253,10 @@ const IssueTable: React.FC<IIssueTable> = props => {
 					<div className="w-full">
 						<Input
 							className="h-8 w-full"
-							placeholder="请填写搜索表达式，例如“tags:测试,重建 owner:US101”"
+							placeholder="请填写搜索表达式，例如“标签测试 作者US101 序号3”"
+							value={advancedInput}
+							onBlur={parseAdvancedInput}
+							onChange={e => setAdvancedInput(e.target.value)}
 						/>
 					</div>
 				)}
@@ -129,37 +267,64 @@ const IssueTable: React.FC<IIssueTable> = props => {
 				>
 					{isAdvancedSearch ? "普通搜索" : "高级搜索"}
 				</Button>
-				<Button size="sm">搜索</Button>
-				<Button size="sm" variant="outline">
-					重置
+				<Button size="sm" variant="outline" onClick={refresh}>
+					<Search />
+				</Button>
+				<Button size="sm" variant="outline" onClick={clearInput}>
+					<Eraser />
 				</Button>
 			</div>
-			<div className="w-full flex flex-1 flex-col flex-wrap space-y-2">
+			<div className="w-full flex flex-1 flex-col flex-wrap space-y-2 min-h-[80%]">
 				{issues.map(issue => (
-					<div className=" w-full p-2 m-1 border rounded-lg border-zinc-200 bg-white text-zinc-950 shadow-sm flex flex-col space-y-1">
-						<div className="w-full flex flex-row justify-start items-end">
-							<div className="mr-2">
+					<div className="w-full p-2 m-1 border rounded-lg border-zinc-200 bg-white text-zinc-950 shadow-sm hover:bg-zinc-100 flex flex-col space-y-2">
+						<div className="w-full flex flex-row justify-between items-end">
+							<div className="mr-2 flex flex-row space-x-1 items-end">
 								{formatIssueStatus(issue.status)}
-							</div>
-							<div className="flex flex-row space-x-1 items-end">
-								<span className="text-lg font-semibold leading-none tracking-tight">
+								<span className="text-base font-semibold leading-none tracking-tight">
 									{issue.title}
 								</span>
 								<span className="text-base font-thin leading-none tracking-tight">
 									#{issue.issue_id}
 								</span>
 							</div>
+							<div className="text-sm font-normal text-muted-foreground">
+								{issue.propose_date}
+							</div>
 						</div>
-						<div className="w-full justify-start flex flex-row flex-wrap space-x-1 overflow-y-auto">
+						<div className="w-full justify-start flex flex-row flex-wrap space-x-1 overflow-y-auto text-xs">
 							{issue.tags
 								?.split(",")
 								.map(tag => <Badge>{tag}</Badge>)}
 						</div>
-						<div className="w-full h-14 overflow-x-auto text-base font-normal text-muted-foreground">
-							{issue.description}
-						</div>
 					</div>
 				))}
+			</div>
+			<div className="flex justify-start w-fit h-10">
+				<Pagination>
+					<PaginationContent>
+						<PaginationItem>
+							<Button
+								variant="ghost"
+								onClick={gotoPrevious}
+								size="xs"
+							>
+								<ChevronLeft />
+							</Button>
+						</PaginationItem>
+						<PaginationItem className="w-[100px] flex justify-center mx-0">
+							第{current}页/共{total}页
+						</PaginationItem>
+						<PaginationItem>
+							<Button
+								variant="ghost"
+								onClick={gotoNext}
+								size="xs"
+							>
+								<ChevronRight />
+							</Button>
+						</PaginationItem>
+					</PaginationContent>
+				</Pagination>
 			</div>
 		</div>
 	)

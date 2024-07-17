@@ -51,7 +51,7 @@ const MyProject: React.FC = () => {
 
 	const [tableContent, setTableContent] = useState<Project[]>([])
 	const [pageNum, setPageNum] = useState<number>(1)
-	const [pageTotal, setPageTotal] = useState<number>(0)
+	const [pageTotal, setPageTotal] = useState<number>(1)
 	const [projectName, setProjectName] = useState<string>("")
 	const [startDate, setStartDate] = useState<Date>()
 	const [endDate, setEndDate] = useState<Date>()

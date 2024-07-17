@@ -37,7 +37,7 @@ const Projects: React.FC = () => {
 	>([])
 
 	const [pageNum, setPageNum] = useState<number>(1)
-	const [pageTotal, setPageTotal] = useState<number>(0)
+	const [pageTotal, setPageTotal] = useState<number>(1)
 
 	const { toast } = useToast()
 

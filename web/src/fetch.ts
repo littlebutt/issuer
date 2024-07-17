@@ -206,6 +206,28 @@ const getProjectsCount = async (
 	})
 }
 
+const getProjectDailyStat = async (
+	projectCode: string,
+	afterDate: string,
+	beforeDate: string
+) => {
+	return axios({
+		method: "GET",
+		url: `/project/stat_date?project_code=${projectCode}&before_date=${beforeDate}&after_date=${afterDate}`
+	})
+}
+
+const getProjectStatusStat = async (
+	projectCode: string,
+	afterDate: string,
+	beforeDate: string
+) => {
+	return axios({
+		method: "GET",
+		url: `/project/stat_status?project_code=${projectCode}&before_date=${beforeDate}&after_date=${afterDate}`
+	})
+}
+
 const getIssues = async (
 	issue_code: string,
 	project_code: string,
@@ -258,6 +280,8 @@ export {
 	getUserGroupsCount,
 	getProjects,
 	getProjectsCount,
+	getProjectDailyStat,
+	getProjectStatusStat,
 	getIssues,
 	getIssuesCount
 }

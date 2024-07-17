@@ -22,7 +22,7 @@ import { useForm } from "react-hook-form"
 const MyGroup: React.FC = () => {
 	const [tableContent, setTableContent] = useState<UserGroup[]>([])
 	const [pageNum, setPageNum] = useState<number>(1)
-	const [pageTotal, setPageTotal] = useState<number>(0)
+	const [pageTotal, setPageTotal] = useState<number>(1)
 	const [userOptions, setUserOptions] = useState<
 		{ value: string; label: string }[]
 	>([])

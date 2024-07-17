@@ -4,7 +4,8 @@ import pytest
 
 from issuer import db
 from issuer.db import delete_all_projects, delete_all_project_to_user, \
-    delete_all_users, delete_all_issues
+    delete_all_users, delete_all_issues, insert_metas
+from issuer.db.models import Metas
 from issuer.main import app
 from tests.routers.test_user_group import get_cookie
 
@@ -12,7 +13,20 @@ from tests.routers.test_user_group import get_cookie
 client = TestClient(app)
 
 
+def init_meta():
+    issue_status_open = Metas(meta_type='ISSUE_STATUS',
+                              meta_value='open', note="开放")
+    insert_metas(issue_status_open)
+    issue_status_finished = Metas(meta_type='ISSUE_STATUS',
+                                  meta_value='finished', note="完成")
+    insert_metas(issue_status_finished)
+    issue_status_closed = Metas(meta_type='ISSUE_STATUS',
+                                meta_value='closed', note="关闭")
+    insert_metas(issue_status_closed)
+
+
 def setup_function(function):
+    init_meta()
     delete_all_users()
     delete_all_projects()
     delete_all_issues()
