@@ -77,7 +77,7 @@ class IssueReq(BaseModel):
 
 class IssueRes(BaseModel):
     issue_code: str
-    project_code: str
+    project: ProjectRes
     issue_id: int
     title: str
     description: str | None

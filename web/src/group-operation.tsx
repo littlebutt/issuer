@@ -260,6 +260,7 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 				</DialogContent>
 			</Dialog>
 			<Popover>
+				{/* TODO: 更改为弹出框，项目列表同理 */}
 				<PopoverTrigger asChild>
 					<Button
 						variant="ghost"

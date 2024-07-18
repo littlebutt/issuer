@@ -6,7 +6,6 @@ import {
 	Users,
 	Settings,
 	Bookmark,
-	SquarePen,
 	LayoutGrid
 } from "lucide-react"
 import { Outlet } from "react-router-dom"
@@ -33,14 +32,9 @@ const Layout: React.FC = () => {
 					icon: Bookmark
 				},
 				{
-					href: "",
+					href: "/main/my-issue",
 					label: "议题",
 					icon: Tag
-				},
-				{
-					href: "/main/my-group",
-					label: "组织",
-					icon: SquarePen
 				}
 			]
 		},

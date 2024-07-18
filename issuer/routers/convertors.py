@@ -73,6 +73,10 @@ def convert_project(do_: Project) -> "ProjectRes":
 
 
 def convert_issue(do_: Issue) -> "IssueRes":
+    project_do = db.find_project_by_code(do_.project_code)
+    if project_do is None:
+        Logger.error("Cannot find Project with project_code: "
+                     f"{do_.project_code}")
     owner_do = db.find_user_by_code(do_.owner)
     if owner_do is None:
         Logger.error("Cannot find User with user_code: "
@@ -97,7 +101,7 @@ def convert_issue(do_: Issue) -> "IssueRes":
             assigneds.append(convert_user(a))
     res = IssueRes(
         issue_code=do_.issue_code,
-        project_code=do_.project_code,
+        project=convert_project(project_do),
         issue_id=do_.issue_id,
         title=do_.title,
         description=do_.description,

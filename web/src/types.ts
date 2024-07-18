@@ -36,7 +36,7 @@ type Project = {
 
 type Issue = {
 	issue_code: string
-	project_code: string
+	project: Project
 	issue_id: number
 	title: string
 	description?: string

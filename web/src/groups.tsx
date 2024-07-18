@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react"
 import { useToast } from "./components/ui/use-toast"
 import { Button } from "./components/ui/button"
 import { UserGroup } from "./types"
-import GroupTable from "./group-table"
 import { getUserGroupsCount, getUserGroups, fetchUserOptions } from "./fetch"
 import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
@@ -13,6 +12,29 @@ import {
 	SelectTrigger,
 	SelectValue
 } from "./components/ui/select"
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow
+} from "./components/ui/table"
+import { formatMembers, formatOwner } from "./utils"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger
+} from "./components/ui/tooltip"
+import { Card, CardContent } from "./components/ui/card"
+import GroupOperation from "./group-operation"
+import {
+	Pagination,
+	PaginationContent,
+	PaginationItem
+} from "./components/ui/pagination"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 const Groups: React.FC = () => {
 	const [tableContent, setTableContent] = useState<UserGroup[]>([])
@@ -162,16 +184,109 @@ const Groups: React.FC = () => {
 					</div>
 				</div>
 				<div className="flex justify-center h-[86vh]">
-					<GroupTable
-						isMine={false}
-						current={pageNum}
-						total={pageTotal}
-						gotoNext={gotoNext}
-						gotoPrevious={gotoPrevious}
-						tableContent={tableContent}
-						userOptions={userOptions}
-						refresh={refresh}
-					/>
+					<div className="w-full border rounded-lg border-zinc-200 p-2 shadow-sm">
+						<div className="w-full min-h-[95%]">
+							<Table>
+								<TableHeader>
+									<TableRow>
+										<TableHead className="w-[10%]">
+											编号
+										</TableHead>
+										<TableHead className="w-1/5">
+											名称
+										</TableHead>
+										<TableHead className="w-1/5">
+											创建者
+										</TableHead>
+										<TableHead className="w-[30%]">
+											成员
+										</TableHead>
+										<TableHead className="w-1/5">
+											操作
+										</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
+									{tableContent.map((content, idx) => (
+										<TableRow
+											key={content.group_code}
+											className="h-[10px]"
+										>
+											<TableCell className="font-semibold">
+												#{idx + 1}
+											</TableCell>
+											<TableCell>
+												{content.group_name}
+											</TableCell>
+											<TableCell>
+												{formatOwner(content.owner)}
+											</TableCell>
+											<TableCell>
+												<TooltipProvider>
+													<Tooltip>
+														<TooltipTrigger>
+															{formatMembers(
+																content.members
+															)}
+														</TooltipTrigger>
+														<TooltipContent>
+															<Card className="flex items-center bg-slate-900 text-slate-200 max-w-[300px] h-[30px] mb-[-5px]">
+																<CardContent className="p-1">
+																	{content.members
+																		.map(
+																			u =>
+																				u.user_name
+																		)
+																		.join(
+																			"/"
+																		)}
+																</CardContent>
+															</Card>
+														</TooltipContent>
+													</Tooltip>
+												</TooltipProvider>
+											</TableCell>
+											<TableCell className="space-x-1">
+												<GroupOperation
+													isMine={false}
+													content={content}
+													userOptions={userOptions}
+													refresh={refresh}
+												/>
+											</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						</div>
+						<div className="flex justify-start w-fit h-10">
+							<Pagination>
+								<PaginationContent>
+									<PaginationItem>
+										<Button
+											variant="ghost"
+											onClick={gotoPrevious}
+											size="xs"
+										>
+											<ChevronLeft />
+										</Button>
+									</PaginationItem>
+									<PaginationItem className="w-[100px] flex justify-center mx-0">
+										第{pageNum}页/共{pageTotal}页
+									</PaginationItem>
+									<PaginationItem>
+										<Button
+											variant="ghost"
+											onClick={gotoNext}
+											size="xs"
+										>
+											<ChevronRight />
+										</Button>
+									</PaginationItem>
+								</PaginationContent>
+							</Pagination>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

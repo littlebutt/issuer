@@ -5,12 +5,12 @@ import Login from "./login"
 import Layout from "./layout"
 import Dashboard from "./dashboard"
 import Settings from "./settings"
-import MyGroup from "./my-group"
 import Groups from "./groups"
 import MyProject from "./my-project"
 import Projects from "./projects"
 import User from "./user"
 import Project from "./project"
+import MyIssue from "./my-issue"
 
 const router = [
 	{
@@ -34,16 +34,16 @@ const router = [
 				element: <Settings />
 			},
 			{
-				path: "my-group",
-				element: <MyGroup />
-			},
-			{
 				path: "groups",
 				element: <Groups />
 			},
 			{
 				path: "my-project",
 				element: <MyProject />
+			},
+			{
+				path: "my-issue",
+				element: <MyIssue />
 			},
 			{
 				path: "projects",

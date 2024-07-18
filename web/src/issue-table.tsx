@@ -17,7 +17,7 @@ import {
 	SelectValue
 } from "./components/ui/select"
 import { Button } from "./components/ui/button"
-import { ChevronLeft, ChevronRight, Circle, Eraser, Search } from "lucide-react"
+import { ChevronLeft, ChevronRight, Circle } from "lucide-react"
 import { Badge } from "./components/ui/badge"
 import {
 	Pagination,
@@ -64,8 +64,8 @@ const IssueTable: React.FC<IIssueTable> = props => {
 			circle.props.color = "#71717A"
 			circle.props.fill = "#71717A"
 		} else if (issueStatus === "closed") {
-			circle.props.color = "	EF4444"
-			circle.props.fill = "#71717A"
+			circle.props.color = "#EF4444"
+			circle.props.fill = "#EF4444"
 		}
 		return circle
 	}
@@ -267,11 +267,21 @@ const IssueTable: React.FC<IIssueTable> = props => {
 				>
 					{isAdvancedSearch ? "普通搜索" : "高级搜索"}
 				</Button>
-				<Button size="sm" variant="outline" onClick={refresh}>
-					<Search />
+				<Button
+					size="sm"
+					variant="link"
+					className="text-sm"
+					onClick={refresh}
+				>
+					搜索
 				</Button>
-				<Button size="sm" variant="outline" onClick={clearInput}>
-					<Eraser />
+				<Button
+					size="sm"
+					variant="link"
+					className="text-sm"
+					onClick={clearInput}
+				>
+					重置
 				</Button>
 			</div>
 			<div className="w-full flex flex-1 flex-col flex-wrap space-y-2 min-h-[80%]">

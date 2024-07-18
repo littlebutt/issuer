@@ -1,5 +1,30 @@
 import axios from "axios"
 
+const newGroupApi = (toast: any, refresh: () => void, groupName: string) => {
+	axios({
+		method: "POST",
+		url: "/user_group/new",
+		data: {
+			group_name: groupName
+		}
+	})
+		.then(res => {
+			if (res.status === 200 && res.data.success === true) {
+				toast({
+					title: "新建成功",
+					variant: "success"
+				})
+			} else {
+				toast({
+					title: "新建失败",
+					variant: "destructive"
+				})
+			}
+			refresh()
+		})
+		.catch(err => console.log(err))
+}
+
 const updateGroupApi = (
 	toast: any,
 	refresh: () => void,
@@ -91,19 +116,4 @@ const addGroupApi = (
 		.catch(err => console.log(err))
 }
 
-const values2labels = (
-	values: string[],
-	options: { value: string; label: string }[]
-) => {
-	let values_dc: string[] = JSON.parse(JSON.stringify(values))
-	return values_dc.map(v => {
-		for (let item of options) {
-			if (item.value === v) {
-				return item.label
-			}
-		}
-		return v
-	})
-}
-
-export { updateGroupApi, deleteGroupApi, addGroupApi, values2labels }
+export { updateGroupApi, deleteGroupApi, addGroupApi, newGroupApi }
