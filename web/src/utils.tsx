@@ -1,7 +1,7 @@
 import { Avatar, AvatarImage } from "./components/ui/avatar"
 import { AvatarCircles } from "./components/ui/avatar-circle"
 import { Badge } from "./components/ui/badge"
-import { User } from "./types"
+import { Issue, Project, User } from "./types"
 
 const formatMembers = (members: User[]) => {
 	if (members === undefined) {
@@ -35,6 +35,28 @@ const formatOwner = (owner: User) => {
 	)
 }
 
+const formatProject = (project?: Project) => {
+	return (
+		<a
+			className="hover:underline"
+			href={`/#/main/project/${project?.project_code}`}
+		>
+			{project?.project_name}
+		</a>
+	)
+}
+
+const formatIssue = (issue?: Issue) => {
+	return (
+		<a
+			className="hover:underline"
+			href={`/#/main/issue/${issue?.issue_code}`}
+		>
+			{issue?.title}
+		</a>
+	)
+}
+
 const statusValue2label = (
 	value: string,
 	projectStatuses: { label: string; value: string }[]
@@ -51,4 +73,10 @@ const statusValue2label = (
 	return <Badge variant="destructive">unknown</Badge>
 }
 
-export { formatMembers, formatOwner, statusValue2label }
+export {
+	formatMembers,
+	formatOwner,
+	statusValue2label,
+	formatProject,
+	formatIssue
+}

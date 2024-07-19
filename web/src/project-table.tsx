@@ -24,7 +24,12 @@ import {
 import { Button } from "./components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import ProjectOperation from "./project-operation"
-import { formatMembers, formatOwner, statusValue2label } from "./utils"
+import {
+	formatMembers,
+	formatOwner,
+	formatProject,
+	statusValue2label
+} from "./utils"
 
 interface IProjectTable {
 	isMine: boolean
@@ -66,12 +71,7 @@ const ProjectTable: React.FC<IProjectTable> = props => {
 									#{idx + 1}
 								</TableCell>
 								<TableCell>
-									<a
-										className="hover:underline"
-										href={`/#/main/project/${content.project_code}`}
-									>
-										{content.project_name}
-									</a>
+									{formatProject(content)}
 
 									{content.privilege === "Private" && (
 										<Badge

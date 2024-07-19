@@ -7,6 +7,7 @@ import { Button } from "./components/ui/button"
 import { newIssueApi } from "./issue-api"
 import { useToast } from "./components/ui/use-toast"
 import { useForm } from "react-hook-form"
+import { useNavigate } from "react-router-dom"
 
 interface IIssueNew {
 	projectCode: string
@@ -20,6 +21,7 @@ const IssueNew: React.FC<IIssueNew> = props => {
 	const [description, setDescription] = useState<string>("")
 
 	const { toast } = useToast()
+	const navigate = useNavigate()
 
 	const {
 		register,
@@ -40,10 +42,11 @@ const IssueNew: React.FC<IIssueNew> = props => {
 	}
 
 	const newIssue = () => {
-		// TODO: 更新议题
 		newIssueApi(
 			toast,
-			() => {},
+			(issueCode: string) => {
+				navigate(`/#/main/issue/${issueCode}`)
+			},
 			props.projectCode,
 			title,
 			description,

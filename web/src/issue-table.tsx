@@ -24,6 +24,7 @@ import {
 	PaginationContent,
 	PaginationItem
 } from "./components/ui/pagination"
+import { formatIssue } from "./utils"
 
 interface IIssueTable {
 	projectCode: string
@@ -291,7 +292,7 @@ const IssueTable: React.FC<IIssueTable> = props => {
 							<div className="mr-2 flex flex-row space-x-1 items-end">
 								{formatIssueStatus(issue.status)}
 								<span className="text-base font-semibold leading-none tracking-tight">
-									{issue.title}
+									{formatIssue(issue)}
 								</span>
 								<span className="text-base font-thin leading-none tracking-tight">
 									#{issue.issue_id}

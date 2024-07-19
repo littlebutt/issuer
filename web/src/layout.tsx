@@ -1,13 +1,7 @@
 import React from "react"
 import { SideMenu } from "./components/ui/menu"
 
-import {
-	Tag,
-	Users,
-	Settings,
-	Bookmark,
-	LayoutGrid
-} from "lucide-react"
+import { Tag, Users, Settings, Bookmark, LayoutGrid } from "lucide-react"
 import { Outlet } from "react-router-dom"
 import Header from "./header"
 

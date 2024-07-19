@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card"
-import { Project as ProjectType, User } from "./types"
+import { Project as ProjectType, defaultProject } from "./types"
 import {
 	fetchIssueStatuses,
+	fetchProjectPrivileges,
 	fetchProjectStatuses,
+	fetchUserOptions,
 	getProjectDailyStat,
 	getProjectStatusStat,
 	getProjects
@@ -44,11 +46,12 @@ import {
 	Pie,
 	PieChart
 } from "recharts"
+import ProjectEdit from "./project-edit"
 
 const Project: React.FC = () => {
 	const { projectCode } = useParams()
 
-	const [project, setProject] = useState<ProjectType>()
+	const [project, setProject] = useState<ProjectType>(defaultProject())
 	const [projectStatuses, setProjectStatuses] = useState<
 		{ label: string; value: string }[]
 	>([])
@@ -62,6 +65,13 @@ const Project: React.FC = () => {
 		from: new Date(new Date().setDate(new Date().getDate() - 7)),
 		to: new Date()
 	})
+
+	const [userOptions, setUserOptions] = useState<
+		{ value: string; label: string }[]
+	>([])
+	const [projectPrivileges, setProjectPrivileges] = useState<
+		{ value: string; label: string }[]
+	>([])
 
 	const { toast } = useToast()
 
@@ -91,6 +101,21 @@ const Project: React.FC = () => {
 		{ status: string; value: Number; fill: string }[]
 	>([])
 	const [chartTotal, setChartTotal] = useState<number>(0)
+
+	const refresh = () => {
+		getProjects(projectCode as string, "", "", "", "", "", "")
+			.then(res => {
+				if (res.status === 200 && res.data.success === true) {
+					setProject(res.data.data[0])
+				} else {
+					toast({
+						title: "获取项目失败",
+						variant: "destructive"
+					})
+				}
+			})
+			.catch(err => console.log(err))
+	}
 
 	const refreshChartData = useCallback(() => {
 		getProjectDailyStat(
@@ -155,40 +180,43 @@ const Project: React.FC = () => {
 	}, [projectStatuses])
 
 	useEffect(() => {
-		getProjects(projectCode as string, "", "", "", "", "", "")
-			.then(res => {
-				if (res.status === 200 && res.data.success === true) {
-					setProject(res.data.data[0])
-				} else {
-					toast({
-						title: "获取项目失败",
-						variant: "destructive"
-					})
-				}
-			})
-			.catch(err => console.log(err))
+		refresh()
 		fetchProjectStatuses(projectStatuses, setProjectStatuses)
 		fetchIssueStatuses(issueStatuses, setIssueStatuses)
+		fetchUserOptions(userOptions, setUserOptions)
+		fetchProjectPrivileges(projectPrivileges, setProjectPrivileges)
 		refreshChartData()
 	}, [])
 	return (
 		<div>
 			<div className="w-full flex flex-row space-x-2 h-full p-1">
 				<Card className="w-1/3">
-					<CardHeader className="px-6 py-3">
-						<CardTitle className="flex flex-row space-x-3 items-end">
-							<span className="text-3xl font-semibold leading-none tracking-tight">
-								{project?.project_name}
+					<CardHeader className="px-6 py-3 flex flex-row justify-between">
+						<CardTitle className="flex flex-row space-x-3 text-end">
+							<span className="text-2xl font-semibold leading-none tracking-tight">
+								{project.project_name}
 							</span>
-							<span className="text-base font-thin tracking-tight align-text-bottom">
-								{project?.project_code}
+							<span className="text-2xl font-thin tracking-tight align-text-bottom">
+								{project.project_code}
 							</span>
-							{project?.privilege === "Private" && (
-								<Badge variant="outline" className="text-sm">
+							{project.privilege === "Private" && (
+								<Badge
+									variant="outline"
+									className="text-sm h-[30px]"
+								>
 									私有
 								</Badge>
 							)}
 						</CardTitle>
+						<div className="flex flex-row space-x-1">
+							<ProjectEdit
+								project={project}
+								userOptions={userOptions}
+								projectStatuses={projectStatuses}
+								projectPrivileges={projectPrivileges}
+								refresh={refresh}
+							/>
+						</div>
 					</CardHeader>
 					<CardContent className="flex flex-col space-y-3 p-9">
 						<div className="flex flex-col space-y-2">
@@ -198,7 +226,7 @@ const Project: React.FC = () => {
 								</Label>
 								<div className="text-sm font-normal text-muted-foreground">
 									{statusValue2label(
-										project?.status as string,
+										project.status,
 										projectStatuses
 									)}
 								</div>
@@ -208,7 +236,7 @@ const Project: React.FC = () => {
 									创建者
 								</Label>
 								<div className="text-sm font-normal text-muted-foreground">
-									{formatOwner(project?.owner as User)}
+									{formatOwner(project.owner)}
 								</div>
 							</div>
 							<div className="flex flex-row justify-between">
@@ -216,33 +244,31 @@ const Project: React.FC = () => {
 									成员
 								</Label>
 								<div className="text-sm font-normal text-muted-foreground">
-									{formatMembers(
-										project?.participants as User[]
-									)}
+									{formatMembers(project.participants)}
 								</div>
 							</div>
 							<div className="flex flex-row justify-between">
 								<Label className="text-base font-medium">
-									开始日期
+									开始
 								</Label>
 								<div className="text-sm font-normal text-muted-foreground">
-									{project?.start_date}
+									{project.start_date}
 								</div>
 							</div>
 							<div className="flex flex-row justify-between">
 								<Label className="text-base font-medium">
-									结束日期
+									结束
 								</Label>
 								<div className="text-sm font-normal text-muted-foreground">
-									{project?.end_date ?? "未设定"}
+									{project.end_date ?? "未设定"}
 								</div>
 							</div>
 							<div className="flex flex-row justify-between overflow-y-auto max-h-[200px]">
 								<Label className="text-base font-medium">
-									项目描述
+									描述
 								</Label>
-								<div className="text-sm font-normal text-muted-foreground">
-									{project?.description}
+								<div className="text-sm font-normal text-muted-foreground w-48 max-h-24 overflow-y-scroll">
+									{project.description}
 								</div>
 							</div>
 						</div>
@@ -428,6 +454,7 @@ const Project: React.FC = () => {
 												</Pie>
 											</PieChart>
 										</ChartContainer>
+										{/* TODO: 标签不正确显示 */}
 									</div>
 								</CollapsibleContent>
 							</Collapsible>

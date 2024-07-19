@@ -46,7 +46,7 @@ async def new_issue(issue: "IssueReq",
     res = db.insert_issue(issue_do)
     if res is None:
         return {"success": False, "reason": "Internal error"}
-    return {"success": True}
+    return {"success": True, "data": res}
 
 
 @router.post('/delete')

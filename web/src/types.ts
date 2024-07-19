@@ -34,6 +34,18 @@ type Project = {
 	participants: User[]
 }
 
+const defaultProject = () => {
+	return {
+		project_code: "",
+		project_name: "",
+		start_date: "",
+		owner: {},
+		status: "",
+		privilege: "",
+		participants: []
+	}
+}
+
 type Issue = {
 	issue_code: string
 	project: Project
@@ -48,4 +60,20 @@ type Issue = {
 	assigned?: User[]
 }
 
+const defaultIssue = () => {
+	return {
+		issue_code: "",
+		project: defaultProject(),
+		issue_id: 0,
+		title: "",
+		owner: {},
+		propose_date: "",
+		status: "",
+		followers: [],
+		assigned: []
+	}
+}
+
 export type { User, UserRole, UserGroup, Project, Issue }
+
+export { defaultProject, defaultIssue }

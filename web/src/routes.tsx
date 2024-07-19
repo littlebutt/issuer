@@ -11,6 +11,7 @@ import Projects from "./projects"
 import User from "./user"
 import Project from "./project"
 import MyIssue from "./my-issue"
+import Issue from "./issue"
 
 const router = [
 	{
@@ -56,6 +57,10 @@ const router = [
 			{
 				path: "project/:projectCode",
 				element: <Project />
+			},
+			{
+				path: "issue/:issueCode",
+				element: <Issue />
 			}
 		]
 	}

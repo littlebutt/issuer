@@ -19,6 +19,7 @@ import { Badge } from "./components/ui/badge"
 import { useCookie } from "./lib/cookies"
 import { getIssues, getIssuesCount } from "./fetch"
 import { toast } from "./components/ui/use-toast"
+import { formatIssue, formatProject } from "./utils"
 
 const MyIssue: React.FC = () => {
 	const [tableContent, setTableContent] = useState<Issue[]>([])
@@ -155,18 +156,10 @@ const MyIssue: React.FC = () => {
 												#{idx + 1}
 											</TableCell>
 											<TableCell className="overflow-hidden">
-												{content.title}
+												{formatIssue(content)}
 											</TableCell>
 											<TableCell>
-												<a
-													className="hover:underline"
-													href={`/#/main/project/${content.project.project_code}`}
-												>
-													{
-														content.project
-															.project_name
-													}
-												</a>
+												{formatProject(content.project)}
 											</TableCell>
 											<TableCell>
 												{content.propose_date}
