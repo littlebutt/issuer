@@ -90,7 +90,6 @@ async def change_issue(issue: "IssueReq",
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
-    issue = empty_strings_to_none(issue)
     issue_dos = db.list_issues_by_condition(issue_code=issue.issue_code)
     if len(issue_dos) == 0:
         return {"success": False, "reason": "Cannot find issue"}
@@ -108,6 +107,38 @@ async def change_issue(issue: "IssueReq",
     issue_do.description = issue.description \
         if issue.description is not None else issue_do.description
     res = db.update_issue_by_code(issue_do)
+    return {"success": res}
+
+
+@router.get('/follow')
+async def follow_issue(issue_code: str,
+                       action: int,
+                       current_user: Annotated[str | None, Cookie()] = None):
+    '''
+    关注或取关议题。
+
+    Args:
+        issue_code: 议题码。
+        action: 关注或取关，:obj:`True`代表关注，:obj:`False`代表取关。
+        current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
+            形式。
+
+    '''
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {"success": False, "reason": "Invalid token"}
+    issue_dos = db.list_issues_by_condition(issue_code=issue_code)
+    if len(issue_dos) == 0:
+        return {"success": False, "reason": "Cannot find issue"}
+    issue_do = issue_dos[0]
+
+    followers = issue_do.followers.split(",")
+    if action == 1 and _user.user_code not in issue_do.followers:
+        followers.append(_user.user_code)
+    if action == 0 and _user.user_code in issue_do.followers:
+        followers.remove(_user.user_code)
+    issue_do.followers = ",".join(followers)
+    res = db.update_issue_by_code(issue=issue_do)
     return {"success": res}
 
 

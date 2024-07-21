@@ -5,8 +5,8 @@ from fastapi import APIRouter, Cookie, Form, UploadFile
 
 from issuer import db
 from issuer.db.models import IssueComment
-from issuer.routers.models import IssueCommentReq, IssueCommentRes, IssueReq, \
-    UserModel
+from issuer.routers.convertors import convert_comment
+from issuer.routers.models import IssueCommentReq, IssueCommentRes
 from issuer.routers.users import check_cookie, get_statics
 
 
@@ -49,7 +49,8 @@ async def fold_comment(issue_comment: "IssueCommentReq",
     return {"success": res}
 
 
-@router.get('/list', response_model=List[IssueCommentRes] | Dict)
+@router.get('/list_comments',
+            response_model=Dict[str, str | List[IssueCommentRes] | bool])
 async def list_comment(issue_code: str,
                        current_user: Annotated[str | None, Cookie()] = None):
     _user = check_cookie(cookie=current_user)
@@ -58,24 +59,10 @@ async def list_comment(issue_code: str,
     comments = db.list_issue_comment_by_issue(issue_code)
     res = list()
     for comment in comments:
-        commenter = db.find_user_by_code(comment.commenter)
-        res.append(IssueCommentRes(
-            comment_code=comment.comment_code,
-            issue_code=comment.issue_code,
-            comment_time=datetime.strftime(comment.comment_time,
-                                           '%Y-%m-%d %H:%M:%S'),
-            commenter=UserModel(user_code=commenter.user_code,
-                                user_name=commenter.user_name,
-                                email=commenter.email,
-                                role=commenter.role,
-                                description=commenter.description,
-                                phone=commenter.phone,
-                                avatar=commenter.avatar
-                                ),
-            fold=comment.fold,
-            content=comment.content,
-            appendices=comment.appendices))
-    return res
+        if comment is None:
+            continue
+        res.append(convert_comment(comment))
+    return {"success": True, "data": res}
 
 
 @router.post('/upload_appendix')

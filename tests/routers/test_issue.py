@@ -214,3 +214,34 @@ def test_count_issues_by_condition():
                      cookies=cookie)
     assert res.json()['success'] is True
     assert res.json()['data'] == 1
+
+
+def test_follow_issue():
+    cookie, user_code = get_cookie()
+    res = client.post('/project/new',
+                      json={
+                          "project_name": "test_project",
+                          "start_date": "2024-06-05",
+                          "privilege": "Start"
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+
+    res = client.get(f'/project/participants?user_code={user_code}',
+                     cookies=cookie)
+    assert res.json()["success"] is True
+    project_code = res.json()["data"][0]['project_code']
+    res = client.post('/issue/new',
+                      json={
+                          "project_code": project_code,
+                          "title": "test_issue",
+                          "tags": "test,new",
+                          "assigned": user_code
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+    issue_code = res.json()["data"]
+
+    res = client.get(f'/issue/follow?issue_code={issue_code}&action={0}',
+                     cookies=cookie)
+    assert res.json()["success"] is True

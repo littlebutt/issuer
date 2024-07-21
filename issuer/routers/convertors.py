@@ -2,8 +2,9 @@ from datetime import datetime
 import logging
 from typing import List
 from issuer import db
-from issuer.db import UserGroup, User, Project, Issue
-from issuer.routers.models import IssueRes, ProjectRes, UserGroupRes, UserModel
+from issuer.db import UserGroup, User, Project, Issue, IssueComment
+from issuer.routers.models import IssueCommentRes, IssueRes, ProjectRes, \
+    UserGroupRes, UserModel
 
 
 Logger = logging.getLogger(__name__)
@@ -113,3 +114,21 @@ def convert_issue(do_: Issue) -> "IssueRes":
         assigned=assigneds
     )
     return res
+
+
+def convert_comment(do_: IssueComment) -> "IssueCommentRes":
+    commenter_do = db.find_user_by_code(do_.commenter)
+    if commenter_do is None:
+        Logger.error("Cannot find User with user_code: "
+                     f"{do_.commenter}")
+    return IssueCommentRes(
+        comment_code=do_.comment_code,
+        issue_code=do_.issue_code,
+        comment_time=datetime.strftime(do_.comment_time,
+                                       '%Y-%m-%d %H:%M:%S'),
+        commenter=convert_user(commenter_do),
+        fold=do_.fold,
+        content=do_.content,
+        appendices=do_.appendices.split(",")
+        if do_.appendices is not None else []
+    )

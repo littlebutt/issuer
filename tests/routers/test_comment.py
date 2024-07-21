@@ -144,8 +144,9 @@ def test_list_comment():
                       cookies=cookie)
     assert res.json()['success'] is True
 
-    res = client.get(f'/comment/list?issue_code={issue_code}')
-    assert len(res.json()) > 0
+    res = client.get(f'/comment/list_comments?issue_code={issue_code}',
+                     cookies=cookie)
+    assert len(res.json()["data"]) > 0
 
 
 def test_upload_appendix():

@@ -106,4 +106,4 @@ class IssueCommentRes(BaseModel):
     commenter: UserModel
     fold: bool
     content: str
-    appendices: str | None = None
+    appendices: List[str]
