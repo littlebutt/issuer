@@ -74,6 +74,16 @@ const defaultIssue = () => {
 	}
 }
 
-export type { User, UserRole, UserGroup, Project, Issue }
+type Comment = {
+	comment_code: string
+	issue_code: string
+	comment_time: string
+	commenter?: User
+	fold: boolean
+	content: string
+	appendices: string[]
+}
+
+export type { User, UserRole, UserGroup, Project, Issue, Comment }
 
 export { defaultProject, defaultIssue }

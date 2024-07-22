@@ -56,11 +56,7 @@ const Header: React.FC = () => {
 					<HoverCardTrigger>
 						<Avatar>
 							<AvatarImage
-								src={
-									userInfo.avatar
-										? userInfo.avatar
-										: "/statics/avatar.png"
-								}
+								src={userInfo.avatar ?? "/statics/avatar.png"}
 								alt="avatar"
 							/>
 							<AvatarFallback>
@@ -71,9 +67,7 @@ const Header: React.FC = () => {
 					<HoverCardContent className="w-30 h-30 my-1 p-0">
 						<div className="flex flex-col items-center p-0">
 							<span className="text-sm pb-1">
-								{userInfo.user_name
-									? userInfo.user_name
-									: "unknown"}
+								{userInfo.user_name ?? "unknown"}
 							</span>
 							<Button
 								variant="link"

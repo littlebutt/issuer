@@ -267,7 +267,7 @@ const Project: React.FC = () => {
 								<Label className="text-base font-medium">
 									描述
 								</Label>
-								<div className="text-sm font-normal text-muted-foreground w-48 max-h-24 overflow-y-scroll">
+								<div className="text-sm font-normal text-muted-foreground w-48 max-h-24 overflow-y-auto">
 									{project.description}
 								</div>
 							</div>

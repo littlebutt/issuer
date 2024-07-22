@@ -81,20 +81,49 @@ const deleteIssueApi = (toast: any, refresh: () => void, issueCode: string) => {
 		data: {
 			issue_code: issueCode
 		}
-	}).then(res => {
-		if (res.status === 200 && res.data.success === true) {
-			toast({
-				title: "删除成功",
-				variant: "success"
-			})
-			refresh()
-		} else {
-			toast({
-				title: "删除失败",
-				variant: "destructive"
-			})
-		}
 	})
+		.then(res => {
+			if (res.status === 200 && res.data.success === true) {
+				toast({
+					title: "删除成功",
+					variant: "success"
+				})
+				refresh()
+			} else {
+				toast({
+					title: "删除失败",
+					variant: "destructive"
+				})
+			}
+		})
+		.catch(err => console.log(err))
 }
 
-export { newIssueApi, updateIssueApi, deleteIssueApi }
+const followIssueApi = (
+	toast: any,
+	refresh: () => void,
+	issueCode: string,
+	action: number
+) => {
+	axios({
+		method: "GET",
+		url: `/issue/follow?issue_code=${issueCode}&action=${action}`
+	})
+		.then(res => {
+			if (res.status === 200 && res.data.success === true) {
+				toast({
+					title: "关注成功",
+					variant: "success"
+				})
+				refresh()
+			} else {
+				toast({
+					title: "关注失败",
+					variant: "destructive"
+				})
+			}
+		})
+		.catch(err => console.log(err))
+}
+
+export { newIssueApi, updateIssueApi, deleteIssueApi, followIssueApi }

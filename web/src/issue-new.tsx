@@ -45,7 +45,7 @@ const IssueNew: React.FC<IIssueNew> = props => {
 		newIssueApi(
 			toast,
 			(issueCode: string) => {
-				navigate(`/#/main/issue/${issueCode}`)
+				navigate(`/main/issue/${issueCode}`)
 			},
 			props.projectCode,
 			title,
