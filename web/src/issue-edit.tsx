@@ -140,7 +140,7 @@ const IssueEdit: React.FC<IIssueEdit> = props => {
 							</div>
 							<div className="flex flex-col space-y-1">
 								<Label>指派</Label>
-								{/* TODO: 组件无法删除指派 */}
+								{/* TODO: 组件删除指派影响关注和标签 */}
 								<MultiSelector
 									values={assigned}
 									onValuesChange={setAssigned}

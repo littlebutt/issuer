@@ -1,12 +1,15 @@
 import React from "react"
 import { Comment } from "./types"
 import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar"
+import useMarked from "./lib/marked"
 
 interface IIssueCommentItem {
 	comment: Comment
 }
 
 const IssueCommentItem: React.FC<IIssueCommentItem> = props => {
+	const marked = useMarked()
+
 	return (
 		<div className="grid grid-cols-[1fr,11fr] align-top">
 			<Avatar className="mt-1 left-5">
@@ -24,12 +27,12 @@ const IssueCommentItem: React.FC<IIssueCommentItem> = props => {
 					<div className="text-base font-semibold">
 						{props.comment.commenter?.user_name}
 					</div>
-					<div className="text-base font-thin">
+					<div className="text-sm font-thin">
 						{props.comment.comment_time}
 					</div>
 				</div>
 				<div className="rounded-b-lg border border-zinc-200 mx-1 mb-1 p-4 min-h-16">
-					{props.comment.content}
+					{marked.parse(props.comment.content)}
 				</div>
 			</div>
 		</div>

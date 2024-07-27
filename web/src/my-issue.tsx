@@ -115,7 +115,7 @@ const MyIssue: React.FC = () => {
 	return (
 		<div>
 			<div className="flex flex-col space-y-1 w-full px-5 py-0 gap-0 h-full">
-				<div className="flex flex-row justify-between">
+				<div className="flex flex-row justify-between h-10">
 					<div className="text-2xl font-semibold leading-none tracking-tight">
 						我的议题
 					</div>

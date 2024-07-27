@@ -1,14 +1,26 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs"
 import { Button } from "./components/ui/button"
 import { Bold, Code, Heading, Italic, Paperclip, TextQuote } from "lucide-react"
 import { Textarea } from "./components/ui/textarea"
-import Markdown from "marked-react"
 import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
+import { newIssueCommentApi, uploadAppendix } from "./issue-comment-api"
+import { useToast } from "./components/ui/use-toast"
+import useMarked from "./lib/marked"
 
-const IssueCommentText: React.FC = () => {
+interface IIssueCommentText {
+	issueCode: string
+	refresh: () => void
+}
+
+const IssueCommentText: React.FC<IIssueCommentText> = props => {
 	const [commentContent, setCommentContent] = useState<string>("")
+
+	const [appendixUrl, setAppendixUrl] = useState<string>("")
+
+	const { toast } = useToast()
+	const marked = useMarked()
 
 	const addHeading = () => {
 		let newContent = commentContent + "\n###\n"
@@ -37,8 +49,41 @@ const IssueCommentText: React.FC = () => {
 
 	const uploadFile = (e: any) => {
 		let target = document.querySelector("#fileUpload") as any
-		console.log(target.files)
+		let newContent = commentContent + "\n![图片上传中](url)\n"
+		setCommentContent(newContent)
+		uploadAppendix(target.files[0], props.issueCode)
+			.then(res => {
+				if (res.status === 200 && res.data.success === true) {
+					setAppendixUrl(
+						`${window.location.protocol}//${window.location.host}${res.data.filename}`
+					)
+				} else {
+					toast({
+						title: "上传失败",
+						variant: "destructive"
+					})
+				}
+			})
+			.catch(err => console.log(err))
 	}
+
+	const newComment = () => {
+		newIssueCommentApi(
+			toast,
+			props.refresh,
+			props.issueCode,
+			commentContent
+		)
+	}
+
+	useEffect(() => {
+		let newContent = commentContent.replace(
+			"![图片上传中](url)",
+			`![图片](${appendixUrl})`
+		)
+		setCommentContent(newContent)
+	}, [appendixUrl])
+
 	return (
 		<div>
 			<Tabs defaultValue="write">
@@ -97,8 +142,13 @@ const IssueCommentText: React.FC = () => {
 					value="preview"
 					className="m-2 mt-0 border border-zinc-200 rounded-b-sm p-2 border-x border-b"
 				>
-					<Markdown>{commentContent}</Markdown>
+					{marked.parse(commentContent)}
 				</TabsContent>
+				<div className="w-full flex justify-end">
+					<Button className="w-[100px] px-2" onClick={newComment}>
+						评论
+					</Button>
+				</div>
 			</Tabs>
 		</div>
 	)

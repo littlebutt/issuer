@@ -10,7 +10,7 @@ import { getIssues } from "./fetch"
 import { useToast } from "./components/ui/use-toast"
 import IssueEdit from "./issue-edit"
 import { useCookie } from "./lib/cookies"
-import { followIssueApi, updateIssueApi } from "./issue-api"
+import { followIssueApi } from "./issue-api"
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -23,7 +23,6 @@ import {
 	AlertDialogTrigger
 } from "./components/ui/alert-dialog"
 import { CircleX } from "lucide-react"
-import IssueComment from "./issue-comment-item"
 import IssueCommentList from "./issue-comment-list"
 
 const Issue: React.FC = () => {
@@ -88,16 +87,6 @@ const Issue: React.FC = () => {
 	useEffect(() => {
 		refresh()
 	}, [])
-
-	let testComment = {
-		comment_code: "",
-		issue_code: "",
-		comment_time: "2024-7-20 10:42:00",
-		commenter: { user_name: "测试用户" },
-		fold: false,
-		content: "这是评论，很长很长很长很长",
-		appendices: []
-	}
 
 	return (
 		<div className="w-full flex flex-row space-x-2 p-1">
@@ -205,7 +194,7 @@ const Issue: React.FC = () => {
 				</CardContent>
 			</Card>
 			<div className="w-2/3">
-				<IssueCommentList issue={issue} comments={[]} />
+				<IssueCommentList issue={issue} />
 			</div>
 		</div>
 	)

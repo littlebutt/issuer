@@ -25,7 +25,7 @@ import { Button } from "./components/ui/button"
 import { formatMembers, formatOwner } from "./utils"
 
 const User: React.FC = () => {
-	// TODO: 更改布局
+	// TODO: 更改布局，添加用户组织项目的hover card
 	const { userCode } = useParams()
 
 	const { toast } = useToast()
