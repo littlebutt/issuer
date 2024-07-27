@@ -77,6 +77,7 @@ async def upload_appendix(file: "UploadFile",
         }
     try:
         filename = f"{issue_code}_{file.filename}"
+        filename = filename.replace(" ", "_")
         data = await file.read()
         with open(os.path.join(get_statics(), filename), "wb") as f:
             f.write(data)

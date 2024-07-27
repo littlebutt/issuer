@@ -426,5 +426,6 @@ async def stat_issue_date(project_code: str,
     keys = [key_date.strftime("%Y-%m-%d") for key_date in keys]
     res = dict.fromkeys(keys, 0)
     for issue in issues:
-        res[issue.propose_date.strftime("%Y-%m-%d")] += 1
+        if issue.propose_date.strftime("%Y-%m-%d") in res.keys():
+            res[issue.propose_date.strftime("%Y-%m-%d")] += 1
     return {"success": True, "data": res}
