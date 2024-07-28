@@ -133,159 +133,152 @@ const Groups: React.FC = () => {
 	}, [])
 
 	return (
-		<div>
-			<div className="flex flex-col space-y-1 w-full px-5 py-0 gap-0 h-full">
-				<div className="flex justify-between">
-					<div className="text-2xl font-semibold leading-none tracking-tight">
-						探索组织
-					</div>
-					<div className="flex flex-row space-x-2">
-						<div className="flex flex-row space-x-0">
-							<Label
-								htmlFor="group-name"
-								className="w-[70px] pt-1 text-base font-semibold"
-							>
-								名称
-							</Label>
-							<Input
-								className="h-8"
-								id="group-name"
-								onChange={e => setGroupName(e.target.value)}
-								value={groupName}
-							></Input>
-						</div>
-						<div className="flex flex-row space-x-0 px-3">
-							<Label
-								htmlFor="owner"
-								className="w-[70px] pt-1 text-base font-semibold"
-							>
-								创建者
-							</Label>
-							<Select
-								onValueChange={v => setOwner(v)}
-								value={owner}
-							>
-								<SelectTrigger className="md:w-[187px] h-8">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									{userOptions.map(o => (
-										<SelectItem value={o.value}>
-											{o.label}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-						</div>
-						<Button onClick={search}>搜索</Button>
-						<Button variant="outline" onClick={clearInput}>
-							重置
-						</Button>
-					</div>
+		<div className="flex flex-col space-y-1 w-full px-5 py-0 gap-0 h-full">
+			<div className="flex justify-between h-[6%]">
+				<div className="text-3xl font-semibold leading-none tracking-tight">
+					探索组织
 				</div>
-				<div className="flex justify-center h-[86vh]">
-					<div className="w-full border rounded-lg border-zinc-200 p-2 shadow-sm">
-						<div className="w-full min-h-[95%]">
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead className="w-[10%]">
-											编号
-										</TableHead>
-										<TableHead className="w-1/5">
-											名称
-										</TableHead>
-										<TableHead className="w-1/5">
-											创建者
-										</TableHead>
-										<TableHead className="w-[30%]">
-											成员
-										</TableHead>
-										<TableHead className="w-1/5">
-											操作
-										</TableHead>
+				<div className="flex flex-row space-x-2">
+					<div className="flex flex-row space-x-0">
+						<Label
+							htmlFor="group-name"
+							className="w-[70px] pt-1 text-base font-semibold"
+						>
+							名称
+						</Label>
+						<Input
+							className="h-8"
+							id="group-name"
+							onChange={e => setGroupName(e.target.value)}
+							value={groupName}
+						></Input>
+					</div>
+					<div className="flex flex-row space-x-0 px-3">
+						<Label
+							htmlFor="owner"
+							className="w-[70px] pt-1 text-base font-semibold"
+						>
+							创建者
+						</Label>
+						<Select onValueChange={v => setOwner(v)} value={owner}>
+							<SelectTrigger className="md:w-[187px] h-8">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								{userOptions.map(o => (
+									<SelectItem value={o.value}>
+										{o.label}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+					<Button onClick={search}>搜索</Button>
+					<Button variant="outline" onClick={clearInput}>
+						重置
+					</Button>
+				</div>
+			</div>
+			<div className="flex justify-center h-[92%]">
+				<div className="w-full border rounded-lg border-zinc-200 p-2 shadow-sm">
+					<div className="w-full min-h-[95%]">
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead className="w-[10%]">
+										编号
+									</TableHead>
+									<TableHead className="w-1/5">
+										名称
+									</TableHead>
+									<TableHead className="w-1/5">
+										创建者
+									</TableHead>
+									<TableHead className="w-[30%]">
+										成员
+									</TableHead>
+									<TableHead className="w-1/5">
+										操作
+									</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{tableContent.map((content, idx) => (
+									<TableRow
+										key={content.group_code}
+										className="h-[10px]"
+									>
+										<TableCell className="font-semibold">
+											#{idx + 1}
+										</TableCell>
+										<TableCell>
+											{content.group_name}
+										</TableCell>
+										<TableCell>
+											{formatOwner(content.owner)}
+										</TableCell>
+										<TableCell>
+											<TooltipProvider>
+												<Tooltip>
+													<TooltipTrigger>
+														{formatMembers(
+															content.members
+														)}
+													</TooltipTrigger>
+													<TooltipContent>
+														<Card className="flex items-center bg-slate-900 text-slate-200 max-w-[300px] h-[30px] mb-[-5px]">
+															<CardContent className="p-1">
+																{content.members
+																	.map(
+																		u =>
+																			u.user_name
+																	)
+																	.join("/")}
+															</CardContent>
+														</Card>
+													</TooltipContent>
+												</Tooltip>
+											</TooltipProvider>
+										</TableCell>
+										<TableCell className="space-x-1">
+											<GroupOperation
+												isMine={false}
+												content={content}
+												userOptions={userOptions}
+												refresh={refresh}
+											/>
+										</TableCell>
 									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{tableContent.map((content, idx) => (
-										<TableRow
-											key={content.group_code}
-											className="h-[10px]"
-										>
-											<TableCell className="font-semibold">
-												#{idx + 1}
-											</TableCell>
-											<TableCell>
-												{content.group_name}
-											</TableCell>
-											<TableCell>
-												{formatOwner(content.owner)}
-											</TableCell>
-											<TableCell>
-												<TooltipProvider>
-													<Tooltip>
-														<TooltipTrigger>
-															{formatMembers(
-																content.members
-															)}
-														</TooltipTrigger>
-														<TooltipContent>
-															<Card className="flex items-center bg-slate-900 text-slate-200 max-w-[300px] h-[30px] mb-[-5px]">
-																<CardContent className="p-1">
-																	{content.members
-																		.map(
-																			u =>
-																				u.user_name
-																		)
-																		.join(
-																			"/"
-																		)}
-																</CardContent>
-															</Card>
-														</TooltipContent>
-													</Tooltip>
-												</TooltipProvider>
-											</TableCell>
-											<TableCell className="space-x-1">
-												<GroupOperation
-													isMine={false}
-													content={content}
-													userOptions={userOptions}
-													refresh={refresh}
-												/>
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-						</div>
-						<div className="flex justify-start w-fit h-10">
-							<Pagination>
-								<PaginationContent>
-									<PaginationItem>
-										<Button
-											variant="ghost"
-											onClick={gotoPrevious}
-											size="xs"
-										>
-											<ChevronLeft />
-										</Button>
-									</PaginationItem>
-									<PaginationItem className="w-[100px] flex justify-center mx-0">
-										第{pageNum}页/共{pageTotal}页
-									</PaginationItem>
-									<PaginationItem>
-										<Button
-											variant="ghost"
-											onClick={gotoNext}
-											size="xs"
-										>
-											<ChevronRight />
-										</Button>
-									</PaginationItem>
-								</PaginationContent>
-							</Pagination>
-						</div>
+								))}
+							</TableBody>
+						</Table>
+					</div>
+					<div className="flex justify-start w-fit h-10">
+						<Pagination>
+							<PaginationContent>
+								<PaginationItem>
+									<Button
+										variant="ghost"
+										onClick={gotoPrevious}
+										size="xs"
+									>
+										<ChevronLeft />
+									</Button>
+								</PaginationItem>
+								<PaginationItem className="w-[100px] flex justify-center mx-0">
+									第{pageNum}页/共{pageTotal}页
+								</PaginationItem>
+								<PaginationItem>
+									<Button
+										variant="ghost"
+										onClick={gotoNext}
+										size="xs"
+									>
+										<ChevronRight />
+									</Button>
+								</PaginationItem>
+							</PaginationContent>
+						</Pagination>
 					</div>
 				</div>
 			</div>

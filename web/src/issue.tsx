@@ -131,49 +131,49 @@ const Issue: React.FC = () => {
 				<CardContent className="flex flex-col space-y-3 p-9">
 					<div className="flex flex-col space-y-2">
 						<div className="flex flex-row justify-between">
-							<Label className="text-base font-medium">
+							<Label className="text-sm font-normal text-muted-foreground">
 								项目
 							</Label>
-							<div className="text-sm font-normal text-muted-foreground">
+							<div className="text-base font-medium">
 								{formatProject(issue?.project)}
 							</div>
 						</div>
 						<div className="flex flex-row justify-between">
-							<Label className="text-base font-medium">
+							<Label className="text-sm font-normal text-muted-foreground">
 								创建者
 							</Label>
-							<div className="text-sm font-normal text-muted-foreground">
+							<div className="text-base font-medium">
 								{formatOwner(issue?.owner as User)}
 							</div>
 						</div>
 						<div className="flex flex-row justify-between">
-							<Label className="text-base font-medium">
+							<Label className="text-sm font-normal text-muted-foreground">
 								关注
 							</Label>
-							<div className="text-sm font-normal text-muted-foreground">
+							<div className="text-base font-medium">
 								{formatMembers(issue?.followers as User[])}
 							</div>
 						</div>
 						<div className="flex flex-row justify-between">
-							<Label className="text-base font-medium">
+							<Label className="text-sm font-normal text-muted-foreground">
 								指派给
 							</Label>
-							<div className="text-sm font-normal text-muted-foreground flex flex-row space-x-1">
+							<div className="text-base font-medium flex flex-row space-x-1">
 								{issue?.assigned?.map(user =>
 									formatOwner(user)
 								)}
 							</div>
 						</div>
 						<div className="flex flex-row justify-between">
-							<Label className="text-base font-medium">
+							<Label className="text-sm font-normal text-muted-foreground">
 								提出日期
 							</Label>
-							<div className="text-sm font-normal text-muted-foreground">
+							<div className="text-base font-medium">
 								{issue?.propose_date}
 							</div>
 						</div>
 						<div className="flex flex-row justify-between">
-							<Label className="text-base font-medium">
+							<Label className="text-sm font-normal text-muted-foreground">
 								标签
 							</Label>
 							<div className="text-sm font-normal flex flex-row flex-wrap space-x-1">

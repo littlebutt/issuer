@@ -188,313 +188,302 @@ const Project: React.FC = () => {
 		refreshChartData()
 	}, [])
 	return (
-		<div>
-			<div className="w-full flex flex-row space-x-2 h-full p-1">
-				<Card className="w-1/3">
-					<CardHeader className="px-6 py-3 flex flex-row justify-between">
-						<CardTitle className="flex flex-row space-x-3 text-end">
-							<span className="text-2xl font-semibold leading-none tracking-tight">
-								{project.project_name}
-							</span>
-							<span className="text-2xl font-thin tracking-tight align-text-bottom">
-								{project.project_code}
-							</span>
-							{project.privilege === "Private" && (
-								<Badge
-									variant="outline"
-									className="text-sm h-[30px]"
-								>
-									私有
-								</Badge>
-							)}
-						</CardTitle>
-						<div className="flex flex-row space-x-1">
-							<ProjectEdit
-								project={project}
-								userOptions={userOptions}
-								projectStatuses={projectStatuses}
-								projectPrivileges={projectPrivileges}
-								refresh={refresh}
-							/>
-						</div>
-					</CardHeader>
-					<CardContent className="flex flex-col space-y-3 p-9">
-						<div className="flex flex-col space-y-2">
-							<div className="flex flex-row justify-between">
-								<Label className="text-base font-medium">
-									状态
-								</Label>
-								<div className="text-sm font-normal text-muted-foreground">
-									{statusValue2label(
-										project.status,
-										projectStatuses
-									)}
-								</div>
-							</div>
-							<div className="flex flex-row justify-between">
-								<Label className="text-base font-medium">
-									创建者
-								</Label>
-								<div className="text-sm font-normal text-muted-foreground">
-									{formatOwner(project.owner)}
-								</div>
-							</div>
-							<div className="flex flex-row justify-between">
-								<Label className="text-base font-medium">
-									成员
-								</Label>
-								<div className="text-sm font-normal text-muted-foreground">
-									{formatMembers(project.participants)}
-								</div>
-							</div>
-							<div className="flex flex-row justify-between">
-								<Label className="text-base font-medium">
-									开始
-								</Label>
-								<div className="text-sm font-normal text-muted-foreground">
-									{project.start_date}
-								</div>
-							</div>
-							<div className="flex flex-row justify-between">
-								<Label className="text-base font-medium">
-									结束
-								</Label>
-								<div className="text-sm font-normal text-muted-foreground">
-									{project.end_date ?? "未设定"}
-								</div>
-							</div>
-							<div className="flex flex-row justify-between overflow-y-auto max-h-[200px]">
-								<Label className="text-base font-medium">
-									描述
-								</Label>
-								<div className="text-sm font-normal text-muted-foreground w-48 max-h-24 overflow-y-auto">
-									{project.description}
-								</div>
-							</div>
-						</div>
-						<div>
-							<Collapsible
-								open={isStatsOpen}
-								onOpenChange={setIsStatsOpen}
-								className="w-full space-y-2"
+		<div className="w-full flex flex-row space-x-2 h-full p-1">
+			<Card className="w-1/3">
+				<CardHeader className="px-6 py-3 flex flex-row justify-between">
+					<CardTitle className="flex flex-row space-x-3 text-end">
+						<span className="text-2xl font-semibold leading-none tracking-tight">
+							{project.project_name}
+						</span>
+						<span className="text-2xl font-thin tracking-tight align-text-bottom">
+							{project.project_code}
+						</span>
+						{project.privilege === "Private" && (
+							<Badge
+								variant="outline"
+								className="text-sm h-[30px]"
 							>
-								<div className="flex items-center justify-between space-x-4">
-									<div className="text-base font-medium">
-										统计
-									</div>
-									<CollapsibleTrigger asChild>
-										<Button
-											variant="ghost"
-											size="sm"
-											className="w-9 p-0"
-										>
-											<ChevronsUpDown className="h-4 w-4" />
-											<span className="sr-only">
-												Toggle
-											</span>
-										</Button>
-									</CollapsibleTrigger>
+								私有
+							</Badge>
+						)}
+					</CardTitle>
+					<div className="flex flex-row space-x-1">
+						<ProjectEdit
+							project={project}
+							userOptions={userOptions}
+							projectStatuses={projectStatuses}
+							projectPrivileges={projectPrivileges}
+							refresh={refresh}
+						/>
+					</div>
+				</CardHeader>
+				<CardContent className="flex flex-col space-y-3 p-9">
+					<div className="flex flex-col space-y-2">
+						<div className="flex flex-row justify-between">
+							<Label className="text-sm font-normal text-muted-foreground">
+								状态
+							</Label>
+							<div className="text-base font-medium">
+								{statusValue2label(
+									project.status,
+									projectStatuses
+								)}
+							</div>
+						</div>
+						<div className="flex flex-row justify-between">
+							<Label className="text-sm font-normal text-muted-foreground">
+								创建者
+							</Label>
+							<div className="text-base font-medium">
+								{formatOwner(project.owner)}
+							</div>
+						</div>
+						<div className="flex flex-row justify-between">
+							<Label className="text-sm font-normal text-muted-foreground">
+								成员
+							</Label>
+							<div className="text-base font-medium">
+								{formatMembers(project.participants)}
+							</div>
+						</div>
+						<div className="flex flex-row justify-between">
+							<Label className="text-sm font-normal text-muted-foreground">
+								开始
+							</Label>
+							<div className="text-base font-medium">
+								{project.start_date}
+							</div>
+						</div>
+						<div className="flex flex-row justify-between">
+							<Label className="text-sm font-normal text-muted-foreground">
+								结束
+							</Label>
+							<div className="text-base font-medium">
+								{project.end_date ?? "未设定"}
+							</div>
+						</div>
+						<div className="flex flex-row justify-between overflow-y-auto max-h-[200px]">
+							<Label className="text-sm font-normal text-muted-foreground">
+								描述
+							</Label>
+							<div className="text-base font-medium w-48 max-h-24 overflow-y-auto">
+								{project.description}
+							</div>
+						</div>
+					</div>
+					<div>
+						<Collapsible
+							open={isStatsOpen}
+							onOpenChange={setIsStatsOpen}
+							className="w-full space-y-2"
+						>
+							<div className="flex items-center justify-between space-x-4">
+								<div className="text-sm font-normal text-muted-foreground">
+									统计
 								</div>
-								<CollapsibleContent className="space-y-2">
-									<div className="text-sm text-muted-foreground flex flex-col items-start space-y-1">
-										<Popover>
-											<PopoverTrigger asChild>
-												<Button
-													variant={"outline"}
-													className={cn(
-														"w-[180px] h-9 px-1 py-1 justify-start text-left text-sm font-normal",
-														!statDate &&
-															"text-muted-foreground"
-													)}
-												>
-													{statDate?.from ? (
-														statDate.to ? (
-															<>
-																{format(
-																	statDate.from,
-																	"yyyy-MM-dd"
-																)}{" "}
-																-{" "}
-																{format(
-																	statDate.to,
-																	"yyyy-MM-dd"
-																)}
-															</>
-														) : (
-															format(
+								<CollapsibleTrigger asChild>
+									<Button
+										variant="ghost"
+										size="sm"
+										className="w-9 p-0"
+									>
+										<ChevronsUpDown className="h-4 w-4" />
+										<span className="sr-only">Toggle</span>
+									</Button>
+								</CollapsibleTrigger>
+							</div>
+							<CollapsibleContent className="space-y-2">
+								<div className="text-sm text-muted-foreground flex flex-col items-start space-y-1">
+									<Popover>
+										<PopoverTrigger asChild>
+											<Button
+												variant={"outline"}
+												className={cn(
+													"w-[180px] h-9 px-1 py-1 justify-start text-left text-sm font-normal",
+													!statDate &&
+														"text-muted-foreground"
+												)}
+											>
+												{statDate?.from ? (
+													statDate.to ? (
+														<>
+															{format(
 																statDate.from,
 																"yyyy-MM-dd"
-															)
-														)
+															)}{" "}
+															-{" "}
+															{format(
+																statDate.to,
+																"yyyy-MM-dd"
+															)}
+														</>
 													) : (
-														<span>选择日期</span>
-													)}
-												</Button>
-											</PopoverTrigger>
-											<PopoverContent className="w-auto p-0">
-												<Calendar
-													mode="range"
-													defaultMonth={
-														statDate?.from
-													}
-													selected={statDate}
-													onSelect={setStatDate}
-													initialFocus
-													numberOfMonths={2}
-													onDayBlur={refreshChartData}
-												/>
-											</PopoverContent>
-										</Popover>
-									</div>
-									<div>
-										<ChartContainer
-											config={dailyChartConfig}
-											className="min-h-[200px] w-full"
+														format(
+															statDate.from,
+															"yyyy-MM-dd"
+														)
+													)
+												) : (
+													<span>选择日期</span>
+												)}
+											</Button>
+										</PopoverTrigger>
+										<PopoverContent className="w-auto p-0">
+											<Calendar
+												mode="range"
+												defaultMonth={statDate?.from}
+												selected={statDate}
+												onSelect={setStatDate}
+												initialFocus
+												numberOfMonths={2}
+												onDayBlur={refreshChartData}
+											/>
+										</PopoverContent>
+									</Popover>
+								</div>
+								<div>
+									<ChartContainer
+										config={dailyChartConfig}
+										className="min-h-[200px] w-full"
+									>
+										<BarChart
+											accessibilityLayer
+											data={dailyChartData}
 										>
-											<BarChart
-												accessibilityLayer
-												data={dailyChartData}
+											<XAxis
+												dataKey="date"
+												tickLine={false}
+												tickMargin={10}
+												axisLine={false}
+												tickFormatter={value =>
+													value.substring(5)
+												}
+											/>
+											<ChartTooltip
+												content={
+													<ChartTooltipContent />
+												}
+											/>
+											<Bar
+												dataKey="value"
+												fill="var(--color-value)"
+												radius={4}
+											/>
+										</BarChart>
+									</ChartContainer>
+								</div>
+								<div>
+									<ChartContainer
+										config={statusChartConfig}
+										className="min-h-[200px] w-full"
+									>
+										<PieChart>
+											<ChartTooltip
+												cursor={false}
+												content={
+													<ChartTooltipContent
+														hideLabel
+													/>
+												}
+											/>
+											<Pie
+												data={statusChartData}
+												dataKey="value"
+												nameKey="status"
+												innerRadius={50}
+												strokeWidth={5}
+												paddingAngle={5}
 											>
-												<XAxis
-													dataKey="date"
-													tickLine={false}
-													tickMargin={10}
-													axisLine={false}
-													tickFormatter={value =>
-														value.substring(5)
-													}
-												/>
-												<ChartTooltip
-													content={
-														<ChartTooltipContent />
-													}
-												/>
-												<Bar
-													dataKey="value"
-													fill="var(--color-value)"
-													radius={4}
-												/>
-											</BarChart>
-										</ChartContainer>
-									</div>
-									<div>
-										<ChartContainer
-											config={statusChartConfig}
-											className="min-h-[200px] w-full"
-										>
-											<PieChart>
-												<ChartTooltip
-													cursor={false}
-													content={
-														<ChartTooltipContent
-															hideLabel
-														/>
-													}
-												/>
-												<Pie
-													data={statusChartData}
-													dataKey="value"
-													nameKey="status"
-													innerRadius={50}
-													strokeWidth={5}
-													paddingAngle={5}
-												>
-													<ChartLabel
-														content={({
-															viewBox
-														}) => {
-															if (
-																viewBox &&
-																"cx" in
-																	viewBox &&
-																"cy" in viewBox
-															) {
-																return (
-																	<text
+												<ChartLabel
+													content={({ viewBox }) => {
+														if (
+															viewBox &&
+															"cx" in viewBox &&
+															"cy" in viewBox
+														) {
+															return (
+																<text
+																	x={
+																		viewBox.cx
+																	}
+																	y={
+																		viewBox.cy
+																	}
+																	textAnchor="middle"
+																	dominantBaseline="middle"
+																>
+																	<tspan
 																		x={
 																			viewBox.cx
 																		}
 																		y={
 																			viewBox.cy
 																		}
-																		textAnchor="middle"
-																		dominantBaseline="middle"
+																		className="fill-foreground text-3xl font-bold"
 																	>
-																		<tspan
-																			x={
-																				viewBox.cx
-																			}
-																			y={
-																				viewBox.cy
-																			}
-																			className="fill-foreground text-3xl font-bold"
-																		>
-																			{
-																				chartTotal
-																			}
-																		</tspan>
-																		<tspan
-																			x={
-																				viewBox.cx
-																			}
-																			y={
-																				(viewBox.cy ||
-																					0) +
-																				24
-																			}
-																			className="fill-muted-foreground"
-																		>
-																			议题总数
-																		</tspan>
-																	</text>
-																)
-															}
-														}}
-													/>
-												</Pie>
-											</PieChart>
-										</ChartContainer>
-										{/* TODO: 标签不正确显示 */}
-									</div>
-								</CollapsibleContent>
-							</Collapsible>
-						</div>
-						<div>
-							<Collapsible
-								open={isAdvancedOpen}
-								onOpenChange={setIsAdvancedOpen}
-								className="w-full space-y-2"
-							>
-								<div className="flex items-center justify-between space-x-4">
-									<div className="text-base font-medium">
-										高级
-										{/* TODO: 修改高级 */}
-									</div>
-									<CollapsibleTrigger asChild>
-										<Button
-											variant="ghost"
-											size="sm"
-											className="w-9 p-0"
-										>
-											<ChevronsUpDown className="h-4 w-4" />
-											<span className="sr-only">
-												Toggle
-											</span>
-										</Button>
-									</CollapsibleTrigger>
+																		{
+																			chartTotal
+																		}
+																	</tspan>
+																	<tspan
+																		x={
+																			viewBox.cx
+																		}
+																		y={
+																			(viewBox.cy ||
+																				0) +
+																			24
+																		}
+																		className="fill-muted-foreground"
+																	>
+																		议题总数
+																	</tspan>
+																</text>
+															)
+														}
+													}}
+												/>
+											</Pie>
+										</PieChart>
+									</ChartContainer>
+									{/* TODO: 标签不正确显示 */}
 								</div>
-								<CollapsibleContent className="space-y-2">
-									<div className="rounded-md border px-4 py-3 font-mono text-sm">
-										Content
-									</div>
-								</CollapsibleContent>
-							</Collapsible>
-						</div>
-					</CardContent>
-				</Card>
-				<div className="w-2/3">
-					<IssuePanel projectCode={projectCode as string} />
-				</div>
+							</CollapsibleContent>
+						</Collapsible>
+					</div>
+					<div>
+						<Collapsible
+							open={isAdvancedOpen}
+							onOpenChange={setIsAdvancedOpen}
+							className="w-full space-y-2"
+						>
+							<div className="flex items-center justify-between space-x-4">
+								<div className="text-base font-medium">
+									高级
+									{/* TODO: 修改高级 */}
+								</div>
+								<CollapsibleTrigger asChild>
+									<Button
+										variant="ghost"
+										size="sm"
+										className="w-9 p-0"
+									>
+										<ChevronsUpDown className="h-4 w-4" />
+										<span className="sr-only">Toggle</span>
+									</Button>
+								</CollapsibleTrigger>
+							</div>
+							<CollapsibleContent className="space-y-2">
+								<div className="rounded-md border px-4 py-3 font-mono text-sm">
+									Content
+								</div>
+							</CollapsibleContent>
+						</Collapsible>
+					</div>
+				</CardContent>
+			</Card>
+			<div className="w-2/3">
+				<IssuePanel projectCode={projectCode as string} />
 			</div>
 		</div>
 	)

@@ -113,101 +113,97 @@ const MyIssue: React.FC = () => {
 	}, [])
 
 	return (
-		<div>
-			<div className="flex flex-col space-y-1 w-full px-5 py-0 gap-0 h-full">
-				<div className="flex flex-row justify-between h-10">
-					<div className="text-2xl font-semibold leading-none tracking-tight">
-						我的议题
-					</div>
+		<div className="flex flex-col space-y-1 w-full px-5 py-0 gap-0 h-full">
+			<div className="flex flex-row justify-between h-[6%]">
+				<div className="text-3xl font-semibold leading-none tracking-tight">
+					我的议题
 				</div>
-				<div className="flex justify-center h-[86vh]">
-					<div className="w-full border rounded-lg border-zinc-200 p-2 shadow-sm">
-						<div className="w-full min-h-[95%]">
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead className="w-1/10">
-											编号
-										</TableHead>
-										<TableHead className="w-1/5">
-											标题
-										</TableHead>
-										<TableHead className="w-1/5">
-											项目
-										</TableHead>
-										<TableHead className="w-1/5">
-											提出日期
-										</TableHead>
-										<TableHead className="w-1/5">
-											标签
-										</TableHead>
-										<TableHead className="w-1/10">
-											状态
-										</TableHead>
+			</div>
+			<div className="flex justify-center h-[92%]">
+				<div className="w-full border rounded-lg border-zinc-200 p-2 shadow-sm">
+					<div className="w-full min-h-[95%]">
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead className="w-1/10">
+										编号
+									</TableHead>
+									<TableHead className="w-1/5">
+										标题
+									</TableHead>
+									<TableHead className="w-1/5">
+										项目
+									</TableHead>
+									<TableHead className="w-1/5">
+										提出日期
+									</TableHead>
+									<TableHead className="w-1/5">
+										标签
+									</TableHead>
+									<TableHead className="w-1/10">
+										状态
+									</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{tableContent.map((content, idx) => (
+									<TableRow
+										key={content.issue_code}
+										className="h-[45px]"
+									>
+										<TableCell className="font-semibold">
+											#{idx + 1}
+										</TableCell>
+										<TableCell className="overflow-hidden">
+											{formatIssue(content)}
+										</TableCell>
+										<TableCell>
+											{formatProject(content.project)}
+										</TableCell>
+										<TableCell>
+											{content.propose_date}
+										</TableCell>
+										<TableCell className="space-x-1 w-full justify-start flex flex-row flex-wrap overflow-y-auto text-xs mt-2">
+											{content.tags
+												?.split(",")
+												.map(tag => (
+													<Badge>{tag}</Badge>
+												))}
+										</TableCell>
+										<TableCell>
+											{formatIssueStatus(content.status)}
+										</TableCell>
 									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{tableContent.map((content, idx) => (
-										<TableRow
-											key={content.issue_code}
-											className="h-[45px]"
-										>
-											<TableCell className="font-semibold">
-												#{idx + 1}
-											</TableCell>
-											<TableCell className="overflow-hidden">
-												{formatIssue(content)}
-											</TableCell>
-											<TableCell>
-												{formatProject(content.project)}
-											</TableCell>
-											<TableCell>
-												{content.propose_date}
-											</TableCell>
-											<TableCell className="space-x-1 w-full justify-start flex flex-row flex-wrap overflow-y-auto text-xs mt-2">
-												{content.tags
-													?.split(",")
-													.map(tag => (
-														<Badge>{tag}</Badge>
-													))}
-											</TableCell>
-											<TableCell>
-												{formatIssueStatus(
-													content.status
-												)}
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-						</div>
-						<div className="flex justify-start w-fit h-10">
-							<Pagination>
-								<PaginationContent>
-									<PaginationItem>
-										<Button
-											variant="ghost"
-											onClick={gotoPrevious}
-											size="xs"
-										>
-											<ChevronLeft />
-										</Button>
-									</PaginationItem>
-									<PaginationItem className="w-[100px] flex justify-center mx-0">
-										第{pageNum}页/共{pageTotal}页
-									</PaginationItem>
-									<PaginationItem>
-										<Button
-											variant="ghost"
-											onClick={gotoNext}
-											size="xs"
-										>
-											<ChevronRight />
-										</Button>
-									</PaginationItem>
-								</PaginationContent>
-							</Pagination>
-						</div>
+								))}
+							</TableBody>
+						</Table>
+					</div>
+					<div className="flex justify-start w-fit h-10">
+						<Pagination>
+							<PaginationContent>
+								<PaginationItem>
+									<Button
+										variant="ghost"
+										onClick={gotoPrevious}
+										size="xs"
+									>
+										<ChevronLeft />
+									</Button>
+								</PaginationItem>
+								<PaginationItem className="w-[100px] flex justify-center mx-0">
+									第{pageNum}页/共{pageTotal}页
+								</PaginationItem>
+								<PaginationItem>
+									<Button
+										variant="ghost"
+										onClick={gotoNext}
+										size="xs"
+									>
+										<ChevronRight />
+									</Button>
+								</PaginationItem>
+							</PaginationContent>
+						</Pagination>
 					</div>
 				</div>
 			</div>

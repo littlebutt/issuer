@@ -151,7 +151,7 @@ const User: React.FC = () => {
 			.catch(err => console.log(err))
 	}, [])
 	return (
-		<div className="flex flex-col items-center space-y-2 w-full py-0 h-[calc(100vh-55px)] overflow-y-auto">
+		<div className="flex flex-col items-center space-y-2 w-full py-0 h-full overflow-y-auto">
 			<div className="w-[600px] flex flex-col space-y-4">
 				<div className="flex flex-row space-x-3 items-end">
 					<span className="text-3xl font-semibold leading-none tracking-tight">

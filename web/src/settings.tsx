@@ -134,7 +134,7 @@ const Settings: React.FC = () => {
 	}, [])
 
 	return (
-		<div className="flex flex-col items-center space-y-2 w-full py-0 h-[calc(100vh-55px)] overflow-y-auto">
+		<div className="flex flex-col items-center space-y-2 w-full py-0">
 			<form>
 				<div className="w-[600px] space-y-2">
 					<div className="w-full">
@@ -174,8 +174,6 @@ const Settings: React.FC = () => {
 							</div>
 						</CardContent>
 					</Card>
-				</div>
-				<div className="w-[600px]">
 					<Card className="w-full">
 						<CardHeader>
 							<CardTitle>基本设置</CardTitle>

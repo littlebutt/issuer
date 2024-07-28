@@ -127,7 +127,7 @@ const Login: React.FC = () => {
 	}, [])
 
 	return (
-		<div className="grid grid-cols-[2fr_1fr] h-screen w-full bg-zinc-100">
+		<div className="grid grid-cols-[2fr_1fr] h-full w-full bg-zinc-100">
 			<div className=" bg-zinc-950 dark:bg-white"></div>
 			<div className="h-full grid place-items-center">
 				{loginMode ? (

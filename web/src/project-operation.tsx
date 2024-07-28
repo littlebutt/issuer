@@ -52,6 +52,7 @@ const ProjectOperation: React.FC<IProjectOperation> = props => {
 	const addProject = (newMember: string, projectCode: string) => {
 		addProjectApi(toast, props.refresh, projectCode, newMember)
 	}
+	// TODO: 修改删除按钮确认方式，嵌入项目界面
 
 	return (
 		<div className={cn("w-full h-full space-x-1", props.className)}>

@@ -69,7 +69,7 @@ const Layout: React.FC = () => {
 				className="bg-zinc-950 text-white"
 				menuList={menuList}
 			></SideMenu>
-			<div className="flex flex-col h-[98%]">
+			<div className="flex flex-col h-full">
 				<Header />
 				<Outlet />
 			</div>
