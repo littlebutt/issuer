@@ -250,3 +250,25 @@ class Metas(SQLModel, table=True):
 
     note: Optional[str]
     '''备注'''
+
+
+class Activity(SQLModel, table=True):
+    '''
+    用户活动内容，发号标识为AC。
+
+    '''
+    id: Optional[int] = Field(default=None, primary_key=True)
+    gmt_create: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    gmt_modified: Optional[datetime] = Field(default_factory=datetime.utcnow)
+
+    subject: str = Field(index=True)
+    '''活动主体，用户码标识'''
+
+    target: str = Field(index=True)
+    '''活动对象，可以是用户组，项目，议题和评论'''
+
+    category: str
+    '''活动行为，可以是New、Change、Delete'''
+
+    ext_info: Optional[str]
+    '''其他信息，用json字符串表示'''

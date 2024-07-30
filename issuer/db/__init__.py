@@ -1,6 +1,6 @@
 from issuer.db.database import DatabaseFactory
 from issuer.db.models import User, UserGroup, UserToUserGroup, Project, \
-    ProjectToUser, Issue, Metas, IssueComment
+    ProjectToUser, Issue, Metas, IssueComment, Activity
 from issuer.db.users import insert_user, delete_all_users, \
     find_user_by_email, update_user_by_code, delete_user_by_code, \
     find_user_by_code, list_users
@@ -30,3 +30,6 @@ from issuer.db.relationships import insert_user_to_user_group, \
     delete_all_project_to_user, delete_project_to_user_by_project, \
     count_user_to_user_group_by_user
 from issuer.db.metas import insert_metas, delete_metas, list_metas_by_type
+from issuer.db.activity import insert_activity, \
+    delete_activity_by_create_time, list_activities_by_subject, \
+    list_activities_by_targets
