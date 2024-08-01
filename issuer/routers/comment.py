@@ -4,9 +4,10 @@ from typing import Annotated, Dict, List
 from fastapi import APIRouter, Cookie, Form, UploadFile
 
 from issuer import db
-from issuer.db.models import IssueComment
+from issuer.db.models import Activity, IssueComment
 from issuer.routers.convertors import convert_comment
-from issuer.routers.models import IssueCommentReq, IssueCommentRes
+from issuer.routers.models import ActivityEnum, IssueCommentReq, \
+    IssueCommentRes
 from issuer.routers.users import check_cookie, get_statics
 
 
@@ -32,6 +33,9 @@ async def new_comment(issue_comment: "IssueCommentReq",
     res = db.insert_issue_comment(comment_do)
     if res is None:
         return {"success": False, "reason": "Internal error"}
+    db.insert_activity(Activity(subject=_user.user_code,
+                                target=issue_comment.issue_code,
+                                category=ActivityEnum.NewComment.name))
     return {"success": True}
 
 
@@ -46,6 +50,9 @@ async def fold_comment(issue_comment: "IssueCommentReq",
         return {"success": False, "reason": "Permission denied"}
     comment.fold = True
     res = db.change_issue_comment_by_code(comment)
+    db.insert_activity(Activity(subject=_user.user_code,
+                                target=comment.issue_code,
+                                category=ActivityEnum.FoldComment.name))
     return {"success": res}
 
 

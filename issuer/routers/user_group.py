@@ -4,8 +4,9 @@ from fastapi import APIRouter, Cookie
 
 from issuer import db
 from issuer.db import UserGroup, UserToUserGroup
+from issuer.db.models import Activity
 from issuer.routers.convertors import convert_user_group
-from issuer.routers.models import UserGroupReq, UserGroupRes
+from issuer.routers.models import ActivityEnum, UserGroupReq, UserGroupRes
 from issuer.routers.users import check_cookie
 from issuer.routers.utils import empty_string_to_none, empty_strings_to_none
 
@@ -41,12 +42,14 @@ async def new_user_group(user_group_model: "UserGroupReq",
     res = db.insert_user_group(user_group=user_group_do)
     if res is None:
         return {"success": False}
+
     # 把自己添加入members列表
     user_group = db.find_user_group_by_code(res)
     res = db.insert_user_to_user_group(
         UserToUserGroup(user_code=_user.user_code,
                         group_code=user_group.group_code)
     )
+
     # 把其他人添加入members列表
     if user_group_model.members is not None and user_group_model.members != "":
         for member in user_group_model.members.split(','):
@@ -54,6 +57,11 @@ async def new_user_group(user_group_model: "UserGroupReq",
                 UserToUserGroup(user_code=member,
                                 group_code=user_group.group_code)
             )
+
+    # 添加用户活动
+    db.insert_activity(Activity(subject=_user.user_code,
+                                target=user_group.group_code,
+                                category=ActivityEnum.NewGroup.name))
     return {"success": res}
 
 
@@ -79,6 +87,10 @@ async def delete_user_group(user_group_model: "UserGroupReq",
     if res is False:
         return {"success": res}
     res = db.delete_user_to_user_group_by_group(user_group_model.group_code)
+    # 添加用户活动
+    db.insert_activity(Activity(subject=_user.user_code,
+                                target=user_group.group_code,
+                                category=ActivityEnum.DeleteGroup.name))
     return {"success": res}
 
 
@@ -111,6 +123,10 @@ async def change_user_group(user_group_model: "UserGroupReq",
         user_group.group_owner = user_group_model.owner
 
     res = db.update_user_group_by_code(user_group)
+    # 添加用户活动
+    db.insert_activity(Activity(subject=_user.user_code,
+                                target=user_group.group_code,
+                                category=ActivityEnum.ChangeGroup.name))
 
     if user_group_model.members is not None:
         db.delete_user_to_user_group_by_group(user_group_model.group_code)
@@ -150,6 +166,10 @@ async def add_user_group(user_group_model: "UserGroupReq",
             group_code=user_group_model.group_code
         )
     )
+    # 添加用户活动
+    db.insert_activity(Activity(subject=user_group_model.new_member,
+                                target=user_group_model.group_code,
+                                category=ActivityEnum.AddGroup.name))
     return {"success": res}
 
 

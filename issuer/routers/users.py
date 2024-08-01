@@ -6,9 +6,9 @@ from fastapi import APIRouter, Cookie, UploadFile
 
 from issuer import db
 from issuer.db import User
-from issuer.routers.convertors import convert_user
-from issuer.routers.models import UserModel
-from issuer.routers.utils import empty_strings_to_none
+from issuer.routers.convertors import convert_activity, convert_user
+from issuer.routers.models import ActivityModel, UserModel
+from issuer.routers.utils import empty_string_to_none, empty_strings_to_none
 
 
 router = APIRouter(
@@ -252,4 +252,63 @@ def get_users(page_num: int = 1,
     res = []
     for user in users:
         res.append(convert_user(user))
+    return {"success": True, "data": res}
+
+
+@router.get('/stat_subject',
+            response_model=Dict[str, bool | str | Sequence[ActivityModel]])
+async def stat_activity_subject(subject: str,
+                                limit: Optional[int] = None,
+                                current_user: Annotated[str | None, Cookie()] = None): # noqa
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {
+            "success": False,
+            "reason": "Invalid token",
+        }
+    limit = empty_string_to_none(limit)
+    res = list()
+    activities = db.list_activities_by_subject(subject, limit)
+    for activity in activities:
+        res.append(convert_activity(activity))
+    return {"success": True, "data": res}
+
+
+@router.get('/stat_targets',
+            response_model=Dict[str, bool | str | Sequence[ActivityModel]])
+async def stat_activity_targets(limit: Optional[int] = None,
+                                current_user: Annotated[str | None, Cookie()] = None): # noqa
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {
+            "success": False,
+            "reason": "Invalid token",
+        }
+    limit = empty_string_to_none(limit)
+
+    targets = []
+
+    # 获取参与的组织
+    # XXX: 参与的用户组存在上限
+    u2ugs = db.list_user_to_user_group_by_user(_user.user_code, 1, 999)
+    for u2ug in u2ugs:
+        targets.append(u2ug.group_code)
+
+    # 获取参与的项目
+    # XXX: 参与的项目存在上限
+    projects = db.list_project_to_user_by_user(_user.user_code, 1, 999)
+    for project in projects:
+        targets.append(project.project_code)
+
+    # 获取关注的议题
+    # XXX: 关注的议题存在上限
+    issues = db.list_issues_by_condition(follower=_user.user_code,
+                                         page_size=999)
+    for issue in issues:
+        targets.append(issue.issue_code)
+
+    activities = db.list_activities_by_targets(targets, limit)
+    res = []
+    for activity in activities:
+        res.append(convert_activity(activity))
     return {"success": True, "data": res}

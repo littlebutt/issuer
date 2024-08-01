@@ -4,8 +4,9 @@ from fastapi import APIRouter, Cookie
 
 from issuer import db
 from issuer.db import Issue
+from issuer.db.models import Activity
 from issuer.routers.convertors import convert_issue
-from issuer.routers.models import IssueReq, IssueRes
+from issuer.routers.models import ActivityEnum, IssueReq, IssueRes
 from issuer.routers.users import check_cookie
 from issuer.routers.utils import empty_string_to_none, empty_strings_to_none
 
@@ -46,6 +47,11 @@ async def new_issue(issue: "IssueReq",
     res = db.insert_issue(issue_do)
     if res is None:
         return {"success": False, "reason": "Internal error"}
+
+    # 添加用户活动
+    db.insert_activity(Activity(subject=_user.user_code,
+                                target=issue.project_code,
+                                category=ActivityEnum.NewIssue.name))
     return {"success": True, "data": res}
 
 
@@ -65,14 +71,18 @@ async def delete_issue(issue: "IssueReq",
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
     issue = empty_strings_to_none(issue)
-    issue_dos = db.list_issues_by_condition(issue_code=issue.issue_code)
-    if len(issue_dos) == 0:
+    issue_do = db.find_issue_by_code(issue_code=issue.issue_code)
+    if issue_do is None:
         return {"success": False, "reason": "Cannot find issue"}
-    issue_do = issue_dos[0]
     if issue_do.owner != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
     db.delete_issue_by_code(issue.issue_code)
     res = db.delete_issue_comment_by_issue(issue.issue_code)
+
+    # 添加用户活动
+    db.insert_activity(Activity(subject=_user.user_code,
+                                target=issue.issue_code,
+                                category=ActivityEnum.DeleteIssue.name))
     return {"success": res}
 
 
@@ -90,10 +100,9 @@ async def change_issue(issue: "IssueReq",
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
-    issue_dos = db.list_issues_by_condition(issue_code=issue.issue_code)
-    if len(issue_dos) == 0:
+    issue_do = db.find_issue_by_code(issue_code=issue.issue_code)
+    if issue_do is None:
         return {"success": False, "reason": "Cannot find issue"}
-    issue_do = issue_dos[0]
     if issue_do.owner != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
     issue_do.title = issue.title if issue.title is not None else issue_do.title
@@ -107,6 +116,11 @@ async def change_issue(issue: "IssueReq",
     issue_do.description = issue.description \
         if issue.description is not None else issue_do.description
     res = db.update_issue_by_code(issue_do)
+
+    # 添加用户活动
+    db.insert_activity(Activity(subject=_user.user_code,
+                                target=issue.issue_code,
+                                category=ActivityEnum.ChangeIssue.name))
     return {"success": res}
 
 
@@ -119,7 +133,7 @@ async def follow_issue(issue_code: str,
 
     Args:
         issue_code: 议题码。
-        action: 关注或取关，:obj:`True`代表关注，:obj:`False`代表取关。
+        action: 关注或取关，1代表关注，0代表取关。
         current_user: 请求Cookies，键为:arg:`current_user`，值为 user_code:token
             形式。
 
@@ -127,16 +141,22 @@ async def follow_issue(issue_code: str,
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
-    issue_dos = db.list_issues_by_condition(issue_code=issue_code)
-    if len(issue_dos) == 0:
+    issue_do = db.find_issue_by_code(issue_code=issue_code)
+    if issue_do is None:
         return {"success": False, "reason": "Cannot find issue"}
-    issue_do = issue_dos[0]
 
     followers = issue_do.followers.split(",")
     if action == 1 and _user.user_code not in issue_do.followers:
         followers.append(_user.user_code)
+        # 添加用户活动
+        db.insert_activity(Activity(subject=_user.user_code,
+                                    target=issue_code,
+                                    category=ActivityEnum.FollowIssue.name))
     if action == 0 and _user.user_code in issue_do.followers:
         followers.remove(_user.user_code)
+        db.insert_activity(Activity(subject=_user.user_code,
+                                    target=issue_code,
+                                    category=ActivityEnum.UnfollowIssue.name))
     issue_do.followers = ",".join(followers)
     res = db.update_issue_by_code(issue=issue_do)
     return {"success": res}

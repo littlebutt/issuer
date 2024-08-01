@@ -62,6 +62,17 @@ def delete_issue_by_code(issue_code: str) -> bool:
     return True
 
 
+def find_issue_by_code(issue_code: str) -> Optional["Issue"]:
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = select(Issue).where(Issue.issue_code == issue_code)
+            res = session.exec(stmt).one()
+            return res
+    except Exception as e:
+        Logger.error(e)
+    return None
+
+
 def list_issues_by_condition(issue_code: Optional[str] = None,
                              project_code: Optional[str] = None,
                              owner: Optional[str] = None,

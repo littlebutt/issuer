@@ -234,3 +234,77 @@ def test_get_users():
 
     res = client.get('/users/users', cookies=cookie)
     assert res.json()["success"] is True and len(res.json()["data"]) == 1
+
+
+def test_stat_activity_subject():
+    res = client.post('/users/sign_up',
+                      json={
+                          "user_name": "test",
+                          "passwd": "test",
+                          "email": "test"
+                      })
+    assert res.json()['success'] is True
+
+    res = client.post('/users/sign_in',
+                      json={
+                          "user_name": "test",
+                          "passwd": "test",
+                          "email": "test"
+                      })
+    assert res.json()['success'] is True
+
+    token = res.json()['token']
+    user_code = res.json()['user']['user_code']
+    cookie = httpx.Cookies()
+    cookie.set(name="current_user", value=f"{user_code}:{token}")
+
+    res = client.post('/project/new',
+                      json={
+                          "project_name": "test_project",
+                          "start_date": "2024-06-05",
+                          "privilege": "Start"
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+
+    res = client.get(f'/users/stat_subject?subject={user_code}',
+                     cookies=cookie)
+    assert res.json()["success"] is True
+    assert len(res.json()["data"]) > 0
+
+
+def test_stat_activity_targets():
+    res = client.post('/users/sign_up',
+                      json={
+                          "user_name": "test",
+                          "passwd": "test",
+                          "email": "test"
+                      })
+    assert res.json()['success'] is True
+
+    res = client.post('/users/sign_in',
+                      json={
+                          "user_name": "test",
+                          "passwd": "test",
+                          "email": "test"
+                      })
+    assert res.json()['success'] is True
+
+    token = res.json()['token']
+    user_code = res.json()['user']['user_code']
+    cookie = httpx.Cookies()
+    cookie.set(name="current_user", value=f"{user_code}:{token}")
+
+    res = client.post('/project/new',
+                      json={
+                          "project_name": "test_project",
+                          "start_date": "2024-06-05",
+                          "privilege": "Start"
+                      },
+                      cookies=cookie)
+    assert res.json()["success"] is True
+
+    res = client.get(f'/users/stat_targets?limit={20}',
+                     cookies=cookie)
+    assert res.json()["success"] is True
+    assert len(res.json()["data"]) > 0

@@ -107,3 +107,28 @@ class IssueCommentRes(BaseModel):
     fold: bool
     content: str
     appendices: List[str]
+
+
+class ActivityEnum(Enum):
+    NewComment = 1
+    FoldComment = 2
+    NewIssue = 3
+    ChangeIssue = 4
+    DeleteIssue = 5
+    FollowIssue = 6
+    UnfollowIssue = 7
+    NewProject = 8
+    DeleteProject = 9
+    ChangeProject = 10
+    JoinProject = 11
+    NewGroup = 12
+    DeleteGroup = 13
+    ChangeGroup = 14
+    AddGroup = 15
+
+
+class ActivityModel(BaseModel):
+    trigger_time: str
+    subject: UserModel
+    target: UserGroupRes | ProjectRes | IssueRes
+    desc: str

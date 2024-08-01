@@ -4,10 +4,10 @@ from typing import Annotated, Dict, List, Optional, Sequence
 from fastapi import APIRouter, Cookie
 
 from issuer import db
-from issuer.db.models import Issue, Project, ProjectToUser
+from issuer.db.models import Activity, Issue, Project, ProjectToUser
 from issuer.routers.convertors import convert_project
-from issuer.routers.models import ProjectPrivilegeEnum, ProjectReq, \
-    ProjectRes
+from issuer.routers.models import ActivityEnum, ProjectPrivilegeEnum, \
+    ProjectReq, ProjectRes
 from issuer.routers.users import check_cookie
 from issuer.routers.utils import empty_string_to_none, empty_strings_to_none
 
@@ -54,6 +54,11 @@ async def new_project(project: "ProjectReq",
     if code is None:
         return {"success": False, "reason": "Fail to insert"}
 
+    # 添加用户活动
+    db.insert_activity(Activity(subject=_user.user_code,
+                                target=code,
+                                category=ActivityEnum.NewProject.name))
+
     # 将创建人加入关注
     res = db.insert_project_to_user(ProjectToUser(
         project_code=code, user_code=_user.user_code
@@ -86,6 +91,11 @@ async def delete_project(project: "ProjectReq",
     if len(issues) > 0:
         return {"success": False, "reason": "Undeleted issues"}
     res = db.delete_project_by_code(project_do.project_code)
+
+    # 添加用户活动
+    db.insert_activity(Activity(subject=_user.user_code,
+                                target=project.project_code,
+                                category=ActivityEnum.DeleteProject.name))
     return {"success": res}
 
 
@@ -131,6 +141,11 @@ async def change_project(project: "ProjectReq",
     if project.privilege is not None:
         project_do.privilege = project.privilege
     res = db.update_project_by_code(project_do)
+
+    # 添加用户活动
+    db.insert_activity(Activity(subject=_user.user_code,
+                                target=project.project_code,
+                                category=ActivityEnum.ChangeProject.name))
     return {"success": res}
 
 
@@ -154,6 +169,11 @@ async def add_project(project: "ProjectReq",
     res = db.insert_project_to_user(ProjectToUser(
         project_code=project.project_code,
         user_code=project.new_member))
+
+    # 添加用户活动
+    db.insert_activity(Activity(subject=_user.user_code,
+                                target=project.project_code,
+                                category=ActivityEnum.JoinProject.name))
     return {"success": res}
 
 

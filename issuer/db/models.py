@@ -83,7 +83,7 @@ class UserGroup(SQLModel, table=True):
 
 class UserToUserGroup(SQLModel, table=True):
     '''
-    用户-用户组关系模型
+    用户-用户组关系模型，所属关系
     '''
     __table_args__ = (UniqueConstraint("user_code", "group_code"),)
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -140,7 +140,7 @@ class Project(SQLModel, table=True):
 
 class ProjectToUser(SQLModel, table=True):
     '''
-    项目-用户关系模型
+    项目-用户关系模型，参与关系
     '''
     __table_args__ = (UniqueConstraint("project_code", "user_code"),)
     id: Optional[int] = Field(default=None, primary_key=True)
