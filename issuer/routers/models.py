@@ -130,5 +130,5 @@ class ActivityEnum(Enum):
 class ActivityModel(BaseModel):
     trigger_time: str
     subject: UserModel
-    target: UserGroupRes | ProjectRes | IssueRes
+    type: str
     desc: str

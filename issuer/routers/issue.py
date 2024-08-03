@@ -8,7 +8,8 @@ from issuer.db.models import Activity
 from issuer.routers.convertors import convert_issue
 from issuer.routers.models import ActivityEnum, IssueReq, IssueRes
 from issuer.routers.users import check_cookie
-from issuer.routers.utils import empty_string_to_none, empty_strings_to_none
+from issuer.routers.utils import activity_helper, empty_string_to_none, \
+    empty_strings_to_none
 
 
 router = APIRouter(
@@ -49,9 +50,13 @@ async def new_issue(issue: "IssueReq",
         return {"success": False, "reason": "Internal error"}
 
     # 添加用户活动
-    db.insert_activity(Activity(subject=_user.user_code,
-                                target=issue.project_code,
-                                category=ActivityEnum.NewIssue.name))
+    project = db.find_project_by_code(issue.project_code)
+    if project is None:
+        return {"success": False, "reason": "Internal error"}
+    activity_helper(subject=_user.user_code,
+                    target=project.project_code,
+                    category=ActivityEnum.NewIssue.name,
+                    kv={"name": project.project_name})
     return {"success": True, "data": res}
 
 
@@ -80,9 +85,13 @@ async def delete_issue(issue: "IssueReq",
     res = db.delete_issue_comment_by_issue(issue.issue_code)
 
     # 添加用户活动
-    db.insert_activity(Activity(subject=_user.user_code,
-                                target=issue.issue_code,
-                                category=ActivityEnum.DeleteIssue.name))
+    project = db.find_project_by_code(issue_do.project_code)
+    if project is None:
+        return {"success": False, "reason": "Internal Error"}
+    activity_helper(subject=_user.user_code,
+                    target=issue_do.issue_code,
+                    category=ActivityEnum.DeleteIssue.name,
+                    kv={"name": f"{project.project_name}#{issue_do.issue_id}"})
     return {"success": res}
 
 
@@ -118,9 +127,13 @@ async def change_issue(issue: "IssueReq",
     res = db.update_issue_by_code(issue_do)
 
     # 添加用户活动
-    db.insert_activity(Activity(subject=_user.user_code,
-                                target=issue.issue_code,
-                                category=ActivityEnum.ChangeIssue.name))
+    project = db.find_project_by_code(issue_do.project_code)
+    if project is None:
+        return {"success": False, "reason": "Internal Error"}
+    activity_helper(subject=_user.user_code,
+                    target=issue_do.issue_code,
+                    category=ActivityEnum.ChangeIssue.name,
+                    kv={"name": f"{project.project_name}#{issue_do.issue_id}"})
     return {"success": res}
 
 
@@ -146,17 +159,22 @@ async def follow_issue(issue_code: str,
         return {"success": False, "reason": "Cannot find issue"}
 
     followers = issue_do.followers.split(",")
+    project = db.find_project_by_code(issue_do.project_code)
+    if project is None:
+        return {"success": False, "reason": "Internal Error"}
     if action == 1 and _user.user_code not in issue_do.followers:
         followers.append(_user.user_code)
         # 添加用户活动
-        db.insert_activity(Activity(subject=_user.user_code,
-                                    target=issue_code,
-                                    category=ActivityEnum.FollowIssue.name))
+        activity_helper(subject=_user.user_code,
+                        target=issue_do.issue_code,
+                        category=ActivityEnum.FollowIssue.name,
+                        kv={"name": f"{project.project_name}#{issue_do.issue_id}"}) # noqa
     if action == 0 and _user.user_code in issue_do.followers:
         followers.remove(_user.user_code)
-        db.insert_activity(Activity(subject=_user.user_code,
-                                    target=issue_code,
-                                    category=ActivityEnum.UnfollowIssue.name))
+        activity_helper(subject=_user.user_code,
+                        target=issue_do.issue_code,
+                        category=ActivityEnum.UnfollowIssue.name,
+                        kv={"name": f"{project.project_name}#{issue_do.issue_id}"}) # noqa
     issue_do.followers = ",".join(followers)
     res = db.update_issue_by_code(issue=issue_do)
     return {"success": res}

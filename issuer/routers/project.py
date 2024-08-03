@@ -9,7 +9,8 @@ from issuer.routers.convertors import convert_project
 from issuer.routers.models import ActivityEnum, ProjectPrivilegeEnum, \
     ProjectReq, ProjectRes
 from issuer.routers.users import check_cookie
-from issuer.routers.utils import empty_string_to_none, empty_strings_to_none
+from issuer.routers.utils import activity_helper, empty_string_to_none, \
+    empty_strings_to_none
 
 
 router = APIRouter(
@@ -55,9 +56,10 @@ async def new_project(project: "ProjectReq",
         return {"success": False, "reason": "Fail to insert"}
 
     # 添加用户活动
-    db.insert_activity(Activity(subject=_user.user_code,
-                                target=code,
-                                category=ActivityEnum.NewProject.name))
+    activity_helper(subject=_user.user_code,
+                    target=code,
+                    category=ActivityEnum.NewProject.name,
+                    kv={"name": project.project_name})
 
     # 将创建人加入关注
     res = db.insert_project_to_user(ProjectToUser(
@@ -88,14 +90,15 @@ async def delete_project(project: "ProjectReq",
     if project_do.owner != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
     issues = db.list_issues_by_condition(project_code=project.project_code)
-    if len(issues) > 0:
-        return {"success": False, "reason": "Undeleted issues"}
+    for issue in issues:
+        db.delete_issue_by_code(issue.issue_code)
     res = db.delete_project_by_code(project_do.project_code)
 
     # 添加用户活动
-    db.insert_activity(Activity(subject=_user.user_code,
-                                target=project.project_code,
-                                category=ActivityEnum.DeleteProject.name))
+    activity_helper(subject=_user.user_code,
+                    target=project.project_code,
+                    category=ActivityEnum.DeleteProject.name,
+                    kv={"name": project.project_name})
     return {"success": res}
 
 
@@ -143,9 +146,10 @@ async def change_project(project: "ProjectReq",
     res = db.update_project_by_code(project_do)
 
     # 添加用户活动
-    db.insert_activity(Activity(subject=_user.user_code,
-                                target=project.project_code,
-                                category=ActivityEnum.ChangeProject.name))
+    activity_helper(subject=_user.user_code,
+                    target=project.project_code,
+                    category=ActivityEnum.ChangeProject.name,
+                    kv={"name": project.project_name})
     return {"success": res}
 
 
@@ -171,9 +175,10 @@ async def add_project(project: "ProjectReq",
         user_code=project.new_member))
 
     # 添加用户活动
-    db.insert_activity(Activity(subject=_user.user_code,
-                                target=project.project_code,
-                                category=ActivityEnum.JoinProject.name))
+    activity_helper(subject=_user.user_code,
+                    target=project.project_code,
+                    category=ActivityEnum.JoinProject.name,
+                    kv={"name": project.project_name})
     return {"success": res}
 
 

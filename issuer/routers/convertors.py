@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 import logging
 from typing import List
 from issuer import db
@@ -144,151 +145,77 @@ def convert_activity(activity: "Activity") -> "ActivityModel":
     trigger_time = datetime.strftime(activity.gmt_create, '%Y-%m-%d')
     match activity.category:
         case ActivityEnum.NewComment.name:
-            issue_do = db.find_issue_by_code(activity.target)
-            if issue_do is None:
-                Logger.error("Cannot find Issue with issue_code: "
-                             f"{activity.target}")
-            issue = convert_issue(issue_do)
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=issue,
-                                 desc=f"用户{user.user_name}向项目{issue.project.project_name}#{issue.issue_id}议题添加了一条评论") # noqa
+                                 type="comment",
+                                 desc=f"{user.user_name}向项目{json.loads(activity.ext_info)['name']}议题添加了一条评论") # noqa
         case ActivityEnum.FoldComment.name:
-            issue_do = db.find_issue_by_code(activity.target)
-            if issue_do is None:
-                Logger.error("Cannot find Issue with issue_code: "
-                             f"{activity.target}")
-            issue = convert_issue(issue_do)
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=issue,
-                                 desc=f"用户{user.user_name}折叠了项目{issue.project.project_name}#{issue.issue_id}议题的一条评论") # noqa
+                                 type="comment",
+                                 desc=f"{user.user_name}折叠了项目{json.loads(activity.ext_info)['name']}议题的一条评论") # noqa
         case ActivityEnum.NewIssue.name:
-            project_do = db.find_project_by_code(activity.target)
-            if project_do is None:
-                Logger.error("Cannot find Project with project_code: "
-                             f"{activity.target}")
-            project = convert_project(project_do)
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=project,
-                                 desc=f"用户{user.user_name}向项目{project.project_name}添加了一个议题") # noqa
+                                 type="issue",
+                                 desc=f"{user.user_name}向项目{json.loads(activity.ext_info)['name']}添加了一个议题") # noqa
         case ActivityEnum.ChangeIssue.name:
-            issue_do = db.find_issue_by_code(activity.target)
-            if issue_do is None:
-                Logger.error("Cannot find Issue with issue_code: "
-                             f"{activity.target}")
-            issue = convert_issue(issue_do)
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=project,
-                                 desc=f"用户{user.user_name}变更了项目{issue.project.project_name}的一个议题") # noqa
+                                 type="issue",
+                                 desc=f"用户{user.user_name}变更了项目{json.loads(activity.ext_info)['name']}的一个议题") # noqa
         case ActivityEnum.DeleteIssue.name:
-            issue_do = db.find_issue_by_code(activity.target)
-            if issue_do is None:
-                Logger.error("Cannot find Issue with issue_code: "
-                             f"{activity.target}")
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=project,
-                                 desc=f"用户{user.user_name}删除了项目{issue.project.project_name}的一个议题") # noqa
+                                 type="issue",
+                                 desc=f"{user.user_name}删除了项目{json.loads(activity.ext_info)['name']}的一个议题") # noqa
         case ActivityEnum.FollowIssue.name:
-            issue_do = db.find_issue_by_code(activity.target)
-            if issue_do is None:
-                Logger.error("Cannot find Issue with issue_code: "
-                             f"{activity.target}")
-            issue = convert_issue(issue_do)
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=project,
-                                 desc=f"用户{user.user_name}关注了项目{issue.project.project_name}的一个议题") # noqa
+                                 type="issue",
+                                 desc=f"{user.user_name}关注了项目{json.loads(activity.ext_info)['name']}的一个议题") # noqa
         case ActivityEnum.UnfollowIssue.name:
-            issue_do = db.find_issue_by_code(activity.target)
-            if issue_do is None:
-                Logger.error("Cannot find Issue with issue_code: "
-                             f"{activity.target}")
-            issue = convert_issue(issue_do)
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=project,
-                                 desc=f"用户{user.user_name}取消关注了项目{issue.project.project_name}的一个议题") # noqa
+                                 type="issue",
+                                 desc=f"{user.user_name}取消关注了项目{json.loads(activity.ext_info)['name']}的一个议题") # noqa
         case ActivityEnum.NewProject.name:
-            project_do = db.find_project_by_code(activity.target)
-            if project_do is None:
-                Logger.error("Cannot find Project with project_code: "
-                             f"{activity.target}")
-            project = convert_project(project_do)
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=project,
-                                 desc=f"用户{user.user_name}新增了一个项目{project.project_name}") # noqa
+                                 type="project",
+                                 desc=f"{user.user_name}新增了一个项目{json.loads(activity.ext_info)['name']}") # noqa
         case ActivityEnum.DeleteProject.name:
-            project_do = db.find_project_by_code(activity.target)
-            if project_do is None:
-                Logger.error("Cannot find Project with project_code: "
-                             f"{activity.target}")
-            project = convert_project(project_do)
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=project,
-                                 desc=f"用户{user.user_name}删除了项目{project.project_name}") # noqa
+                                 type="project",
+                                 desc=f"{user.user_name}删除了项目{json.loads(activity.ext_info)['name']}") # noqa
         case ActivityEnum.ChangeProject.name:
-            project_do = db.find_project_by_code(activity.target)
-            if project_do is None:
-                Logger.error("Cannot find Project with project_code: "
-                             f"{activity.target}")
-            project = convert_project(project_do)
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=project,
-                                 desc=f"用户{user.user_name}变更了项目{project.project_name}") # noqa
+                                 type="project",
+                                 desc=f"{user.user_name}变更了项目{json.loads(activity.ext_info)['name']}") # noqa
         case ActivityEnum.JoinProject.name:
-            project_do = db.find_project_by_code(activity.target)
-            if project_do is None:
-                Logger.error("Cannot find Project with project_code: "
-                             f"{activity.target}")
-            project = convert_project(project_do)
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=project,
-                                 desc=f"用户{user.user_name}加入了项目{project.project_name}") # noqa
+                                 type="project",
+                                 desc=f"{user.user_name}加入了项目{json.loads(activity.ext_info)['name']}") # noqa
         case ActivityEnum.NewGroup.name:
-            group_do = db.find_user_group_by_code(activity.target)
-            if group_do is None:
-                Logger.error("Cannot find UserGroup with group_code: "
-                             f"{activity.target}")
-            group = convert_user_group(group_do)
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=group,
-                                 desc=f"用户{user.user_name}创建了组织{group.group_name}") # noqa
+                                 type="group",
+                                 desc=f"{user.user_name}创建了组织{json.loads(activity.ext_info)['name']}") # noqa
         case ActivityEnum.DeleteGroup.name:
-            group_do = db.find_user_group_by_code(activity.target)
-            if group_do is None:
-                Logger.error("Cannot find UserGroup with group_code: "
-                             f"{activity.target}")
-            group = convert_user_group(group_do)
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=group,
-                                 desc=f"用户{user.user_name}删除了组织{group.group_name}") # noqa
+                                 type="group",
+                                 desc=f"{user.user_name}删除了组织{json.loads(activity.ext_info)['name']}") # noqa
         case ActivityEnum.ChangeGroup.name:
-            group_do = db.find_user_group_by_code(activity.target)
-            if group_do is None:
-                Logger.error("Cannot find UserGroup with group_code: "
-                             f"{activity.target}")
-            group = convert_user_group(group_do)
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=group,
-                                 desc=f"用户{user.user_name}变更了组织{group.group_name}") # noqa
+                                 type="group",
+                                 desc=f"用户{user.user_name}变更了组织{json.loads(activity.ext_info)['name']}") # noqa
         case ActivityEnum.AddGroup.name:
-            group_do = db.find_user_group_by_code(activity.target)
-            if group_do is None:
-                Logger.error("Cannot find UserGroup with group_code: "
-                             f"{activity.target}")
-            group = convert_user_group(group_do)
             return ActivityModel(trigger_time=trigger_time,
                                  subject=user,
-                                 target=group,
-                                 desc=f"用户{user.user_name}加入了组织{group.group_name}") # noqa\
+                                 type="group",
+                                 desc=f"用户{user.user_name}加入了组织{json.loads(activity.ext_info)['name']}") # noqa

@@ -4,11 +4,12 @@ from typing import Annotated, Dict, List
 from fastapi import APIRouter, Cookie, Form, UploadFile
 
 from issuer import db
-from issuer.db.models import Activity, IssueComment
+from issuer.db.models import IssueComment
 from issuer.routers.convertors import convert_comment
 from issuer.routers.models import ActivityEnum, IssueCommentReq, \
     IssueCommentRes
 from issuer.routers.users import check_cookie, get_statics
+from issuer.routers.utils import activity_helper
 
 
 router = APIRouter(
@@ -33,9 +34,16 @@ async def new_comment(issue_comment: "IssueCommentReq",
     res = db.insert_issue_comment(comment_do)
     if res is None:
         return {"success": False, "reason": "Internal error"}
-    db.insert_activity(Activity(subject=_user.user_code,
-                                target=issue_comment.issue_code,
-                                category=ActivityEnum.NewComment.name))
+    issue = db.find_issue_by_code(issue_comment.issue_code)
+    if issue is None:
+        return {"success": False, "reason": "Internal error"}
+    project = db.find_project_by_code(issue.project_code)
+    if project is None:
+        return {"success": False, "reason": "Internal error"}
+    activity_helper(subject=_user.user_code,
+                    target=issue.issue_code,
+                    category=ActivityEnum.NewComment.name,
+                    kv={"name": f"{project.project_name}#{issue.issue_id}"})
     return {"success": True}
 
 
@@ -50,9 +58,19 @@ async def fold_comment(issue_comment: "IssueCommentReq",
         return {"success": False, "reason": "Permission denied"}
     comment.fold = True
     res = db.change_issue_comment_by_code(comment)
-    db.insert_activity(Activity(subject=_user.user_code,
-                                target=comment.issue_code,
-                                category=ActivityEnum.FoldComment.name))
+    if res is False:
+        return {"success": res}
+
+    issue = db.find_issue_by_code(comment.issue_code)
+    if issue is None:
+        return {"success": False, "reason": "Internal error"}
+    project = db.find_project_by_code(issue.project_code)
+    if project is None:
+        return {"success": False, "reason": "Internal error"}
+    activity_helper(subject=_user.user_code,
+                    target=issue_comment.issue_code,
+                    category=ActivityEnum.FoldComment.name,
+                    kv={"name": f"{project.project_name}#{issue.issue_id}"})
     return {"success": res}
 
 
