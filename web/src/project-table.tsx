@@ -46,7 +46,7 @@ interface IProjectTable {
 
 const ProjectTable: React.FC<IProjectTable> = props => {
 	return (
-		<div className="w-full h-full border rounded-lg border-zinc-200 p-2 shadow-sm">
+		<div className="w-full h-full p-2 shadow-sm">
 			<div className="w-full min-h-[95%]">
 				<Table>
 					<TableHeader>

@@ -84,6 +84,13 @@ type Comment = {
 	appendices: string[]
 }
 
-export type { User, UserRole, UserGroup, Project, Issue, Comment }
+type Activity = {
+	trigger_time: string
+    subject: User
+	type: string
+    desc: string
+}
+
+export type { User, UserRole, UserGroup, Project, Issue, Comment, Activity }
 
 export { defaultProject, defaultIssue }

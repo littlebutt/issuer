@@ -4,7 +4,7 @@ import { Label } from "./components/ui/label"
 import { useForm } from "react-hook-form"
 import { newGroupApi } from "./group-api"
 import { useToast } from "./components/ui/use-toast"
-import { User } from "./types"
+import { Activity, User } from "./types"
 import { fetchSelf } from "./fetch"
 import { useCookie } from "./lib/cookies"
 import { useNavigate } from "react-router-dom"
@@ -30,9 +30,13 @@ import {
 	TooltipProvider,
 	TooltipTrigger
 } from "./components/ui/tooltip"
+import axios from "axios"
 
 const Dashboard: React.FC = () => {
 	const [userInfo, setUserInfo] = useState<User>({})
+
+	const [activities, setActivities] = useState<Activity[]>([])
+	const [limit, setLimit] = useState<number>(10)
 	// TODO: 后期清理
 	const {
 		register,
@@ -88,8 +92,8 @@ const Dashboard: React.FC = () => {
 
 	const formatContent = (content: string) => {
 		let cellContent = content
-		if (content.length > 8) {
-			cellContent = content.substring(0, 6) + "..."
+		if (content.length > 25) {
+			cellContent = content.substring(0, 25) + "..."
 		}
 		return (
 			<TooltipProvider>
@@ -105,6 +109,33 @@ const Dashboard: React.FC = () => {
 		)
 	}
 
+	const fetchActivities = () => {
+		axios({
+			method: "GET",
+			url: `/users/stat_targets?limit=${limit}`
+		}).then(res => {
+			if (res.status === 200 && res.data.success === true) {
+				setActivities(res.data.data)
+			} else {
+				toast({
+					title: "获取关注列表失败",
+					variant: "destructive"
+				})
+			}
+		}).catch(err => console.log(err))
+
+	}
+
+	const formatActivityType = (typed: string) => {
+		switch(typed) {
+			case "comment": return "评论"
+			case "issue": return "议题"
+			case "project": return "项目"
+			case "group": return "组织"
+			default: return "unknown"
+		}
+	}
+
 	useEffect(() => {
 		fetchSelf(cookie, navigate)
 			.then(res => {
@@ -113,6 +144,7 @@ const Dashboard: React.FC = () => {
 				}
 			})
 			.catch(err => console.log(err))
+		fetchActivities()
 	}, [])
 
 	return (
@@ -209,8 +241,8 @@ const Dashboard: React.FC = () => {
 				</div>
 				<div className="flex flex-row">
 					<div className="w-2/3 p-1">
-						<div className="w-full flex flex-col space-y-1 border rounded-lg border-zinc-200 p-2 shadow-sm">
-							<div className="flex flex-row justify-start">
+						<div className="w-full flex flex-col space-y-1 border rounded-lg border-zinc-200 p-6 shadow-sm">
+							<div className="flex flex-row justify-start pb-5">
 								<div className="text-2xl font-semibold leading-none tracking-tight">
 									我的关注
 								</div>
@@ -222,12 +254,9 @@ const Dashboard: React.FC = () => {
 											编号
 										</TableHead>
 										<TableHead className="w-1/5">
-											名称
-										</TableHead>
-										<TableHead className="w-1/5">
 											类型
 										</TableHead>
-										<TableHead className="w-[30%]">
+										<TableHead className="w-1/2">
 											内容
 										</TableHead>
 										<TableHead className="w-1/5">
@@ -236,25 +265,20 @@ const Dashboard: React.FC = () => {
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									<TableRow>
-										<TableCell>#1</TableCell>
-										<TableCell>测试</TableCell>
-										<TableCell>项目</TableCell>
-										<TableCell>
-											{formatContent(
-												"项目测试进入验收阶段"
-											)}
-										</TableCell>
-										<TableCell>2024-07-28 8:00</TableCell>
-									</TableRow>
+									{activities.map((activity, idx) => (<TableRow>
+										<TableCell>#{idx + 1}</TableCell>
+										<TableCell>{formatActivityType(activity.type)}</TableCell>
+										<TableCell>{formatContent(activity.desc)}</TableCell>
+										<TableCell>{activity.trigger_time}</TableCell>
+									</TableRow>))}
 								</TableBody>
 							</Table>
 						</div>
 					</div>
 					<div className="w-1/3 p-1">
 						<Card>
-							<CardHeader>
-								<CardTitle>活动</CardTitle>
+							<CardHeader className="pb-2">
+								<CardTitle>我的活动</CardTitle>
 							</CardHeader>
 							<CardContent className="pb-0">
 								<ChartContainer

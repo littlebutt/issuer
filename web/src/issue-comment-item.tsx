@@ -8,7 +8,7 @@ interface IIssueCommentItem {
 }
 
 const IssueCommentItem: React.FC<IIssueCommentItem> = props => {
-	const marked = useMarked()
+	const marked = useMarked() // TODO: 折叠评论
 
 	return (
 		<div className="grid grid-cols-[1fr,11fr] align-top">

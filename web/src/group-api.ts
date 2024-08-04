@@ -60,31 +60,6 @@ const updateGroupApi = (
 		.catch(err => console.log(err))
 }
 
-const deleteGroupApi = (toast: any, refresh: () => void, groupCode: string) => {
-	axios({
-		method: "POST",
-		url: "/user_group/delete",
-		data: {
-			group_code: groupCode
-		}
-	})
-		.then(res => {
-			if (res.status === 200 && res.data.success === true) {
-				toast({
-					title: "删除成功",
-					variant: "success"
-				})
-				refresh()
-			} else {
-				toast({
-					title: "删除失败",
-					variant: "destructive"
-				})
-			}
-		})
-		.catch(err => console.log(err))
-}
-
 const addGroupApi = (
 	toast: any,
 	refresh: () => void,
@@ -116,4 +91,4 @@ const addGroupApi = (
 		.catch(err => console.log(err))
 }
 
-export { updateGroupApi, deleteGroupApi, addGroupApi, newGroupApi }
+export { updateGroupApi, addGroupApi, newGroupApi }

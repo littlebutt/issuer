@@ -11,7 +11,7 @@ import {
 import { useCookie } from "./lib/cookies"
 import { UserGroup } from "./types"
 import { Button } from "./components/ui/button"
-import { CircleX, PenLine, Plus } from "lucide-react"
+import { PenLine, Plus } from "lucide-react"
 import { Label } from "./components/ui/label"
 import { Input } from "./components/ui/input"
 import {
@@ -28,7 +28,7 @@ import {
 } from "./components/ui/popover"
 import { cn } from "./lib/utils"
 import { useForm } from "react-hook-form"
-import { addGroupApi, deleteGroupApi, updateGroupApi } from "./group-api"
+import { addGroupApi, updateGroupApi } from "./group-api"
 import { useToast } from "./components/ui/use-toast"
 import {
 	MultiSelector,
@@ -99,10 +99,6 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 			owner,
 			members
 		)
-	}
-
-	const deleteGroup = (groupCode: string) => {
-		deleteGroupApi(toast, props.refresh, groupCode)
 	}
 
 	const addGroup = (newMember: string, groupCode: string) => {
@@ -259,29 +255,6 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
-			<Popover>
-				{/* TODO: 更改为弹出框，项目列表同理 */}
-				<PopoverTrigger asChild>
-					<Button
-						variant="ghost"
-						size="icon"
-						disabled={!isGroupOwner(props.content)}
-					>
-						<CircleX className="h-4 w-4" />
-					</Button>
-				</PopoverTrigger>
-				<PopoverContent className="w-[140px] h-[40px] flex flex-row justify-center items-center text-xs space-x-1 p-0 my-0">
-					<p>确认删除？</p>
-					<Button
-						variant="link"
-						size="sm"
-						className="p-1.5 [line-height:10px] text-xs"
-						onClick={() => deleteGroup(props.content.group_code)}
-					>
-						确认
-					</Button>
-				</PopoverContent>
-			</Popover>
 		</div>
 	)
 }

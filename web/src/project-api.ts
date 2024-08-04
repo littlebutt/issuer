@@ -47,35 +47,6 @@ const updateProjectApi = (
 		.catch(err => console.log(err))
 }
 
-const deleteProjectApi = (
-	toast: any,
-	refresh: () => void,
-	projectCode: string
-) => {
-	axios({
-		method: "POST",
-		url: "/project/delete",
-		data: {
-			project_code: projectCode
-		}
-	})
-		.then(res => {
-			if (res.status === 200 && res.data?.success === true) {
-				toast({
-					title: "删除成功",
-					variant: "success"
-				})
-				refresh()
-			} else {
-				toast({
-					title: "删除失败",
-					variant: "destructive"
-				})
-			}
-		})
-		.catch(err => console.log(err))
-}
-
 const addProjectApi = (
 	toast: any,
 	refresh: () => void,
@@ -105,4 +76,4 @@ const addProjectApi = (
 	})
 }
 
-export { updateProjectApi, deleteProjectApi, addProjectApi }
+export { updateProjectApi, addProjectApi }

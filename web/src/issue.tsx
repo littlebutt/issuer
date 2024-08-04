@@ -11,18 +11,7 @@ import { useToast } from "./components/ui/use-toast"
 import IssueEdit from "./issue-edit"
 import { useCookie } from "./lib/cookies"
 import { followIssueApi } from "./issue-api"
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger
-} from "./components/ui/alert-dialog"
-import { CircleX } from "lucide-react"
+
 import IssueCommentList from "./issue-comment-list"
 
 const Issue: React.FC = () => {
@@ -65,10 +54,6 @@ const Issue: React.FC = () => {
 		followIssueApi(toast, refresh, issueCode as string, action ? 0 : 1)
 	}
 
-	const deleteIssue = () => {
-		navigate(`/main/project/${issue.project.project_code}`)
-	}
-
 	const refresh = () => {
 		getIssues(issueCode as string, "", "", "", "", "", "", "", "", "", "")
 			.then(res => {
@@ -103,29 +88,6 @@ const Issue: React.FC = () => {
 					</CardTitle>
 					<div className="flex flex-row space-x-1">
 						<IssueEdit issue={issue} refresh={refresh} />
-						<AlertDialog>
-							<AlertDialogTrigger asChild>
-								<Button variant="ghost" size="icon">
-									<CircleX className="h-4 w-4" />
-								</Button>
-							</AlertDialogTrigger>
-							<AlertDialogContent>
-								<AlertDialogHeader>
-									<AlertDialogTitle>
-										确认删除?
-									</AlertDialogTitle>
-									<AlertDialogDescription>
-										删除当前议题可能会带来无法预计的后果
-									</AlertDialogDescription>
-								</AlertDialogHeader>
-								<AlertDialogFooter>
-									<AlertDialogCancel>取消</AlertDialogCancel>
-									<AlertDialogAction onClick={deleteIssue}>
-										确定
-									</AlertDialogAction>
-								</AlertDialogFooter>
-							</AlertDialogContent>
-						</AlertDialog>
 					</div>
 				</CardHeader>
 				<CardContent className="flex flex-col space-y-3 p-9">

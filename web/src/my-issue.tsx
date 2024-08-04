@@ -120,7 +120,7 @@ const MyIssue: React.FC = () => {
 				</div>
 			</div>
 			<div className="flex justify-center h-[92%]">
-				<div className="w-full border rounded-lg border-zinc-200 p-2 shadow-sm">
+				<div className="w-full p-2 shadow-sm">
 					<div className="w-full min-h-[95%]">
 						<Table>
 							<TableHeader>
