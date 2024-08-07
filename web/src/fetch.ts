@@ -268,10 +268,17 @@ const getIssuesCount = async (
 	})
 }
 
-const getComments = async (issueCode: string) => {
+const getCommentsByCode = async (issueCode: string) => {
 	return axios({
 		method: "GET",
-		url: `/comment/list_comments?issue_code=${issueCode}`
+		url: `/comment/list_comments_by_code?issue_code=${issueCode}`
+	})
+}
+
+const getCommentsByCommenter = async (userCode: string) => {
+	return axios({
+		method: "GET",
+		url: `/comment/list_comments_by_commenter?user_code=${userCode}`
 	})
 }
 
@@ -291,5 +298,6 @@ export {
 	getProjectStatusStat,
 	getIssues,
 	getIssuesCount,
-	getComments
+	getCommentsByCode,
+	getCommentsByCommenter
 }

@@ -1,7 +1,7 @@
 import React from "react"
 import { SideMenu } from "./components/ui/menu"
 
-import { Tag, Users, Settings, Bookmark, LayoutGrid } from "lucide-react"
+import { CircleAlert, Users, Settings, LayoutGrid, StickyNote } from "lucide-react"
 import { Outlet } from "react-router-dom"
 import Header from "./header"
 
@@ -23,12 +23,12 @@ const Layout: React.FC = () => {
 				{
 					href: "/main/my-project",
 					label: "项目",
-					icon: Bookmark
+					icon: StickyNote
 				},
 				{
 					href: "/main/my-issue",
 					label: "议题",
-					icon: Tag
+					icon: CircleAlert
 				}
 			]
 		},
@@ -38,7 +38,7 @@ const Layout: React.FC = () => {
 				{
 					href: "/main/projects",
 					label: "项目",
-					icon: Settings
+					icon: StickyNote
 				},
 				{
 					href: "/main/groups",

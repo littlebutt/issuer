@@ -4,8 +4,8 @@ import { Label } from "./components/ui/label"
 import { useForm } from "react-hook-form"
 import { newGroupApi } from "./group-api"
 import { useToast } from "./components/ui/use-toast"
-import { Activity, User } from "./types"
-import { fetchSelf } from "./fetch"
+import { Activity, Issue, Project, User } from "./types"
+import { fetchSelf, getCommentsByCommenter, getIssues, getProjects, getUserGroupsCount } from "./fetch"
 import { useCookie } from "./lib/cookies"
 import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card"
@@ -31,12 +31,39 @@ import {
 	TooltipTrigger
 } from "./components/ui/tooltip"
 import axios from "axios"
+import { create } from "domain"
+import { CircleAlert, MessageCircleMore, StickyNote } from "lucide-react"
+import { Progress } from "./components/ui/progress"
 
 const Dashboard: React.FC = () => {
 	const [userInfo, setUserInfo] = useState<User>({})
 
 	const [activities, setActivities] = useState<Activity[]>([])
-	const [limit, setLimit] = useState<number>(10)
+	const [limit, setLimit] = useState<number>(6)
+	const [issueStat,  setIssueStat] = useState<
+	{
+		open: number
+		closed: number
+		finished: number
+		other: number
+	}
+	>({open: 0, closed: 0, finished: 0, other: 0})
+	const [issuesStatTotal, setIssuesStatTotal] = useState<number>(0)
+	const [projectStat, setProjectStat] = useState<
+	{
+		start: number
+		processing: number
+		checking: number
+		checked: number
+		other: number
+	}
+	>({start: 0, processing: 0, checking: 0, checked: 0, other: 0})
+	const [commentNum, setCommentNum] = useState<number>(0)
+	const [groupStat, setGroupStat] = useState<
+	{
+		create: number
+		join: number
+	}>({create: 0, join: 0})
 	// TODO: 后期清理
 	const {
 		register,
@@ -137,6 +164,130 @@ const Dashboard: React.FC = () => {
 	}
 
 	useEffect(() => {
+		getIssues(
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			userInfo.user_code as string,
+			"",
+			1,
+			99
+		).then(res => {
+			if (res.status === 200 && res.data.success === true) {
+				let _issueStat = {open: 0, closed: 0, finished: 0, other: 0}
+				res.data.data.forEach((iss: Issue) => {
+					switch (iss.status) {
+						case "open":
+							_issueStat.open += 1
+							break
+						case "closed":
+							_issueStat.closed += 1
+							break
+						case "finished":
+							_issueStat.finished += 1
+							break
+						default:
+							_issueStat.other += 1
+					}
+				})
+				setIssueStat(_issueStat)
+				setIssuesStatTotal(Object.values(_issueStat).reduce((a, b) => a + b, 0))
+			} else {
+				toast({
+					title: "获取关注的议题数据失败",
+					variant: "destructive"
+				})
+			}
+		}).catch(err => console.log(err))
+		getProjects(
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			userInfo.user_code as string,
+			1,
+			99
+		).then(res =>{
+			if (res.status === 200 && res.data.success === true) {
+				let _projectStat = {start: 0, processing: 0, checking: 0, checked: 0, other: 0}
+				res.data.data.forEach((pro: Project) => {
+					switch (pro.status) {
+						case "start":
+							_projectStat.start += 1
+							break
+						case "processing":
+							_projectStat.processing += 1
+							break
+						case "checking":
+							_projectStat.checking += 1
+							break
+						case "checked":
+							_projectStat.checked += 1
+							break
+						default:
+							_projectStat.other += 1
+					}
+				})
+				setProjectStat(_projectStat)
+			} else {
+				toast({
+					title: "获取参与的项目数据失败",
+					variant: "destructive"
+				})
+			}
+		}).catch(err => console.log(err))
+		getUserGroupsCount(
+			"",
+			"",
+			userInfo.user_code as string,
+			""
+		).then(res => {
+			if (res.status === 200 && res.data.success === true) {
+				setGroupStat({...groupStat, create: res.data.data})
+			} else {
+				toast({
+					title: "获取参与的组织数据失败",
+					variant: "destructive"
+				})
+			}
+		}).catch(err => console.log(err))
+		getUserGroupsCount(
+			"",
+			"",
+			"",
+			userInfo.user_code as string
+		).then(res => {
+			if (res.status === 200 && res.data.success === true) {
+				setGroupStat({...groupStat, join: res.data.data})
+			} else {
+				toast({
+					title: "获取参与的组织数据失败",
+					variant: "destructive"
+				})
+			}
+		}).catch(err => console.log(err))
+		getCommentsByCommenter(userInfo.user_code as string)
+		.then(res => {
+			if (res.status === 200 && res.data.success === true) {
+				setCommentNum(res.data.data.length)
+			} else {
+				toast({
+					title: "获取评论数据失败",
+					variant: "destructive"
+				})
+			}
+		}).catch(err => console.log(err))
+	}, [userInfo])
+
+	useEffect(() => {
 		fetchSelf(cookie, navigate)
 			.then(res => {
 				if (res.status === 200) {
@@ -155,93 +306,119 @@ const Dashboard: React.FC = () => {
 				</div>
 			</div>
 			<div className="flex h-[92%] flex-col space-y-3">
-				<div className="flex flex-row justify-around space-x-1 space-y-1">
-					<Card className="w-[24%]">
-						<CardHeader>
+				<div className="grid gap-4 grid-cols-3">
+					<Card className="border-2">
+						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 							<CardTitle>议题</CardTitle>
+							<CircleAlert className="mr-2"/>
 						</CardHeader>
-						<CardContent className="flex flex-col">
+						<CardContent className="flex flex-col space-y-2 pt-4">
 							<div className="flex flex-row justify-between">
-								<Label className="text-sm font-normal text-muted-foreground">
+								<Label className="text-base font-normal text-muted-foreground">
 									开放
 								</Label>
-								<div className="text-base font-medium">1</div>
+								<div className="w-52 flex items-center space-x-1">
+								<div className="w-4/5"><Progress value={issueStat.open} total={issuesStatTotal}/></div>
+									<div className="w-1/5 text-center">{issueStat.open}</div>
+								</div>
 							</div>
 							<div className="flex flex-row justify-between">
-								<Label className="text-sm font-normal text-muted-foreground">
+								<Label className="text-base font-normal text-muted-foreground">
 									完成
 								</Label>
-								<div className="text-base font-medium">2</div>
+								<div className="w-52 flex items-center space-x-1">
+								<div className="w-4/5"><Progress value={issueStat.finished} total={issuesStatTotal}/></div>
+									<div className="w-1/5 text-center">{issueStat.finished}</div>
+								</div>
 							</div>
 							<div className="flex flex-row justify-between">
-								<Label className="text-sm font-normal text-muted-foreground">
+								<Label className="text-base font-normal text-muted-foreground">
 									关闭
 								</Label>
-								<div className="text-base font-medium">1</div>
+								<div className="w-52 flex items-center space-x-1">
+									<div className="w-4/5"><Progress value={issueStat.closed} total={issuesStatTotal}/></div>
+									<div className="w-1/5 text-center">{issueStat.closed}</div>
+								</div>
+							</div>
+							<div className="flex flex-row justify-between">
+								<Label className="text-base font-normal text-muted-foreground">
+									其它
+								</Label>
+								<div className="w-52 flex items-center space-x-1">
+									<div className="w-4/5"><Progress value={issueStat.other} total={issuesStatTotal}/></div>
+									<div className="w-1/5 text-center">{issueStat.other}</div>
+								</div>
 							</div>
 						</CardContent>
 					</Card>
-					<Card className="w-[24%]">
-						<CardHeader>
+					<Card className="border-2">
+						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 							<CardTitle>项目</CardTitle>
+							<StickyNote />
 						</CardHeader>
-						<CardContent className="flex flex-col">
+						<CardContent className="flex flex-col space-y-2">
 							<div className="flex flex-row justify-between">
-								<Label className="text-sm font-normal text-muted-foreground">
+								<Label className="text-base font-normal text-muted-foreground">
 									开始
 								</Label>
-								<div className="text-base font-medium">1</div>
+								<div className="text-base font-medium">{projectStat.start}</div>
 							</div>
 							<div className="flex flex-row justify-between">
-								<Label className="text-sm font-normal text-muted-foreground">
+								<Label className="text-base font-normal text-muted-foreground">
 									进行
 								</Label>
-								<div className="text-base font-medium">2</div>
+								<div className="text-base font-medium">{projectStat.processing}</div>
 							</div>
 							<div className="flex flex-row justify-between">
-								<Label className="text-sm font-normal text-muted-foreground">
+								<Label className="text-base font-normal text-muted-foreground">
 									验收
 								</Label>
-								<div className="text-base font-medium">1</div>
+								<div className="text-base font-medium">{projectStat.checking}</div>
 							</div>
 							<div className="flex flex-row justify-between">
-								<Label className="text-sm font-normal text-muted-foreground">
+								<Label className="text-base font-normal text-muted-foreground">
 									完工
 								</Label>
-								<div className="text-base font-medium">1</div>
+								<div className="text-base font-medium">{projectStat.checked}</div>
+							</div>
+							<div className="flex flex-row justify-between">
+								<Label className="text-base font-normal text-muted-foreground">
+									其它
+								</Label>
+								<div className="text-base font-medium">{projectStat.other}</div>
 							</div>
 						</CardContent>
 					</Card>
-					<Card className="w-[24%]">
-						<CardHeader>
-							<CardTitle>评论</CardTitle>
+					<Card className="border-2">
+						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+							<CardTitle>评论&组织</CardTitle>
+							<MessageCircleMore />
 						</CardHeader>
-						<CardContent className="flex flex-col">
+						<CardContent className="flex flex-col space-y-2">
 							<div className="flex flex-row justify-between">
-								<Label className="text-sm font-normal text-muted-foreground">
-									发表
+								<Label className="text-base font-normal text-muted-foreground">
+									发表评论
 								</Label>
-								<div className="text-base font-medium">1</div>
+								<div className="text-base font-medium">{commentNum}</div>
 							</div>
-						</CardContent>
-					</Card>
-					<Card className="w-[24%]">
-						<CardHeader>
-							<CardTitle>组织</CardTitle>
-						</CardHeader>
-						<CardContent className="flex flex-col">
 							<div className="flex flex-row justify-between">
-								<Label className="text-sm font-normal text-muted-foreground">
-									参与
+								<Label className="text-base font-normal text-muted-foreground">
+									创建组织
 								</Label>
-								<div className="text-base font-medium">1</div>
+								<div className="text-base font-medium">{groupStat.create}</div>
+							</div>
+							<div className="flex flex-row justify-between">
+								<Label className="text-base font-normal text-muted-foreground">
+									参与组织
+								</Label>
+								<div className="text-base font-medium">{groupStat.join}</div>
 							</div>
 						</CardContent>
 					</Card>
 				</div>
 				<div className="flex flex-row">
 					<div className="w-2/3 p-1">
-						<div className="w-full flex flex-col space-y-1 border rounded-lg border-zinc-200 p-6 shadow-sm">
+						<div className="w-full flex flex-col space-y-1 border-2 rounded-lg border-zinc-200 p-6 shadow-sm">
 							<div className="flex flex-row justify-start pb-5">
 								<div className="text-2xl font-semibold leading-none tracking-tight">
 									我的关注
@@ -249,7 +426,7 @@ const Dashboard: React.FC = () => {
 							</div>
 							<Table>
 								<TableHeader>
-									<TableRow>
+									<TableRow className="[line-height:30px]">
 										<TableHead className="w-[10%]">
 											编号
 										</TableHead>
@@ -265,7 +442,7 @@ const Dashboard: React.FC = () => {
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{activities.map((activity, idx) => (<TableRow>
+									{activities.map((activity, idx) => (<TableRow className="[line-height:30px]">
 										<TableCell>#{idx + 1}</TableCell>
 										<TableCell>{formatActivityType(activity.type)}</TableCell>
 										<TableCell>{formatContent(activity.desc)}</TableCell>
@@ -276,7 +453,7 @@ const Dashboard: React.FC = () => {
 						</div>
 					</div>
 					<div className="w-1/3 p-1">
-						<Card>
+						<Card className="border-2 ml-2">
 							<CardHeader className="pb-2">
 								<CardTitle>我的活动</CardTitle>
 							</CardHeader>

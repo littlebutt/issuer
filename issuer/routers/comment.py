@@ -74,14 +74,30 @@ async def fold_comment(issue_comment: "IssueCommentReq",
     return {"success": res}
 
 
-@router.get('/list_comments',
+@router.get('/list_comments_by_code',
             response_model=Dict[str, str | List[IssueCommentRes] | bool])
-async def list_comment(issue_code: str,
-                       current_user: Annotated[str | None, Cookie()] = None):
+async def list_comment_by_code(issue_code: str,
+                               current_user: Annotated[str | None, Cookie()] = None): # noqa
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
     comments = db.list_issue_comment_by_issue(issue_code)
+    res = list()
+    for comment in comments:
+        if comment is None:
+            continue
+        res.append(convert_comment(comment))
+    return {"success": True, "data": res}
+
+
+@router.get('/list_comments_by_commenter',
+            response_model=Dict[str, str | List[IssueCommentRes] | bool])
+async def list_comment_by_commenter(user_code: str,
+                                    current_user: Annotated[str | None, Cookie()] = None): # noqa
+    _user = check_cookie(cookie=current_user)
+    if _user is None:
+        return {"success": False, "reason": "Invalid token"}
+    comments = db.list_issue_comment_by_commenter(user_code)
     res = list()
     for comment in comments:
         if comment is None:

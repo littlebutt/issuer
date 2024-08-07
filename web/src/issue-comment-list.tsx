@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Comment, Issue } from "./types"
 import IssueCommentItem from "./issue-comment-item"
 import IssueCommentText from "./issue-comment-text"
-import { getComments } from "./fetch"
+import { getCommentsByCode } from "./fetch"
 import { useToast } from "./components/ui/use-toast"
 import { useParams } from "react-router-dom"
 
@@ -18,7 +18,7 @@ const IssueCommentList: React.FC<IIssueCommentList> = props => {
 	const { toast } = useToast()
 
 	const refresh = () => {
-		getComments(issueCode as string)
+		getCommentsByCode(issueCode as string)
 			.then(res => {
 				if (res.status === 200 && res.data.success === true) {
 					setIssueComments(res.data.data)
