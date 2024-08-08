@@ -1,7 +1,13 @@
 import React from "react"
 import { SideMenu } from "./components/ui/menu"
 
-import { CircleAlert, Users, Settings, LayoutGrid, StickyNote } from "lucide-react"
+import {
+	CircleAlert,
+	Users,
+	Settings,
+	LayoutGrid,
+	StickyNote
+} from "lucide-react"
 import { Outlet } from "react-router-dom"
 import Header from "./header"
 

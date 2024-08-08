@@ -86,9 +86,9 @@ type Comment = {
 
 type Activity = {
 	trigger_time: string
-    subject: User
+	subject: User
 	type: string
-    desc: string
+	desc: string
 }
 
 export type { User, UserRole, UserGroup, Project, Issue, Comment, Activity }
