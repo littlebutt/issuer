@@ -1,6 +1,6 @@
 from issuer.db.database import DatabaseFactory
 from issuer.db.models import User, UserGroup, UserToUserGroup, Project, \
-    ProjectToUser, Issue, Metas, IssueComment, Activity
+    ProjectToUser, Issue, Metas, IssueComment, Activity, Notice
 from issuer.db.users import insert_user, delete_all_users, \
     find_user_by_email, update_user_by_code, delete_user_by_code, \
     find_user_by_code, list_users
@@ -33,3 +33,5 @@ from issuer.db.metas import insert_metas, delete_metas, list_metas_by_type
 from issuer.db.activity import insert_activity, \
     delete_activity_by_create_time, list_activities_by_subject, \
     list_activities_by_targets
+from issuer.db.notice import insert_notice, list_notices, \
+    delete_notice_by_code, delete_all_notices

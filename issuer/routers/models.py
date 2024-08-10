@@ -132,3 +132,8 @@ class ActivityModel(BaseModel):
     subject: UserModel
     type: str
     desc: str
+
+
+class NoticeModel(BaseModel):
+    publish_time: str
+    content: str

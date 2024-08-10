@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Sequence
+from typing import Sequence
 
 from sqlmodel import Session, select
 from issuer.db.database import DatabaseFactory

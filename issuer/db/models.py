@@ -272,3 +272,16 @@ class Activity(SQLModel, table=True):
 
     ext_info: Optional[str]
     '''其他信息，用json字符串表示'''
+
+
+class Notice(SQLModel, table=True):
+    '''
+    管理员发布的通知，发号标识为NT
+
+    '''
+    id: Optional[int] = Field(default=None, primary_key=True)
+    gmt_create: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    gmt_modified: Optional[datetime] = Field(default_factory=datetime.utcnow)
+
+    notice_code: Optional[str] = Field(index=True)
+    content: str

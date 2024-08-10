@@ -6,7 +6,7 @@ from issuer import db
 from issuer.db.models import Activity
 
 
-def empty_string_to_none(param: str):
+def empty_string_to_none(param: str | int):
     return param if param != '' else None
 
 

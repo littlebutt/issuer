@@ -3,10 +3,10 @@ import json
 import logging
 from typing import List
 from issuer import db
-from issuer.db import UserGroup, User, Project, Issue, IssueComment
-from issuer.db.models import Activity
+from issuer.db import UserGroup, User, Project, Issue, IssueComment, Notice, \
+    Activity
 from issuer.routers.models import ActivityEnum, ActivityModel, \
-    IssueCommentRes, IssueRes, ProjectRes, UserGroupRes, UserModel
+    IssueCommentRes, IssueRes, NoticeModel, ProjectRes, UserGroupRes, UserModel
 
 
 Logger = logging.getLogger(__name__)
@@ -219,3 +219,9 @@ def convert_activity(activity: "Activity") -> "ActivityModel":
                                  subject=user,
                                  type="group",
                                  desc=f"用户{user.user_name}加入了组织{json.loads(activity.ext_info)['name']}") # noqa
+
+
+def convert_notice(notice: "Notice") -> "NoticeModel":
+    return NoticeModel(publish_time=datetime.strftime(notice.gmt_create,
+                                                      '%Y-%m-%d'),
+                       content=notice.content)

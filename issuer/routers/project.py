@@ -4,7 +4,7 @@ from typing import Annotated, Dict, List, Optional, Sequence
 from fastapi import APIRouter, Cookie
 
 from issuer import db
-from issuer.db.models import Activity, Issue, Project, ProjectToUser
+from issuer.db.models import Issue, Project, ProjectToUser
 from issuer.routers.convertors import convert_project
 from issuer.routers.models import ActivityEnum, ProjectPrivilegeEnum, \
     ProjectReq, ProjectRes
