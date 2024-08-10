@@ -135,5 +135,6 @@ class ActivityModel(BaseModel):
 
 
 class NoticeModel(BaseModel):
-    publish_time: str
+    publish_time: str | None = None
+    notice_code: str | None = None
     content: str

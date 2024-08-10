@@ -224,4 +224,5 @@ def convert_activity(activity: "Activity") -> "ActivityModel":
 def convert_notice(notice: "Notice") -> "NoticeModel":
     return NoticeModel(publish_time=datetime.strftime(notice.gmt_create,
                                                       '%Y-%m-%d'),
+                       notice_code=notice.notice_code,
                        content=notice.content)

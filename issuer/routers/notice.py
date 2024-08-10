@@ -21,12 +21,12 @@ Logger = logging.getLogger(__name__)
 
 
 @router.post('/new')
-async def new_notice(content: str,
+async def new_notice(notice: "NoticeModel",
                      current_user: Annotated[str | None, Cookie()] = None):
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
-    res = db.insert_notice(Notice(content=content))
+    res = db.insert_notice(Notice(content=notice.content))
     if res is not None:
         return {"success": True}
     return {"success": False}
@@ -34,8 +34,8 @@ async def new_notice(content: str,
 
 @router.get('/list_notices',
             response_model=Dict[str, bool | str | List[NoticeModel]])
-async def list_notice(limit: Optional[int],
-                      current_user: Annotated[str | None, Cookie()] = None):
+async def list_notices(limit: Optional[int] = None,
+                       current_user: Annotated[str | None, Cookie()] = None):
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
@@ -48,10 +48,10 @@ async def list_notice(limit: Optional[int],
 
 
 @router.post('/delete')
-async def delete_notice(notice_code: str,
+async def delete_notice(notice: "NoticeModel",
                         current_user: Annotated[str | None, Cookie()] = None):
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
-    res = db.delete_notice_by_code(notice_code)
+    res = db.delete_notice_by_code(notice.notice_code)
     return {"success": res}

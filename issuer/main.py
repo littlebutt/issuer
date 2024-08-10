@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from issuer.db import DatabaseFactory, User, Metas, insert_user, insert_metas
-from issuer.routers import users, user_group, project, issue, comment
+from issuer.routers import users, user_group, project, issue, comment, notice
 
 
 def get_statics_path():
@@ -26,6 +26,7 @@ app.include_router(user_group.router)
 app.include_router(project.router)
 app.include_router(issue.router)
 app.include_router(comment.router)
+app.include_router(notice.router)
 app.mount("/statics",
           StaticFiles(directory=get_statics_path()), name="statics")
 app.mount("/",

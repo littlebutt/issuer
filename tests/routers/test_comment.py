@@ -148,7 +148,7 @@ def test_list_comment():
                      cookies=cookie)
     assert len(res.json()["data"]) > 0
 
-    res = client.get(f'/comment/list_comments_by_commenter?issue_code={user_code}', # noqa
+    res = client.get(f'/comment/list_comments_by_commenter?user_code={user_code}', # noqa
                      cookies=cookie)
     assert len(res.json()["data"]) > 0
 
