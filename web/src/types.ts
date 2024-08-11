@@ -91,6 +91,12 @@ type Activity = {
 	desc: string
 }
 
-export type { User, UserRole, UserGroup, Project, Issue, Comment, Activity }
+type Notice = {
+	publish_time: string
+    notice_code: string
+    content: string
+}
+
+export type { User, UserRole, UserGroup, Project, Issue, Comment, Activity, Notice }
 
 export { defaultProject, defaultIssue }

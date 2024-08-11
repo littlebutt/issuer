@@ -57,7 +57,21 @@ const Project: React.FC = () => {
 	>([])
 	const [issueStatuses, setIssueStatuses] = useState<
 		{ label: string; value: string }[]
-	>([])
+	>([
+		{
+			label: "开放",
+			value: "open"
+		},
+		{
+			label: "关闭",
+			value: "closed"
+		},
+		{
+			label: "完成",
+			value: "finished"
+		}
+	])
+	const [chartConfigReady, setChartConfigReady] = useState<boolean>(false)
 	const [isStatsOpen, setIsStatsOpen] = useState<boolean>(true)
 	const [isAdvancedOpen, setIsAdvancedOpen] = useState<boolean>(false)
 
@@ -77,7 +91,7 @@ const Project: React.FC = () => {
 
 	const dailyChartConfig = {
 		value: {
-			label: "日期",
+			label: "数量",
 			color: "#18181b"
 		}
 	} satisfies ChartConfig
@@ -92,6 +106,7 @@ const Project: React.FC = () => {
 		projectStatuses.forEach(
 			v => (statusChartConfig[v.value] = { label: v.label })
 		)
+		setChartConfigReady(true)
 	}
 
 	const [dailyChartData, setDailyChartData] = useState<
@@ -177,7 +192,11 @@ const Project: React.FC = () => {
 
 	useEffect(() => {
 		initStatusChartConfig()
-	}, [projectStatuses])
+	}, [issueStatuses])
+
+	useEffect(() => {
+		refreshChartData()
+	}, [chartConfigReady])
 
 	useEffect(() => {
 		refresh()
@@ -185,10 +204,9 @@ const Project: React.FC = () => {
 		fetchIssueStatuses(issueStatuses, setIssueStatuses)
 		fetchUserOptions(userOptions, setUserOptions)
 		fetchProjectPrivileges(projectPrivileges, setProjectPrivileges)
-		refreshChartData()
 	}, [])
 	return (
-		<div className="w-full flex flex-row space-x-2 h-full p-1">
+		<div className="w-full flex flex-row space-x-2 p-1">
 			<Card className="w-1/3">
 				<CardHeader className="px-6 py-3 flex flex-row justify-between">
 					<CardTitle className="flex flex-row space-x-3 text-end">
@@ -446,7 +464,6 @@ const Project: React.FC = () => {
 											</Pie>
 										</PieChart>
 									</ChartContainer>
-									{/* TODO: 标签不正确显示 */}
 								</div>
 							</CollapsibleContent>
 						</Collapsible>
@@ -458,7 +475,7 @@ const Project: React.FC = () => {
 							className="w-full space-y-2"
 						>
 							<div className="flex items-center justify-between space-x-4">
-								<div className="text-base font-medium">
+								<div className="text-sm font-normal text-muted-foreground">
 									高级
 									{/* TODO: 修改高级 */}
 								</div>

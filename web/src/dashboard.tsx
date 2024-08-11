@@ -4,7 +4,7 @@ import { Label } from "./components/ui/label"
 import { useForm } from "react-hook-form"
 import { newGroupApi } from "./group-api"
 import { useToast } from "./components/ui/use-toast"
-import { Activity, Issue, Project, User } from "./types"
+import { Activity, Issue, Notice, Project, User } from "./types"
 import {
 	fetchSelf,
 	getCommentsByCommenter,
@@ -24,20 +24,12 @@ import {
 	TableRow
 } from "./components/ui/table"
 import {
-	ChartConfig,
-	ChartContainer,
-	ChartTooltip,
-	ChartTooltipContent
-} from "./components/ui/chart"
-import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts"
-import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger
 } from "./components/ui/tooltip"
 import axios from "axios"
-import { create } from "domain"
 import { CircleAlert, MessageCircleMore, StickyNote } from "lucide-react"
 import { Progress } from "./components/ui/progress"
 import { Separator } from "./components/ui/seperator"
@@ -46,6 +38,7 @@ const Dashboard: React.FC = () => {
 	const [userInfo, setUserInfo] = useState<User>({})
 
 	const [activities, setActivities] = useState<Activity[]>([])
+	const [notices, setNotices] = useState<Notice[]>([])
 	const [limit, setLimit] = useState<number>(6)
 	const [issueStat, setIssueStat] = useState<{
 		open: number
@@ -106,24 +99,10 @@ const Dashboard: React.FC = () => {
 		}
 	}
 
-	const chartConfig = {
-		activity: {
-			label: "活动次数",
-			color: "#18181b"
-		}
-	} satisfies ChartConfig
-
-	const chartData = [
-		{ category: "议题", activity: 20 },
-		{ category: "评论", activity: 66 },
-		{ category: "项目", activity: 3 },
-		{ category: "组织", activity: 1 }
-	]
-
-	const formatContent = (content: string) => {
+	const formatContent = (content: string, limit: number = 25) => {
 		let cellContent = content
-		if (content.length > 25) {
-			cellContent = content.substring(0, 25) + "..."
+		if (content.length > limit) {
+			cellContent = content.substring(0, limit) + "..."
 		}
 		return (
 			<TooltipProvider>
@@ -155,6 +134,22 @@ const Dashboard: React.FC = () => {
 				}
 			})
 			.catch(err => console.log(err))
+	}
+
+	const fetchNotices = () => {
+		axios({
+			method: "GET",
+			url: `/notice/list_notices?limit=5`
+		}).then(res => {
+			if (res.status === 200 && res.data.success === true) {
+				setNotices(res.data.data)
+			} else {
+				toast({
+					title: "获取通知失败",
+					variant: "destructive"
+				})
+			}
+		}).catch(err => console.log(err))
 	}
 
 	const formatActivityType = (typed: string) => {
@@ -310,6 +305,7 @@ const Dashboard: React.FC = () => {
 			})
 			.catch(err => console.log(err))
 		fetchActivities()
+		fetchNotices()
 	}, [])
 
 	return (
@@ -569,33 +565,26 @@ const Dashboard: React.FC = () => {
 								<CardTitle className="text-xl">通知</CardTitle>
 							</CardHeader>
 							<CardContent className="flex flex-col space-y-1">
-								<div className="grid grid-cols-[1fr_6fr] items-center">
-									<div className="font-semibold text-xl leading-none tracking-tight">
-										#1
-									</div>
-									<div className="flex flex-col space-y-1 items-start">
-										<div className="font-medium text-sm text-muted-foreground">
-											2024-08-08 12:00
-										</div>
-										<div className="font-normal text-base">
-											这是一条很长很长很长的通知
-										</div>
-									</div>
-								</div>
-								<Separator />
-								<div className="grid grid-cols-[1fr_6fr] items-center">
-									<div className="font-semibold text-xl leading-none tracking-tight">
-										#2
-									</div>
-									<div className="flex flex-col space-y-1 items-start">
-										<div className="font-medium text-sm text-muted-foreground">
-											2024-08-08 12:00
-										</div>
-										<div className="font-normal text-base">
-											这是一条很长很长很长的通知
-										</div>
-									</div>
-								</div>
+								{
+									notices.map((notice, idx) => (
+										<>
+											<div className="grid grid-cols-[1fr_6fr] items-center">
+												<div className="font-semibold text-xl leading-none tracking-tight">
+													#{idx + 1}
+												</div>
+												<div className="flex flex-col space-y-1 items-start">
+													<div className="font-medium text-sm text-muted-foreground">
+														{notice.publish_time}
+													</div>
+													<div className="font-normal text-base">
+														{formatContent(notice.content, 10)}
+													</div>
+												</div>
+											</div>
+											<Separator />
+										</>
+									))
+								}
 							</CardContent>
 						</Card>
 					</div>
