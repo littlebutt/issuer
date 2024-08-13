@@ -81,12 +81,19 @@ const IssueNew: React.FC<IIssueNew> = props => {
 			<div className="w-full flex flex-col space-y-1">
 				<Label
 					htmlFor="title"
-					className="w-[70px] text-base font-semibold leading-none tracking-tight"
+					className="w-[140px] text-base font-semibold leading-none tracking-tight"
 				>
-					描述
+					描述{" "}
+					{errors.desc && (
+						<span className="text-red-500"> 请输入描述</span>
+					)}
 				</Label>
 				<Textarea
 					className="w-full h-150 min-h-[150px]"
+					{...register("desc", {
+						required: true,
+						minLength: 5
+					})}
 					onChange={e => setDescription(e.target.value)}
 				/>
 			</div>

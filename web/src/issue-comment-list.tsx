@@ -48,12 +48,16 @@ const IssueCommentList: React.FC<IIssueCommentList> = props => {
 					content: props.issue.description ?? "",
 					appendices: []
 				}}
+				refresh={refresh}
+				foldable={false}
 			/>
-			{issueComments
-				.filter(comment => !comment.fold)
-				.map(comment => (
-					<IssueCommentItem comment={comment} />
-				))}
+			{issueComments.map(comment => (
+				<IssueCommentItem
+					comment={comment}
+					refresh={refresh}
+					foldable={true}
+				/>
+			))}
 			<IssueCommentText
 				issueCode={props.issue.issue_code}
 				refresh={refresh}

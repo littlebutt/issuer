@@ -93,10 +93,19 @@ type Activity = {
 
 type Notice = {
 	publish_time: string
-    notice_code: string
-    content: string
+	notice_code: string
+	content: string
 }
 
-export type { User, UserRole, UserGroup, Project, Issue, Comment, Activity, Notice }
+export type {
+	User,
+	UserRole,
+	UserGroup,
+	Project,
+	Issue,
+	Comment,
+	Activity,
+	Notice
+}
 
 export { defaultProject, defaultIssue }

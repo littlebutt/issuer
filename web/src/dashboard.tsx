@@ -140,16 +140,18 @@ const Dashboard: React.FC = () => {
 		axios({
 			method: "GET",
 			url: `/notice/list_notices?limit=5`
-		}).then(res => {
-			if (res.status === 200 && res.data.success === true) {
-				setNotices(res.data.data)
-			} else {
-				toast({
-					title: "获取通知失败",
-					variant: "destructive"
-				})
-			}
-		}).catch(err => console.log(err))
+		})
+			.then(res => {
+				if (res.status === 200 && res.data.success === true) {
+					setNotices(res.data.data)
+				} else {
+					toast({
+						title: "获取通知失败",
+						variant: "destructive"
+					})
+				}
+			})
+			.catch(err => console.log(err))
 	}
 
 	const formatActivityType = (typed: string) => {
@@ -565,26 +567,27 @@ const Dashboard: React.FC = () => {
 								<CardTitle className="text-xl">通知</CardTitle>
 							</CardHeader>
 							<CardContent className="flex flex-col space-y-1">
-								{
-									notices.map((notice, idx) => (
-										<>
-											<div className="grid grid-cols-[1fr_6fr] items-center">
-												<div className="font-semibold text-xl leading-none tracking-tight">
-													#{idx + 1}
+								{notices.map((notice, idx) => (
+									<>
+										<div className="grid grid-cols-[1fr_6fr] items-center">
+											<div className="font-semibold text-xl leading-none tracking-tight">
+												#{idx + 1}
+											</div>
+											<div className="flex flex-col space-y-1 items-start">
+												<div className="font-medium text-sm text-muted-foreground">
+													{notice.publish_time}
 												</div>
-												<div className="flex flex-col space-y-1 items-start">
-													<div className="font-medium text-sm text-muted-foreground">
-														{notice.publish_time}
-													</div>
-													<div className="font-normal text-base">
-														{formatContent(notice.content, 10)}
-													</div>
+												<div className="font-normal text-base">
+													{formatContent(
+														notice.content,
+														10
+													)}
 												</div>
 											</div>
-											<Separator />
-										</>
-									))
-								}
+										</div>
+										<Separator />
+									</>
+								))}
 							</CardContent>
 						</Card>
 					</div>

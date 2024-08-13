@@ -46,4 +46,35 @@ const newIssueCommentApi = (
 		.catch(err => console.log(err))
 }
 
-export { uploadAppendix, newIssueCommentApi }
+const foldIssueCommentApi = (
+	toast: any,
+	refresh: () => void,
+	commentCode: string,
+	issueCode: string
+) => {
+	axios({
+		method: "POST",
+		url: "/comment/fold",
+		data: {
+			comment_code: commentCode,
+			issue_code: issueCode
+		}
+	})
+		.then(res => {
+			if (res.status === 200 && res.data.success === true) {
+				toast({
+					title: "折叠成功",
+					variant: "success"
+				})
+				refresh()
+			} else {
+				toast({
+					title: "折叠失败",
+					variant: "desctructive"
+				})
+			}
+		})
+		.catch(err => console.log(err))
+}
+
+export { uploadAppendix, newIssueCommentApi, foldIssueCommentApi }
