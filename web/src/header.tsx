@@ -102,7 +102,7 @@ const Header: React.FC = () => {
 			<div className="w-32 float-end my-1">
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<div className="flex space-x-2 justify-center items-center pt-2">
+						<div className="flex space-x-2 justify-center items-center pt-2 pb-1">
 							<Avatar className="w-8 h-8">
 								<AvatarImage
 									src={

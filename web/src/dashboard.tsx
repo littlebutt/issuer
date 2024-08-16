@@ -37,7 +37,7 @@ const Dashboard: React.FC = () => {
 
 	const [activities, setActivities] = useState<Activity[]>([])
 	const [notices, setNotices] = useState<Notice[]>([])
-	const [limit, setLimit] = useState<number>(6)
+	const limit = 6
 	const [issueStat, setIssueStat] = useState<{
 		open: number
 		closed: number

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card"
 import { Issue as IssueType, User, defaultIssue } from "./types"
 import { Label } from "./components/ui/label"
@@ -21,7 +21,6 @@ const Issue: React.FC = () => {
 
 	const { toast } = useToast()
 	const cookie = useCookie()
-	const navigate = useNavigate()
 
 	const formatIssueStatus = (issueStatus?: string, className?: string) => {
 		let badge = <Badge className={className}></Badge>
