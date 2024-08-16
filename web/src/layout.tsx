@@ -6,7 +6,8 @@ import {
 	Users,
 	Settings,
 	LayoutGrid,
-	StickyNote
+	StickyNote,
+	User
 } from "lucide-react"
 import { Outlet } from "react-router-dom"
 import Header from "./header"
@@ -59,7 +60,7 @@ const Layout: React.FC = () => {
 				{
 					href: "/main/settings",
 					label: "个人",
-					icon: Users
+					icon: User
 				},
 				{
 					href: "",
