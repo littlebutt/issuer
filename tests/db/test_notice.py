@@ -1,7 +1,11 @@
 import pytest
 
-from issuer.db import delete_all_notices, insert_notice, list_notices, \
-    delete_notice_by_code
+from issuer.db import (
+    delete_all_notices,
+    insert_notice,
+    list_notices,
+    delete_notice_by_code,
+)
 from issuer.db.models import Notice
 
 

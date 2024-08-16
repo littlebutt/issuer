@@ -1,8 +1,12 @@
 from datetime import datetime
 import pytest
 
-from issuer.db import delete_activity_by_create_time, insert_activity, \
-    list_activities_by_subject, list_activities_by_targets
+from issuer.db import (
+    delete_activity_by_create_time,
+    insert_activity,
+    list_activities_by_subject,
+    list_activities_by_targets,
+)
 from issuer.db import Activity
 
 

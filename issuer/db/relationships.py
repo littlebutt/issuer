@@ -21,13 +21,15 @@ def insert_user_to_user_group(user_to_user_group: "UserToUserGroup") -> bool:
     return True
 
 
-def delete_user_to_user_group_by_user_and_group(user_code: str,
-                                                group_code: str) -> bool:
+def delete_user_to_user_group_by_user_and_group(
+    user_code: str, group_code: str
+) -> bool:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(UserToUserGroup)\
-                .where(UserToUserGroup.user_code == user_code,
-                       UserToUserGroup.group_code == group_code)
+            stmt = select(UserToUserGroup).where(
+                UserToUserGroup.user_code == user_code,
+                UserToUserGroup.group_code == group_code,
+            )
             result = session.exec(stmt).one()
 
             session.delete(result)
@@ -41,8 +43,9 @@ def delete_user_to_user_group_by_user_and_group(user_code: str,
 def delete_user_to_user_group_by_group(group_code: str) -> bool:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(UserToUserGroup)\
-                .where(UserToUserGroup.group_code == group_code)
+            stmt = select(UserToUserGroup).where(
+                UserToUserGroup.group_code == group_code
+            )
             results = session.exec(stmt).all()
 
             for result in results:
@@ -57,8 +60,9 @@ def delete_user_to_user_group_by_group(group_code: str) -> bool:
 def delete_user_to_user_group_by_user(user_code: str) -> bool:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(UserToUserGroup)\
-                .where(UserToUserGroup.user_code == user_code)
+            stmt = select(UserToUserGroup).where(
+                UserToUserGroup.user_code == user_code
+            )
             results = session.exec(stmt).all()
 
             for result in results:
@@ -70,15 +74,17 @@ def delete_user_to_user_group_by_user(user_code: str) -> bool:
     return True
 
 
-def list_user_to_user_group_by_user(user_code: str,
-                                    page_num: int = 1,
-                                    page_size: int = 10) -> \
-        Sequence["UserToUserGroup"]:
+def list_user_to_user_group_by_user(
+    user_code: str, page_num: int = 1, page_size: int = 10
+) -> Sequence["UserToUserGroup"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(UserToUserGroup)\
-                .where(UserToUserGroup.user_code == user_code) \
-                .limit(page_size).offset((page_num - 1) * page_size)
+            stmt = (
+                select(UserToUserGroup)
+                .where(UserToUserGroup.user_code == user_code)
+                .limit(page_size)
+                .offset((page_num - 1) * page_size)
+            )
             return session.exec(stmt).all()
     except Exception as e:
         Logger.error(e)
@@ -88,23 +94,26 @@ def list_user_to_user_group_by_user(user_code: str,
 def count_user_to_user_group_by_user(user_code: str) -> int:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(func.count(UserToUserGroup.id))\
-                .where(UserToUserGroup.user_code == user_code)
+            stmt = select(func.count(UserToUserGroup.id)).where(
+                UserToUserGroup.user_code == user_code
+            )
             return session.scalar(stmt)
     except Exception as e:
         Logger.error(e)
     return 0
 
 
-def list_user_to_user_group_by_group(group_code: str,
-                                     page_num: int = 1,
-                                     page_size: int = 10) -> \
-        Sequence["UserToUserGroup"]:
+def list_user_to_user_group_by_group(
+    group_code: str, page_num: int = 1, page_size: int = 10
+) -> Sequence["UserToUserGroup"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(UserToUserGroup)\
-                .where(UserToUserGroup.group_code == group_code) \
-                .limit(page_size).offset((page_num - 1) * page_size)
+            stmt = (
+                select(UserToUserGroup)
+                .where(UserToUserGroup.group_code == group_code)
+                .limit(page_size)
+                .offset((page_num - 1) * page_size)
+            )
             return session.exec(stmt).all()
     except Exception as e:
         Logger.error(e)
@@ -137,13 +146,15 @@ def insert_project_to_user(project_to_user: "ProjectToUser") -> bool:
     return True
 
 
-def delete_project_to_user_by_project_and_user(project_code: str,
-                                               user_code: str) -> bool:
+def delete_project_to_user_by_project_and_user(
+    project_code: str, user_code: str
+) -> bool:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(ProjectToUser) \
-                .where(ProjectToUser.project_code == project_code,
-                       ProjectToUser.user_code == user_code)
+            stmt = select(ProjectToUser).where(
+                ProjectToUser.project_code == project_code,
+                ProjectToUser.user_code == user_code,
+            )
             result = session.exec(stmt).one()
 
             session.delete(result)
@@ -157,8 +168,9 @@ def delete_project_to_user_by_project_and_user(project_code: str,
 def delete_project_to_user_by_project(project_code: str) -> bool:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(ProjectToUser) \
-                .where(ProjectToUser.project_code == project_code)
+            stmt = select(ProjectToUser).where(
+                ProjectToUser.project_code == project_code
+            )
             results = session.exec(stmt).all()
             for result in results:
                 session.delete(result)
@@ -169,30 +181,34 @@ def delete_project_to_user_by_project(project_code: str) -> bool:
     return True
 
 
-def list_project_to_user_by_project(project_code: str,
-                                    page_num: int = 1,
-                                    page_size: int = 10) -> \
-        Sequence["ProjectToUser"]:
+def list_project_to_user_by_project(
+    project_code: str, page_num: int = 1, page_size: int = 10
+) -> Sequence["ProjectToUser"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(ProjectToUser) \
-                .where(ProjectToUser.project_code == project_code) \
-                .limit(page_size).offset((page_num - 1) * page_size)
+            stmt = (
+                select(ProjectToUser)
+                .where(ProjectToUser.project_code == project_code)
+                .limit(page_size)
+                .offset((page_num - 1) * page_size)
+            )
             return session.exec(stmt).all()
     except Exception as e:
         Logger.error(e)
     return list()
 
 
-def list_project_to_user_by_user(user_code: str,
-                                 page_num: int = 1,
-                                 page_size: int = 10) -> \
-        Sequence["ProjectToUser"]:
+def list_project_to_user_by_user(
+    user_code: str, page_num: int = 1, page_size: int = 10
+) -> Sequence["ProjectToUser"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(ProjectToUser) \
-                .where(ProjectToUser.user_code == user_code) \
-                .limit(page_size).offset((page_num - 1) * page_size)
+            stmt = (
+                select(ProjectToUser)
+                .where(ProjectToUser.user_code == user_code)
+                .limit(page_size)
+                .offset((page_num - 1) * page_size)
+            )
             return session.exec(stmt).all()
     except Exception as e:
         Logger.error(e)

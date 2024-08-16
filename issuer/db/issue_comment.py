@@ -13,7 +13,7 @@ Logger = logging.getLogger(__name__)
 
 def insert_issue_comment(comment: "IssueComment") -> str | None:
     if comment.comment_code is None:
-        comment.comment_code = generate_code('IC')
+        comment.comment_code = generate_code("IC")
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             session.add(comment)
@@ -28,8 +28,9 @@ def insert_issue_comment(comment: "IssueComment") -> str | None:
 def delete_issue_comment_by_issue(issue_code: str) -> bool:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(IssueComment)\
-                .where(IssueComment.issue_code == issue_code)
+            stmt = select(IssueComment).where(
+                IssueComment.issue_code == issue_code
+            )
             results = session.exec(stmt).all()
 
             for result in results:
@@ -44,8 +45,9 @@ def delete_issue_comment_by_issue(issue_code: str) -> bool:
 def change_issue_comment_by_code(comment: "IssueComment") -> bool:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(IssueComment)\
-                .where(IssueComment.comment_code == comment.comment_code)
+            stmt = select(IssueComment).where(
+                IssueComment.comment_code == comment.comment_code
+            )
             result = session.exec(stmt).one()
 
             result.gmt_modified = datetime.utcnow()
@@ -63,8 +65,9 @@ def change_issue_comment_by_code(comment: "IssueComment") -> bool:
 def find_issue_comment_by_code(comment_code: str) -> Optional["IssueComment"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(IssueComment)\
-                .where(IssueComment.comment_code == comment_code)
+            stmt = select(IssueComment).where(
+                IssueComment.comment_code == comment_code
+            )
             return session.exec(stmt).one()
     except Exception as e:
         Logger.error(e)
@@ -74,21 +77,25 @@ def find_issue_comment_by_code(comment_code: str) -> Optional["IssueComment"]:
 def list_issue_comment_by_issue(issue_code: str) -> Sequence["IssueComment"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(IssueComment)\
-                .where(IssueComment.issue_code == issue_code)\
+            stmt = (
+                select(IssueComment)
+                .where(IssueComment.issue_code == issue_code)
                 .order_by(IssueComment.id)
+            )
             return session.exec(stmt).all()
     except Exception as e:
         Logger.error(e)
     return list()
 
 
-def list_issue_comment_by_commenter(user_code: str) -> \
-        Sequence["IssueComment"]:
+def list_issue_comment_by_commenter(
+    user_code: str,
+) -> Sequence["IssueComment"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(IssueComment)\
-                .where(IssueComment.commenter == user_code)
+            stmt = select(IssueComment).where(
+                IssueComment.commenter == user_code
+            )
             return session.exec(stmt).all()
     except Exception as e:
         Logger.error(e)

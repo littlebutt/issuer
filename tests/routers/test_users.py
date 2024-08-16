@@ -20,131 +20,115 @@ def teardown_function(function):
 
 
 def test_sign_up():
-    res = client.post('/users/sign_up',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
+    res = client.post(
+        "/users/sign_up",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
     print(res.json())
-    assert res.json()['success'] is True
+    assert res.json()["success"] is True
 
 
 def test_sign_in():
-    res = client.post('/users/sign_up',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_up",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    res = client.post('/users/sign_in',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
-    assert res.json()['user']['user_name'] == "test"
+    res = client.post(
+        "/users/sign_in",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
+    assert res.json()["user"]["user_name"] == "test"
 
-    token = res.json()['token']
-    user_code = res.json()['user']['user_code']
+    token = res.json()["token"]
+    user_code = res.json()["user"]["user_code"]
     cookie = httpx.Cookies()
     cookie.set(name="current_user", value=f"{user_code}:{token}")
-    res = client.post('/users/sign_in',
-                      cookies=cookie,
-                      json={
-                          "user_name": "foo",
-                          "passwd": "test",
-                          "email": "foo"
-                      })
-    assert res.json()['success'] is True and \
-        res.json()['reason'] == "Valid token"
+    res = client.post(
+        "/users/sign_in",
+        cookies=cookie,
+        json={"user_name": "foo", "passwd": "test", "email": "foo"},
+    )
+    assert (
+        res.json()["success"] is True and res.json()["reason"] == "Valid token"
+    )
 
-    res = client.post('/users/sign_in',
-                      json={
-                          "user_name": "bar",
-                          "passwd": "test",
-                          "email": "foo"
-                      })
-    assert res.json()['success'] is False and \
-        res.json()['reason'] == "Not exist"
+    res = client.post(
+        "/users/sign_in",
+        json={"user_name": "bar", "passwd": "test", "email": "foo"},
+    )
+    assert (
+        res.json()["success"] is False and res.json()["reason"] == "Not exist"
+    )
 
-    res = client.post('/users/sign_in',
-                      json={
-                          "user_name": "test",
-                          "passwd": "foo",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is False and \
-        res.json()['reason'] == "Wrong passwd"
+    res = client.post(
+        "/users/sign_in",
+        json={"user_name": "test", "passwd": "foo", "email": "test"},
+    )
+    assert (
+        res.json()["success"] is False and
+        res.json()["reason"] == "Wrong passwd"
+    )
 
 
 def test_sign_out():
-    res = client.post('/users/sign_up',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_up",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    res = client.post('/users/sign_in',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_in",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    token = res.json()['token']
-    user_code = res.json()['user']['user_code']
+    token = res.json()["token"]
+    user_code = res.json()["user"]["user_code"]
     cookie = httpx.Cookies()
     cookie.set(name="current_user", value=f"{user_code}:{token}")
 
-    user_code = res.json()['user']['user_code']
-    res = client.post('/users/sign_out',
-                      json={
-                          "user_code": user_code
-                      },
-                      cookies=cookie)
+    user_code = res.json()["user"]["user_code"]
+    res = client.post(
+        "/users/sign_out", json={"user_code": user_code}, cookies=cookie
+    )
     print(res.json())
-    assert res.json()['success'] is True
+    assert res.json()["success"] is True
     _user = find_user_by_code(user_code)
     assert _user.token is None
 
 
 def test_change_user():
-    res = client.post('/users/sign_up',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_up",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    res = client.post('/users/sign_in',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_in",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    token = res.json()['token']
-    user_code = res.json()['user']['user_code']
+    token = res.json()["token"]
+    user_code = res.json()["user"]["user_code"]
     cookie = httpx.Cookies()
     cookie.set(name="current_user", value=f"{user_code}:{token}")
 
-    user_code = res.json()['user']['user_code']
-    res = client.post('/users/change',
-                      json={
-                          "user_code": user_code,
-                          "email": "foo",
-                          "avatar": "/path/to/avatar"
-                      },
-                      cookies=cookie)
+    user_code = res.json()["user"]["user_code"]
+    res = client.post(
+        "/users/change",
+        json={
+            "user_code": user_code,
+            "email": "foo",
+            "avatar": "/path/to/avatar",
+        },
+        cookies=cookie,
+    )
     assert res.json()["success"] is True
     user = find_user_by_code(user_code)
     assert user.email == "foo"
@@ -152,31 +136,29 @@ def test_change_user():
 
 
 def test_upload_avatar():
-    res = client.post('/users/sign_up',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_up",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    res = client.post('/users/sign_in',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_in",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    token = res.json()['token']
-    user_code = res.json()['user']['user_code']
+    token = res.json()["token"]
+    user_code = res.json()["user"]["user_code"]
     cookie = httpx.Cookies()
     cookie.set(name="current_user", value=f"{user_code}:{token}")
 
     file = os.path.join(os.path.dirname(__file__), "avatar.png")
-    res = client.post('/users/upload_avatar',
-                      files={"file": open(file, "rb")},
-                      cookies=cookie)
+    res = client.post(
+        "/users/upload_avatar",
+        files={"file": open(file, "rb")},
+        cookies=cookie,
+    )
 
     assert res.json()["success"] is True
     filepath = res.json()["filename"]
@@ -184,127 +166,114 @@ def test_upload_avatar():
 
 
 def test_get_user():
-    res = client.post('/users/sign_up',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_up",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    res = client.post('/users/sign_in',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_in",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    token = res.json()['token']
-    user_code = res.json()['user']['user_code']
+    token = res.json()["token"]
+    user_code = res.json()["user"]["user_code"]
     cookie = httpx.Cookies()
     cookie.set(name="current_user", value=f"{user_code}:{token}")
 
-    res = client.get(f'/users/user?user_code={user_code}',
-                     cookies=cookie)
-    assert res.json()['success'] is True
+    res = client.get(f"/users/user?user_code={user_code}", cookies=cookie)
+    assert res.json()["success"] is True
 
 
 def test_get_users():
-    res = client.post('/users/sign_up',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_up",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    res = client.post('/users/sign_in',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_in",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    token = res.json()['token']
-    user_code = res.json()['user']['user_code']
+    token = res.json()["token"]
+    user_code = res.json()["user"]["user_code"]
     cookie = httpx.Cookies()
     cookie.set(name="current_user", value=f"{user_code}:{token}")
 
-    res = client.get('/users/users', cookies=cookie)
+    res = client.get("/users/users", cookies=cookie)
     assert res.json()["success"] is True and len(res.json()["data"]) == 1
 
 
 def test_stat_activity_subject():
-    res = client.post('/users/sign_up',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_up",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    res = client.post('/users/sign_in',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_in",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    token = res.json()['token']
-    user_code = res.json()['user']['user_code']
+    token = res.json()["token"]
+    user_code = res.json()["user"]["user_code"]
     cookie = httpx.Cookies()
     cookie.set(name="current_user", value=f"{user_code}:{token}")
 
-    res = client.post('/project/new',
-                      json={
-                          "project_name": "test_project",
-                          "start_date": "2024-06-05",
-                          "privilege": "Start"
-                      },
-                      cookies=cookie)
+    res = client.post(
+        "/project/new",
+        json={
+            "project_name": "test_project",
+            "start_date": "2024-06-05",
+            "privilege": "Start",
+        },
+        cookies=cookie,
+    )
     assert res.json()["success"] is True
 
-    res = client.get(f'/users/stat_subject?subject={user_code}',
-                     cookies=cookie)
+    res = client.get(
+        f"/users/stat_subject?subject={user_code}", cookies=cookie
+    )
     assert res.json()["success"] is True
     assert len(res.json()["data"]) > 0
 
 
 def test_stat_activity_targets():
-    res = client.post('/users/sign_up',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_up",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    res = client.post('/users/sign_in',
-                      json={
-                          "user_name": "test",
-                          "passwd": "test",
-                          "email": "test"
-                      })
-    assert res.json()['success'] is True
+    res = client.post(
+        "/users/sign_in",
+        json={"user_name": "test", "passwd": "test", "email": "test"},
+    )
+    assert res.json()["success"] is True
 
-    token = res.json()['token']
-    user_code = res.json()['user']['user_code']
+    token = res.json()["token"]
+    user_code = res.json()["user"]["user_code"]
     cookie = httpx.Cookies()
     cookie.set(name="current_user", value=f"{user_code}:{token}")
 
-    res = client.post('/project/new',
-                      json={
-                          "project_name": "test_project",
-                          "start_date": "2024-06-05",
-                          "privilege": "Start"
-                      },
-                      cookies=cookie)
+    res = client.post(
+        "/project/new",
+        json={
+            "project_name": "test_project",
+            "start_date": "2024-06-05",
+            "privilege": "Start",
+        },
+        cookies=cookie,
+    )
     assert res.json()["success"] is True
 
-    res = client.get(f'/users/stat_targets?limit={20}',
-                     cookies=cookie)
+    res = client.get(f"/users/stat_targets?limit={20}", cookies=cookie)
     assert res.json()["success"] is True
     assert len(res.json()["data"]) > 0

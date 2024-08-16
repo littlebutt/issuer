@@ -1,10 +1,15 @@
 from datetime import datetime
 import pytest
 
-from issuer.db import delete_all_issue_comments, insert_issue_comment, \
-    list_issue_comment_by_issue, delete_issue_comment_by_issue, \
-    list_issue_comment_by_commenter, change_issue_comment_by_code, \
-    find_issue_comment_by_code
+from issuer.db import (
+    delete_all_issue_comments,
+    insert_issue_comment,
+    list_issue_comment_by_issue,
+    delete_issue_comment_by_issue,
+    list_issue_comment_by_commenter,
+    change_issue_comment_by_code,
+    find_issue_comment_by_code,
+)
 from issuer.db.models import IssueComment
 
 
@@ -17,11 +22,13 @@ def teardown_function(function):
 
 
 def test_insert_issue_comment():
-    issue_comment = IssueComment(issue_code="test",
-                                 comment_time=datetime.utcnow(),
-                                 commenter="test",
-                                 fold=False,
-                                 content="This is a test.")
+    issue_comment = IssueComment(
+        issue_code="test",
+        comment_time=datetime.utcnow(),
+        commenter="test",
+        fold=False,
+        content="This is a test.",
+    )
     comment_code = insert_issue_comment(issue_comment)
     assert comment_code is not None
     res = list_issue_comment_by_issue("test")
@@ -29,11 +36,13 @@ def test_insert_issue_comment():
 
 
 def test_delete_issue_comment_by_issue():
-    issue_comment = IssueComment(issue_code="test",
-                                 comment_time=datetime.utcnow(),
-                                 commenter="test",
-                                 fold=False,
-                                 content="This is a test.")
+    issue_comment = IssueComment(
+        issue_code="test",
+        comment_time=datetime.utcnow(),
+        commenter="test",
+        fold=False,
+        content="This is a test.",
+    )
     comment_code = insert_issue_comment(issue_comment)
     assert comment_code is not None
 
@@ -45,12 +54,14 @@ def test_delete_issue_comment_by_issue():
 
 
 def test_change_issue_comment_by_code():
-    issue_comment = IssueComment(issue_code="test",
-                                 comment_time=datetime.utcnow(),
-                                 commenter="test",
-                                 fold=False,
-                                 content="This is a test.",
-                                 appendices="path/to/pa,path/to/pb")
+    issue_comment = IssueComment(
+        issue_code="test",
+        comment_time=datetime.utcnow(),
+        commenter="test",
+        fold=False,
+        content="This is a test.",
+        appendices="path/to/pa,path/to/pb",
+    )
     comment_code = insert_issue_comment(issue_comment)
     assert comment_code is not None
 

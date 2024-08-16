@@ -38,13 +38,16 @@ def delete_activity_by_create_time(create_time: datetime) -> bool:
     return True
 
 
-def list_activities_by_subject(subject: str, limit: Optional[int] = None) \
-        -> Sequence["Activity"]:
+def list_activities_by_subject(
+    subject: str, limit: Optional[int] = None
+) -> Sequence["Activity"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(Activity)\
-                .where(Activity.subject == subject)\
+            stmt = (
+                select(Activity)
+                .where(Activity.subject == subject)
                 .order_by(Activity.id.desc())
+            )
             if limit is not None:
                 stmt = stmt.limit(limit)
             results = session.exec(stmt).all()
@@ -54,9 +57,9 @@ def list_activities_by_subject(subject: str, limit: Optional[int] = None) \
     return []
 
 
-def list_activities_by_targets(targets: Sequence[str],
-                               limit: Optional[int] = None) \
-        -> Sequence["Activity"]:
+def list_activities_by_targets(
+    targets: Sequence[str], limit: Optional[int] = None
+) -> Sequence["Activity"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             stmt = select(Activity)

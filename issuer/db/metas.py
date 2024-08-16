@@ -23,8 +23,11 @@ def insert_metas(metas: "Metas") -> bool:
 def delete_metas(metas: "Metas") -> bool:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(Metas).where(Metas.meta_type == metas.meta_type)\
+            stmt = (
+                select(Metas)
+                .where(Metas.meta_type == metas.meta_type)
                 .where(Metas.meta_value == metas.meta_value)
+            )
             result = session.exec(stmt).one()
             session.delete(result)
             session.commit()

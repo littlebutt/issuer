@@ -22,23 +22,14 @@ def teardown_function(function):
 
 def test_new_notice():
     cookie, user_code = get_cookie()
-    res = client.post('/notice/new',
-                      json={
-                          "content": "test"
-                      },
-                      cookies=cookie)
+    res = client.post("/notice/new", json={"content": "test"}, cookies=cookie)
     assert res.json()["success"] is True
 
 
 def test_list_notices():
     cookie, user_code = get_cookie()
-    res = client.post('/notice/new',
-                      json={
-                          "content": "test"
-                      },
-                      cookies=cookie)
+    res = client.post("/notice/new", json={"content": "test"}, cookies=cookie)
     assert res.json()["success"] is True
 
-    res = client.get('/notice/list_notices',
-                     cookies=cookie)
+    res = client.get("/notice/list_notices", cookies=cookie)
     assert len(res.json()["data"]) > 0

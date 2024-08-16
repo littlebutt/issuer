@@ -11,18 +11,19 @@ from issuer.routers.utils import empty_string_to_none
 
 
 router = APIRouter(
-    prefix='/notice',
+    prefix="/notice",
     tags=["notice"],
-    responses={404: {"description": "Not Found"}}
+    responses={404: {"description": "Not Found"}},
 )
 
 
 Logger = logging.getLogger(__name__)
 
 
-@router.post('/new')
-async def new_notice(notice: "NoticeModel",
-                     current_user: Annotated[str | None, Cookie()] = None):
+@router.post("/new")
+async def new_notice(
+    notice: "NoticeModel", current_user: Annotated[str | None, Cookie()] = None
+):
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
@@ -32,10 +33,13 @@ async def new_notice(notice: "NoticeModel",
     return {"success": False}
 
 
-@router.get('/list_notices',
-            response_model=Dict[str, bool | str | List[NoticeModel]])
-async def list_notices(limit: Optional[int] = None,
-                       current_user: Annotated[str | None, Cookie()] = None):
+@router.get(
+    "/list_notices", response_model=Dict[str, bool | str | List[NoticeModel]]
+)
+async def list_notices(
+    limit: Optional[int] = None,
+    current_user: Annotated[str | None, Cookie()] = None,
+):
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
@@ -47,9 +51,10 @@ async def list_notices(limit: Optional[int] = None,
     return {"success": True, "data": res}
 
 
-@router.post('/delete')
-async def delete_notice(notice: "NoticeModel",
-                        current_user: Annotated[str | None, Cookie()] = None):
+@router.post("/delete")
+async def delete_notice(
+    notice: "NoticeModel", current_user: Annotated[str | None, Cookie()] = None
+):
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}

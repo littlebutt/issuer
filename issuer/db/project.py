@@ -13,7 +13,7 @@ Logger = logging.getLogger(__name__)
 
 def insert_project(project: "Project") -> str | None:
     if project.project_code is None:
-        project.project_code = generate_code('PJ')
+        project.project_code = generate_code("PJ")
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             session.add(project)
@@ -28,8 +28,9 @@ def insert_project(project: "Project") -> str | None:
 def update_project_by_code(project: "Project") -> bool:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(Project)\
-                .where(Project.project_code == project.project_code)
+            stmt = select(Project).where(
+                Project.project_code == project.project_code
+            )
             result = session.exec(stmt).one()
 
             result.gmt_modified = datetime.utcnow()
@@ -74,39 +75,46 @@ def find_project_by_code(project_code: str) -> Optional["Project"]:
     return None
 
 
-def list_project_by_owner(owner: str,
-                          page_num: int = 1,
-                          page_size: int = 10) -> Sequence["Project"]:
+def list_project_by_owner(
+    owner: str, page_num: int = 1, page_size: int = 10
+) -> Sequence["Project"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(Project) \
-                .where(Project.owner == owner) \
-                .limit(page_size).offset((page_num - 1) * page_size)
+            stmt = (
+                select(Project)
+                .where(Project.owner == owner)
+                .limit(page_size)
+                .offset((page_num - 1) * page_size)
+            )
             return session.exec(stmt).all()
     except Exception as e:
         Logger.error(e)
     return list()
 
 
-def list_projects_by_condition(current_user: str,
-                               project_code: Optional[str] = None,
-                               project_name: Optional[str] = None,
-                               before_date: Optional[date] = None,
-                               after_date: Optional[date] = None,
-                               owner: Optional[str] = None,
-                               status: Optional[str] = None,
-                               participants: Optional[Sequence[str]] = None,
-                               page_num: int = 1,
-                               page_size: int = 10) -> Sequence["Project"]:
+def list_projects_by_condition(
+    current_user: str,
+    project_code: Optional[str] = None,
+    project_name: Optional[str] = None,
+    before_date: Optional[date] = None,
+    after_date: Optional[date] = None,
+    owner: Optional[str] = None,
+    status: Optional[str] = None,
+    participants: Optional[Sequence[str]] = None,
+    page_num: int = 1,
+    page_size: int = 10,
+) -> Sequence["Project"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(Project) \
-                .where(Project.project_code == ProjectToUser.project_code)
+            stmt = select(Project).where(
+                Project.project_code == ProjectToUser.project_code
+            )
             if project_code is not None:
                 stmt = stmt.where(Project.project_code == project_code)
             if project_name is not None:
-                stmt = stmt \
-                    .where(Project.project_name.like('%' + project_name + '%'))
+                stmt = stmt.where(
+                    Project.project_name.like("%" + project_name + "%")
+                )
             if before_date is not None:
                 stmt = stmt.where(Project.start_date < before_date)
             if after_date is not None:
@@ -120,11 +128,18 @@ def list_projects_by_condition(current_user: str,
                 for participant in participants:
                     or_clauses.append(ProjectToUser.user_code == participant)
                 stmt = stmt.where(or_(*or_clauses))
-            stmt = stmt.distinct() \
-                .where(or_(Project.privilege == 'Public',
-                           Project.owner == current_user,
-                           ProjectToUser.user_code == current_user)) \
-                .limit(page_size).offset((page_num - 1) * page_size)
+            stmt = (
+                stmt.distinct()
+                .where(
+                    or_(
+                        Project.privilege == "Public",
+                        Project.owner == current_user,
+                        ProjectToUser.user_code == current_user,
+                    )
+                )
+                .limit(page_size)
+                .offset((page_num - 1) * page_size)
+            )
             result = session.exec(stmt).all()
             return result
     except Exception as e:
@@ -132,23 +147,27 @@ def list_projects_by_condition(current_user: str,
     return list()
 
 
-def count_projects_by_condition(current_user: str,
-                                project_code: Optional[str] = None,
-                                project_name: Optional[str] = None,
-                                before_date: Optional[date] = None,
-                                after_date: Optional[date] = None,
-                                owner: Optional[str] = None,
-                                status: Optional[str] = None,
-                                participants: Optional[Sequence[str]] = None) -> Optional[int]: # noqa
+def count_projects_by_condition(
+    current_user: str,
+    project_code: Optional[str] = None,
+    project_name: Optional[str] = None,
+    before_date: Optional[date] = None,
+    after_date: Optional[date] = None,
+    owner: Optional[str] = None,
+    status: Optional[str] = None,
+    participants: Optional[Sequence[str]] = None,
+) -> Optional[int]:  # noqa
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(func.count(distinct(Project.id))) \
-                .where(Project.project_code == ProjectToUser.project_code)
+            stmt = select(func.count(distinct(Project.id))).where(
+                Project.project_code == ProjectToUser.project_code
+            )
             if project_code is not None:
                 stmt = stmt.where(Project.project_code == project_code)
             if project_name is not None:
-                stmt = stmt \
-                    .where(Project.project_name.like('%' + project_name + '%'))
+                stmt = stmt.where(
+                    Project.project_name.like("%" + project_name + "%")
+                )
             if before_date is not None:
                 stmt = stmt.where(Project.start_date < before_date)
             if after_date is not None:
@@ -162,10 +181,13 @@ def count_projects_by_condition(current_user: str,
                 for participant in participants:
                     or_clauses.append(ProjectToUser.user_code == participant)
                 stmt = stmt.where(or_(*or_clauses))
-            stmt = stmt \
-                .where(or_(Project.privilege == 'Public',
-                           Project.owner == current_user,
-                           ProjectToUser.user_code == current_user))
+            stmt = stmt.where(
+                or_(
+                    Project.privilege == "Public",
+                    Project.owner == current_user,
+                    ProjectToUser.user_code == current_user,
+                )
+            )
             result = session.scalar(stmt)
             return result if result is not None else 0
     except Exception as e:

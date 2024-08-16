@@ -15,7 +15,7 @@ Logger = logging.getLogger(__name__)
 
 def insert_user_group(user_group: "UserGroup") -> str | None:
     if user_group.group_code is None:
-        user_group.group_code = generate_code('UG')
+        user_group.group_code = generate_code("UG")
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             session.add(user_group)
@@ -30,8 +30,9 @@ def insert_user_group(user_group: "UserGroup") -> str | None:
 def update_user_group_by_code(user_group: "UserGroup") -> bool:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(UserGroup) \
-                .where(UserGroup.group_code == user_group.group_code)
+            stmt = select(UserGroup).where(
+                UserGroup.group_code == user_group.group_code
+            )
             results = session.exec(stmt)
             result = results.one()
 
@@ -85,21 +86,25 @@ def find_user_group_by_owner(owner: str) -> Sequence["UserGroup"]:
     return list()
 
 
-def list_user_group_by_condition(group_code: Optional[str] = None,
-                                 group_name: Optional[str] = None,
-                                 owner: Optional[str] = None,
-                                 members: Optional[Sequence[str]] = None,
-                                 page_num: int = 1,
-                                 page_size: int = 10) -> \
-        Sequence["UserGroup"]:
+def list_user_group_by_condition(
+    group_code: Optional[str] = None,
+    group_name: Optional[str] = None,
+    owner: Optional[str] = None,
+    members: Optional[Sequence[str]] = None,
+    page_num: int = 1,
+    page_size: int = 10,
+) -> Sequence["UserGroup"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(UserGroup)\
-                .where(UserGroup.group_code == UserToUserGroup.group_code)
+            stmt = select(UserGroup).where(
+                UserGroup.group_code == UserToUserGroup.group_code
+            )
             if group_code is not None:
                 stmt = stmt.where(UserGroup.group_code == group_code)
             if group_name is not None:
-                stmt = stmt.where(UserGroup.group_name.like('%' + group_name + '%')) # noqa
+                stmt = stmt.where(
+                    UserGroup.group_name.like("%" + group_name + "%")
+                )  # noqa
             if owner is not None:
                 stmt = stmt.where(UserGroup.group_owner == owner)
             if members is not None:
@@ -107,8 +112,11 @@ def list_user_group_by_condition(group_code: Optional[str] = None,
                 for member in members:
                     or_clauses.append(UserToUserGroup.user_code == member)
                 stmt = stmt.where(or_(*or_clauses))
-            stmt = stmt.distinct()\
-                .limit(page_size).offset((page_num - 1) * page_size)
+            stmt = (
+                stmt.distinct()
+                .limit(page_size)
+                .offset((page_num - 1) * page_size)
+            )
             results = session.exec(stmt)
             return results.all()
     except Exception as e:
@@ -116,19 +124,23 @@ def list_user_group_by_condition(group_code: Optional[str] = None,
     return list()
 
 
-def count_user_group_by_condition(group_code: Optional[str] = None,
-                                  group_name: Optional[str] = None,
-                                  owner: Optional[str] = None,
-                                  members: Optional[Sequence[str]] = None) -> \
-        Optional[int]:
+def count_user_group_by_condition(
+    group_code: Optional[str] = None,
+    group_name: Optional[str] = None,
+    owner: Optional[str] = None,
+    members: Optional[Sequence[str]] = None,
+) -> Optional[int]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(func.count(UserGroup.id))\
-                .where(UserGroup.group_code == UserToUserGroup.group_code)
+            stmt = select(func.count(UserGroup.id)).where(
+                UserGroup.group_code == UserToUserGroup.group_code
+            )
             if group_code is not None:
                 stmt = stmt.where(UserGroup.group_code == group_code)
             if group_name is not None:
-                stmt = stmt.where(UserGroup.group_name.like('%' + group_name + '%')) # noqa
+                stmt = stmt.where(
+                    UserGroup.group_name.like("%" + group_name + "%")
+                )  # noqa
             if owner is not None:
                 stmt = stmt.where(UserGroup.group_owner == owner)
             if members is not None:

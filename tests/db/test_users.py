@@ -1,7 +1,14 @@
 import pytest
 
-from issuer.db import insert_user, delete_all_users, update_user_by_code, \
-    find_user_by_email, delete_user_by_code, find_user_by_code, list_users
+from issuer.db import (
+    insert_user,
+    delete_all_users,
+    update_user_by_code,
+    find_user_by_email,
+    delete_user_by_code,
+    find_user_by_code,
+    list_users,
+)
 from issuer.db import User
 
 
@@ -37,8 +44,13 @@ def test_update_user_by_code():
 
 
 def test_delete_user_by_code():
-    user = User(user_code="us99", user_name="test", passwd="test",
-                role="admin", email="test")
+    user = User(
+        user_code="us99",
+        user_name="test",
+        passwd="test",
+        role="admin",
+        email="test",
+    )
     res = insert_user(user=user)
     assert res is True
     delete_user_by_code(user_code="us99")
@@ -47,8 +59,13 @@ def test_delete_user_by_code():
 
 
 def test_find_user():
-    user = User(user_code="test", user_name="test", passwd="test",
-                role="admin", email="test")
+    user = User(
+        user_code="test",
+        user_name="test",
+        passwd="test",
+        role="admin",
+        email="test",
+    )
     res = insert_user(user=user)
     assert res is True
     res = find_user_by_email("test")
@@ -59,8 +76,13 @@ def test_find_user():
 
 
 def test_list_users():
-    user = User(user_code="test", user_name="test", passwd="test",
-                role="admin", email="test")
+    user = User(
+        user_code="test",
+        user_name="test",
+        passwd="test",
+        role="admin",
+        email="test",
+    )
     res = insert_user(user=user)
     assert res is True
 

@@ -3,9 +3,14 @@ from datetime import datetime
 
 
 from issuer.db import Issue
-from issuer.db import delete_all_issues, insert_issue, \
-    list_issues_by_condition, update_issue_by_code, delete_issue_by_code, \
-    count_issues_by_condition
+from issuer.db import (
+    delete_all_issues,
+    insert_issue,
+    list_issues_by_condition,
+    update_issue_by_code,
+    delete_issue_by_code,
+    count_issues_by_condition,
+)
 
 
 def setup_function(function):
@@ -17,9 +22,14 @@ def teardown_function(function):
 
 
 def test_insert_issue():
-    issue = Issue(project_code="test", title="test", owner="test",
-                  propose_date=datetime.now().date(), status="Open",
-                  assigned="test")
+    issue = Issue(
+        project_code="test",
+        title="test",
+        owner="test",
+        propose_date=datetime.now().date(),
+        status="Open",
+        assigned="test",
+    )
     issue_code = insert_issue(issue)
     assert issue_code is not None
     issues = list_issues_by_condition(project_code="test")
@@ -28,9 +38,14 @@ def test_insert_issue():
 
 
 def test_update_issue_by_code():
-    issue = Issue(project_code="test", title="test", owner="test",
-                  propose_date=datetime.now().date(), status="Open",
-                  assigned="bar")
+    issue = Issue(
+        project_code="test",
+        title="test",
+        owner="test",
+        propose_date=datetime.now().date(),
+        status="Open",
+        assigned="bar",
+    )
     issue_code = insert_issue(issue)
     assert issue_code is not None
 
@@ -49,8 +64,13 @@ def test_update_issue_by_code():
 
 
 def test_delete_issue_by_code():
-    issue = Issue(project_code="test", title="test", owner="test",
-                  propose_date=datetime.now().date(), status="Open")
+    issue = Issue(
+        project_code="test",
+        title="test",
+        owner="test",
+        propose_date=datetime.now().date(),
+        status="Open",
+    )
     issue_code = insert_issue(issue)
     assert issue_code is not None
 
@@ -59,9 +79,15 @@ def test_delete_issue_by_code():
 
 
 def test_list_issues_by_condition():
-    issue = Issue(project_code="test", title="test", owner="test",
-                  propose_date=datetime.now().date(), status="Open",
-                  tags="test1,test2", followers="foo,bar")
+    issue = Issue(
+        project_code="test",
+        title="test",
+        owner="test",
+        propose_date=datetime.now().date(),
+        status="Open",
+        tags="test1,test2",
+        followers="foo,bar",
+    )
     issue_code = insert_issue(issue)
     assert issue_code is not None
 
@@ -74,17 +100,23 @@ def test_list_issues_by_condition():
     res = list_issues_by_condition(end_date=datetime.now().date())
     assert len(res) > 0
 
-    res = list_issues_by_condition(follower='foo')
+    res = list_issues_by_condition(follower="foo")
     assert len(res) > 0
 
-    res = list_issues_by_condition(tags=['test1'])
+    res = list_issues_by_condition(tags=["test1"])
     assert len(res) > 0
 
 
 def test_count_issues_by_condition():
-    issue = Issue(project_code="test", title="test", owner="test",
-                  propose_date=datetime.now().date(), status="Open",
-                  tags="test1,test2", followers="foo,bar")
+    issue = Issue(
+        project_code="test",
+        title="test",
+        owner="test",
+        propose_date=datetime.now().date(),
+        status="Open",
+        tags="test1,test2",
+        followers="foo,bar",
+    )
     issue_code = insert_issue(issue)
     assert issue_code is not None
 
@@ -97,8 +129,8 @@ def test_count_issues_by_condition():
     res = count_issues_by_condition(end_date=datetime.now().date())
     assert res == 1
 
-    res = count_issues_by_condition(follower='foo')
+    res = count_issues_by_condition(follower="foo")
     assert res == 1
 
-    res = count_issues_by_condition(tags=['test1'])
+    res = count_issues_by_condition(tags=["test1"])
     assert res == 1

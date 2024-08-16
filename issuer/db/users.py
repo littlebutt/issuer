@@ -12,7 +12,7 @@ Logger = logging.getLogger(__name__)
 
 def insert_user(user: "User") -> bool:
     if user.user_code is None:
-        user.user_code = generate_code('US')
+        user.user_code = generate_code("US")
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             session.add(user)
@@ -92,12 +92,14 @@ def find_user_by_code(user_code: str) -> Optional["User"]:
     return None
 
 
-def list_users(page_num: int = 1,
-               page_size: int = 10) -> Sequence["User"]:
+def list_users(page_num: int = 1, page_size: int = 10) -> Sequence["User"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
-            stmt = select(User)\
-                .limit(page_size).offset((page_num - 1) * page_size)
+            stmt = (
+                select(User)
+                .limit(page_size)
+                .offset((page_num - 1) * page_size)
+            )
             return session.exec(stmt).all()
     except Exception as e:
         Logger.error(e)

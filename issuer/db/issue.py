@@ -13,7 +13,7 @@ Logger = logging.getLogger(__name__)
 
 def insert_issue(issue: "Issue") -> str | None:
     if issue.issue_code is None:
-        issue.issue_code = generate_code('IS')
+        issue.issue_code = generate_code("IS")
     issue_id = count_issues_by_condition(project_code=issue.project_code)
     issue.issue_id = issue_id + 1
     try:
@@ -73,20 +73,22 @@ def find_issue_by_code(issue_code: str) -> Optional["Issue"]:
     return None
 
 
-def list_issues_by_condition(issue_code: Optional[str] = None,
-                             project_code: Optional[str] = None,
-                             owner: Optional[str] = None,
-                             status: Optional[str] = None,
-                             issue_id: Optional[int] = None,
-                             title: Optional[str] = None,
-                             description: Optional[str] = None,
-                             start_date: Optional[date] = None,
-                             end_date: Optional[date] = None,
-                             follower: Optional[str] = None,
-                             assigned: Optional[str] = None,
-                             tags: Optional[List[str]] = None,
-                             page_num: int = 1,
-                             page_size: int = 10) -> Sequence["Issue"]:
+def list_issues_by_condition(
+    issue_code: Optional[str] = None,
+    project_code: Optional[str] = None,
+    owner: Optional[str] = None,
+    status: Optional[str] = None,
+    issue_id: Optional[int] = None,
+    title: Optional[str] = None,
+    description: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    follower: Optional[str] = None,
+    assigned: Optional[str] = None,
+    tags: Optional[List[str]] = None,
+    page_num: int = 1,
+    page_size: int = 10,
+) -> Sequence["Issue"]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             stmt = select(Issue)
@@ -101,21 +103,22 @@ def list_issues_by_condition(issue_code: Optional[str] = None,
             if issue_id is not None:
                 stmt = stmt.where(Issue.issue_id == issue_id)
             if title is not None:
-                stmt = stmt.where(Issue.title.like('%' + title + '%'))
+                stmt = stmt.where(Issue.title.like("%" + title + "%"))
             if description is not None:
-                stmt = stmt\
-                    .where(Issue.description.like('%' + description + '%'))
+                stmt = stmt.where(
+                    Issue.description.like("%" + description + "%")
+                )
             if start_date is not None:
                 stmt = stmt.where(Issue.propose_date >= start_date)
             if end_date is not None:
                 stmt = stmt.where(Issue.propose_date <= end_date)
             if follower is not None:
-                stmt = stmt.where(Issue.followers.like('%' + follower + '%'))
+                stmt = stmt.where(Issue.followers.like("%" + follower + "%"))
             if assigned is not None:
-                stmt = stmt.where(Issue.assigned.like('%' + assigned + '%'))
+                stmt = stmt.where(Issue.assigned.like("%" + assigned + "%"))
             if tags is not None:
                 for tag in tags:
-                    stmt = stmt.where(Issue.tags.like('%' + tag + '%'))
+                    stmt = stmt.where(Issue.tags.like("%" + tag + "%"))
             stmt = stmt.limit(page_size).offset((page_num - 1) * page_size)
             results = session.exec(stmt).all()
             return results
@@ -124,18 +127,20 @@ def list_issues_by_condition(issue_code: Optional[str] = None,
     return list()
 
 
-def count_issues_by_condition(issue_code: Optional[str] = None,
-                              project_code: Optional[str] = None,
-                              owner: Optional[str] = None,
-                              status: Optional[str] = None,
-                              issue_id: Optional[int] = None,
-                              title: Optional[str] = None,
-                              description: Optional[str] = None,
-                              start_date: Optional[date] = None,
-                              end_date: Optional[date] = None,
-                              follower: Optional[str] = None,
-                              assigned: Optional[str] = None,
-                              tags: Optional[List[str]] = None) -> Optional[int]: # noqa
+def count_issues_by_condition(
+    issue_code: Optional[str] = None,
+    project_code: Optional[str] = None,
+    owner: Optional[str] = None,
+    status: Optional[str] = None,
+    issue_id: Optional[int] = None,
+    title: Optional[str] = None,
+    description: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    follower: Optional[str] = None,
+    assigned: Optional[str] = None,
+    tags: Optional[List[str]] = None,
+) -> Optional[int]:  # noqa
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             stmt = select(func.count(Issue.id))
@@ -150,21 +155,22 @@ def count_issues_by_condition(issue_code: Optional[str] = None,
             if issue_id is not None:
                 stmt = stmt.where(Issue.issue_id == issue_id)
             if title is not None:
-                stmt = stmt.where(Issue.title.like('%' + title + '%'))
+                stmt = stmt.where(Issue.title.like("%" + title + "%"))
             if description is not None:
-                stmt = stmt\
-                    .where(Issue.description.like('%' + description + '%'))
+                stmt = stmt.where(
+                    Issue.description.like("%" + description + "%")
+                )
             if start_date is not None:
                 stmt = stmt.where(Issue.propose_date >= start_date)
             if end_date is not None:
                 stmt = stmt.where(Issue.propose_date <= end_date)
             if follower is not None:
-                stmt = stmt.where(Issue.followers.like('%' + follower + '%'))
+                stmt = stmt.where(Issue.followers.like("%" + follower + "%"))
             if assigned is not None:
-                stmt = stmt.where(Issue.assigned.like('%' + assigned + '%'))
+                stmt = stmt.where(Issue.assigned.like("%" + assigned + "%"))
             if tags is not None:
                 for tag in tags:
-                    stmt = stmt.where(Issue.tags.like('%' + tag + '%'))
+                    stmt = stmt.where(Issue.tags.like("%" + tag + "%"))
             result = session.scalar(stmt)
             return result if result is not None else 0
     except Exception as e:

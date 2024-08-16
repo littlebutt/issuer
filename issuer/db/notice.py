@@ -13,7 +13,7 @@ Logger = logging.getLogger(__name__)
 
 def insert_notice(notice: "Notice") -> str | None:
     if notice.notice_code is None:
-        notice.notice_code = generate_code('NT')
+        notice.notice_code = generate_code("NT")
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             session.add(notice)
