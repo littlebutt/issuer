@@ -82,7 +82,7 @@ def convert_project(do_: Project) -> "ProjectRes":
         start_date=datetime.strftime(do_.start_date, "%Y-%m-%d"),
         end_date=datetime.strftime(do_.end_date, "%Y-%m-%d")
         if do_.end_date is not None
-        else None,  # noqa
+        else None,
         owner=convert_user(user_do),
         description=do_.description,
         status=do_.status,
@@ -162,7 +162,7 @@ def convert_activity(activity: "Activity") -> "ActivityModel":
                 trigger_time=trigger_time,
                 subject=user,
                 type="comment",
-                desc=f"{user.user_name}向项目{json.loads(activity.ext_info)['name']}议题添加了一条评论", # noqa
+                desc=f"{user.user_name}向项目{json.loads(activity.ext_info)['name']}议题添加了一条评论",  # noqa
             )
         case ActivityEnum.FoldComment.name:
             return ActivityModel(
@@ -176,91 +176,91 @@ def convert_activity(activity: "Activity") -> "ActivityModel":
                 trigger_time=trigger_time,
                 subject=user,
                 type="issue",
-                desc=f"{user.user_name}向项目{json.loads(activity.ext_info)['name']}添加了一个议题", # noqa
+                desc=f"{user.user_name}向项目{json.loads(activity.ext_info)['name']}添加了一个议题",  # noqa
             )
         case ActivityEnum.ChangeIssue.name:
             return ActivityModel(
                 trigger_time=trigger_time,
                 subject=user,
                 type="issue",
-                desc=f"用户{user.user_name}变更了项目{json.loads(activity.ext_info)['name']}的一个议题", # noqa
+                desc=f"用户{user.user_name}变更了项目{json.loads(activity.ext_info)['name']}的一个议题",  # noqa
             )
         case ActivityEnum.DeleteIssue.name:
             return ActivityModel(
                 trigger_time=trigger_time,
                 subject=user,
                 type="issue",
-                desc=f"{user.user_name}删除了项目{json.loads(activity.ext_info)['name']}的一个议题", # noqa
+                desc=f"{user.user_name}删除了项目{json.loads(activity.ext_info)['name']}的一个议题",  # noqa
             )
         case ActivityEnum.FollowIssue.name:
             return ActivityModel(
                 trigger_time=trigger_time,
                 subject=user,
                 type="issue",
-                desc=f"{user.user_name}关注了项目{json.loads(activity.ext_info)['name']}的一个议题", # noqa
+                desc=f"{user.user_name}关注了项目{json.loads(activity.ext_info)['name']}的一个议题",  # noqa
             )
         case ActivityEnum.UnfollowIssue.name:
             return ActivityModel(
                 trigger_time=trigger_time,
                 subject=user,
                 type="issue",
-                desc=f"{user.user_name}取消关注了项目{json.loads(activity.ext_info)['name']}的一个议题", # noqa
+                desc=f"{user.user_name}取消关注了项目{json.loads(activity.ext_info)['name']}的一个议题",  # noqa
             )
         case ActivityEnum.NewProject.name:
             return ActivityModel(
                 trigger_time=trigger_time,
                 subject=user,
                 type="project",
-                desc=f"{user.user_name}新增了一个项目{json.loads(activity.ext_info)['name']}", # noqa
+                desc=f"{user.user_name}新增了一个项目{json.loads(activity.ext_info)['name']}",  # noqa
             )
         case ActivityEnum.DeleteProject.name:
             return ActivityModel(
                 trigger_time=trigger_time,
                 subject=user,
                 type="project",
-                desc=f"{user.user_name}删除了项目{json.loads(activity.ext_info)['name']}", # noqa
+                desc=f"{user.user_name}删除了项目{json.loads(activity.ext_info)['name']}",  # noqa
             )
         case ActivityEnum.ChangeProject.name:
             return ActivityModel(
                 trigger_time=trigger_time,
                 subject=user,
                 type="project",
-                desc=f"{user.user_name}变更了项目{json.loads(activity.ext_info)['name']}", # noqa
+                desc=f"{user.user_name}变更了项目{json.loads(activity.ext_info)['name']}",  # noqa
             )
         case ActivityEnum.JoinProject.name:
             return ActivityModel(
                 trigger_time=trigger_time,
                 subject=user,
                 type="project",
-                desc=f"{user.user_name}加入了项目{json.loads(activity.ext_info)['name']}", # noqa
+                desc=f"{user.user_name}加入了项目{json.loads(activity.ext_info)['name']}",  # noqa
             )
         case ActivityEnum.NewGroup.name:
             return ActivityModel(
                 trigger_time=trigger_time,
                 subject=user,
                 type="group",
-                desc=f"{user.user_name}创建了组织{json.loads(activity.ext_info)['name']}", # noqa
+                desc=f"{user.user_name}创建了组织{json.loads(activity.ext_info)['name']}",  # noqa
             )
         case ActivityEnum.DeleteGroup.name:
             return ActivityModel(
                 trigger_time=trigger_time,
                 subject=user,
                 type="group",
-                desc=f"{user.user_name}删除了组织{json.loads(activity.ext_info)['name']}", # noqa
+                desc=f"{user.user_name}删除了组织{json.loads(activity.ext_info)['name']}",  # noqa
             )
         case ActivityEnum.ChangeGroup.name:
             return ActivityModel(
                 trigger_time=trigger_time,
                 subject=user,
                 type="group",
-                desc=f"用户{user.user_name}变更了组织{json.loads(activity.ext_info)['name']}", # noqa
+                desc=f"用户{user.user_name}变更了组织{json.loads(activity.ext_info)['name']}",  # noqa
             )
         case ActivityEnum.AddGroup.name:
             return ActivityModel(
                 trigger_time=trigger_time,
                 subject=user,
                 type="group",
-                desc=f"用户{user.user_name}加入了组织{json.loads(activity.ext_info)['name']}", # noqa
+                desc=f"用户{user.user_name}加入了组织{json.loads(activity.ext_info)['name']}",  # noqa
             )
 
 

@@ -121,6 +121,7 @@ async def change_issue(
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
+    issue = empty_strings_to_none(issue)
     issue_do = db.find_issue_by_code(issue_code=issue.issue_code)
     if issue_do is None:
         return {"success": False, "reason": "Cannot find issue"}
@@ -192,7 +193,7 @@ async def follow_issue(
             target=issue_do.issue_code,
             category=ActivityEnum.FollowIssue.name,
             kv={"name": f"{project.project_name}#{issue_do.issue_id}"},
-        )  # noqa
+        )
     if action == 0 and _user.user_code in issue_do.followers:
         followers.remove(_user.user_code)
         activity_helper(
@@ -200,7 +201,7 @@ async def follow_issue(
             target=issue_do.issue_code,
             category=ActivityEnum.UnfollowIssue.name,
             kv={"name": f"{project.project_name}#{issue_do.issue_id}"},
-        )  # noqa
+        )
     issue_do.followers = ",".join(followers)
     res = db.update_issue_by_code(issue=issue_do)
     return {"success": res}
@@ -225,7 +226,7 @@ async def list_issues_by_condition(
     page_num: int = 1,
     page_size: int = 10,
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     """
     根据条件查询议题。
 
@@ -309,7 +310,7 @@ async def count_issues_by_condition(
     assigned: Optional[str] = None,
     tags: Optional[str] = None,
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     """
     根据条件查询议题数量。
 

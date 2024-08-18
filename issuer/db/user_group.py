@@ -104,7 +104,7 @@ def list_user_group_by_condition(
             if group_name is not None:
                 stmt = stmt.where(
                     UserGroup.group_name.like("%" + group_name + "%")
-                )  # noqa
+                )
             if owner is not None:
                 stmt = stmt.where(UserGroup.group_owner == owner)
             if members is not None:
@@ -140,7 +140,7 @@ def count_user_group_by_condition(
             if group_name is not None:
                 stmt = stmt.where(
                     UserGroup.group_name.like("%" + group_name + "%")
-                )  # noqa
+                )
             if owner is not None:
                 stmt = stmt.where(UserGroup.group_owner == owner)
             if members is not None:

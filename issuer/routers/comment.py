@@ -93,7 +93,7 @@ async def fold_comment(
 )
 async def list_comment_by_code(
     issue_code: str, current_user: Annotated[str | None, Cookie()] = None
-):  # noqa
+):
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
@@ -112,7 +112,7 @@ async def list_comment_by_code(
 )
 async def list_comment_by_commenter(
     user_code: str, current_user: Annotated[str | None, Cookie()] = None
-):  # noqa
+):
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
@@ -130,7 +130,7 @@ async def upload_appendix(
     file: "UploadFile",
     issue_code: str = Form(),
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {

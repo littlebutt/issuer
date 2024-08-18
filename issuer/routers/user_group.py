@@ -81,7 +81,7 @@ async def new_user_group(
 async def delete_user_group(
     user_group_model: "UserGroupReq",
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     """
     删除用户组，必须是组长(owner)才能进行的操作。
 
@@ -115,7 +115,7 @@ async def delete_user_group(
 async def change_user_group(
     user_group_model: "UserGroupReq",
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     """
     变更用户组，必须是组长(owner)才能进行的操作。
 
@@ -172,7 +172,7 @@ async def change_user_group(
 async def add_user_group(
     user_group_model: "UserGroupReq",
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     """
     用户组加入新成员。
 
@@ -216,7 +216,7 @@ async def query_user_group_by_user(
     page_num: int = 1,
     page_size: int = 10,
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     """
     根据:arg:`user_code`查询参与的所有项目。
 
@@ -260,7 +260,7 @@ async def list_groups_by_condition(
     page_num: int = 1,
     page_size: int = 10,
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     """
     根据条件查询用户组列表。
 
@@ -306,7 +306,7 @@ async def count_groups_by_condition(
     owner: Optional[str] = None,
     members: Optional[str] = None,
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     """
     获取根据条件查询用户组列表的总数。
 

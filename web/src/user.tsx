@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { Project, UserGroup, User as UserType } from "./types"
 import {
 	fetchUserRoles,
@@ -18,17 +18,21 @@ import {
 	ChevronRight,
 	Circle,
 	Mail,
+	PenLine,
 	Phone,
 	UserRound
 } from "lucide-react"
 import { Button } from "./components/ui/button"
 import { formatMembers, formatOwner } from "./utils"
+import { useCookie } from "./lib/cookies"
 
 const User: React.FC = () => {
-	// TODO: 更改布局，添加用户组织项目的hover card
+	// TODO: 添加用户组织项目的hover card
 	const { userCode } = useParams()
 
 	const { toast } = useToast()
+	const cookie = useCookie()
+	const navigate = useNavigate()
 
 	const [userInfo, setUserInfo] = useState<UserType>({})
 	const [groups, setGroups] = useState<UserGroup[]>([])
@@ -38,6 +42,12 @@ const User: React.FC = () => {
 	const [projectPage, setProjectPage] = useState<number>(1)
 	const [projectPageTotal, setProjectPageTotal] = useState<number>(1)
 	const [roles, setRoles] = useState<{ label: string; value: string }[]>([])
+
+	const isSelf = () => {
+		let current_user = cookie.getCookie("current_user")
+		let user_code = current_user?.split(":")[0]
+		return user_code === userCode
+	}
 
 	const refreshUserGroups = (currentPage?: number) => {
 		getUserGroups(
@@ -151,48 +161,73 @@ const User: React.FC = () => {
 			.catch(err => console.log(err))
 	}, [])
 	return (
-		<div className="flex flex-col items-center space-y-2 w-full py-0 h-full overflow-y-auto">
-			<div className="w-[600px] flex flex-col space-y-4">
-				<div className="flex flex-row space-x-3 items-end">
-					<span className="text-3xl font-semibold leading-none tracking-tight">
-						{userInfo.user_name}
-					</span>
-					<span className="text-base font-thin tracking-tight align-text-bottom">
-						{userInfo.user_code}
-					</span>
-				</div>
-				<Separator />
-				<div className="flex flex-col items-center">
-					<Avatar className="size-64">
-						<AvatarImage
-							src={userInfo.avatar ?? "/statics/avatar.png"}
-						/>
-						<AvatarFallback>{userInfo.user_name}</AvatarFallback>
-					</Avatar>
-					<div className="flex flex-row flex-wrap space-y-2 mt-3 mb-3 w-full">
-						<div className="text-base text-muted-foreground flex flex-row space-x-2 basis-[48%] m-1">
-							<UserRound size="20"></UserRound>
-							{value2label(userInfo.role) as string}
+		<div className="w-full flex flex-row space-x-2 p-1">
+			<Card className="w-1/3">
+				<CardHeader className="px-6 py-3 flex flex-row justify-between">
+					<CardTitle className="flex flex-row space-x-3 text-end">
+						<span className="text-2xl font-semibold leading-none tracking-tight">
+							{userInfo.user_name}
+						</span>
+						<span className="text-2xl font-thin tracking-tight align-text-bottom">
+							{userInfo.user_code}
+						</span>
+					</CardTitle>
+					<div className="flex flex-row space-x-1">
+						<Button
+							variant="ghost"
+							size="icon"
+							disabled={!isSelf()}
+							onClick={() => navigate("/main/settings")}
+						>
+							<PenLine className="h-4 w-4" />
+						</Button>
+					</div>
+				</CardHeader>
+				<CardContent>
+					<div className="flex flex-col space-y-2 w-full">
+						<div className="self-center">
+							<Avatar className="size-64">
+								<AvatarImage
+									src={
+										userInfo.avatar ?? "/statics/avatar.png"
+									}
+								/>
+								<AvatarFallback>
+									{userInfo.user_name}
+								</AvatarFallback>
+							</Avatar>
 						</div>
-						<div className="text-base text-muted-foreground flex flex-row space-x-2 basis-[48%] m-1">
-							<Mail size="20" />
-							{userInfo.email}
+						<div className="flex justify-between">
+							<UserRound
+								className="text-muted-foreground"
+								size={20}
+							/>
+							<span>{value2label(userInfo.role) as string}</span>
 						</div>
-						{userInfo.phone && (
-							<div className="text-base text-muted-foreground flex flex-row space-x-2 basis-[48%] m-1">
-								<Phone size="20" />
-								{userInfo.phone}
+						<div className="flex justify-between">
+							<Mail className="text-muted-foreground" size={20} />
+							<span>{userInfo.email}</span>
+						</div>
+						{!userInfo.phone ?? (
+							<div className="flex justify-between">
+								<Phone
+									className="text-muted-foreground"
+									size={20}
+								/>
+								<span>{userInfo.phone}</span>
 							</div>
 						)}
-						{userInfo.description && (
-							<div className="text-base text-muted-foreground space-x-2 basis-[48%] overflow-auto m-1">
+
+						{!userInfo.description ?? (
+							<div className="text-base text-muted-foreground overflow-auto m-1 w-full">
 								{userInfo.description}
 							</div>
 						)}
 					</div>
-				</div>
-				<Separator />
-				<div className="flex flex-col space-y-1 items-start">
+				</CardContent>
+			</Card>
+			<div className="w-2/3">
+				<div className="flex flex-col space-y-1 items-start pb-2">
 					<span className="text-xl font-semibold leading-none tracking-tight">
 						参与组织
 					</span>
@@ -204,15 +239,11 @@ const User: React.FC = () => {
 										{group.group_name}
 									</CardTitle>
 								</CardHeader>
-								<CardContent className="p-0 text-sm font-normal text-muted-foreground flex flex-col space-y-1">
-									<div className="flex flex-row">
-										创建者&nbsp;
-										{formatOwner(group.owner)}
-									</div>
-									<div className="flex flex-row">
-										成员&nbsp;
-										{formatMembers(group.members)}
-									</div>
+								<CardContent className="p-0 pt-2 text-sm align-baseline font-normal text-muted-foreground grid grid-cols-[1fr_3fr] grid-rows-2">
+									<div>创建者</div>
+									{formatOwner(group.owner)}
+									<div>成员</div>
+									{formatMembers(group.members)}
 								</CardContent>
 							</Card>
 						))}
@@ -237,7 +268,7 @@ const User: React.FC = () => {
 					</div>
 				</div>
 				<Separator />
-				<div className="flex flex-col space-y-1 items-start">
+				<div className="flex flex-col space-y-1 items-start pt-3">
 					<span className="text-xl font-semibold leading-none tracking-tight">
 						参与项目
 					</span>
@@ -262,15 +293,11 @@ const User: React.FC = () => {
 										/>
 									</CardTitle>
 								</CardHeader>
-								<CardContent className="p-0 text-sm font-normal text-muted-foreground flex flex-col space-y-1">
-									<div className="flex flex-row">
-										创建者&nbsp;
-										{formatOwner(project.owner)}
-									</div>
-									<div className="flex flex-row">
-										成员&nbsp;
-										{formatMembers(project.participants)}
-									</div>
+								<CardContent className="p-0 pt-2 text-sm align-baseline font-normal text-muted-foreground grid grid-cols-[1fr_3fr] grid-rows-2">
+									<div>创建者</div>
+									{formatOwner(project.owner)}
+									<div>成员</div>
+									{formatMembers(project.participants)}
 								</CardContent>
 							</Card>
 						))}

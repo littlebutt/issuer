@@ -56,6 +56,7 @@ const MultiSelector = ({
 	const [open, setOpen] = useState<boolean>(false)
 	const [activeIndex, setActiveIndex] = useState<number>(-1)
 
+	// TODO: 项目选中后输入框显示label而不是value
 	const onValueChangeHandler = useCallback(
 		(val: string) => {
 			if (value.includes(val)) {

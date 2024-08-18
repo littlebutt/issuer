@@ -258,7 +258,7 @@ async def stat_activity_subject(
     subject: str,
     limit: Optional[int] = None,
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {
@@ -280,7 +280,7 @@ async def stat_activity_subject(
 async def stat_activity_targets(
     limit: Optional[int] = None,
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {

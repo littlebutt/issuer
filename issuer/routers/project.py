@@ -177,7 +177,7 @@ async def change_project(
 @router.post("/add")
 async def add_project(
     project: "ProjectReq", current_user: Annotated[str | None, Cookie()] = None
-):  # noqa
+):
     """
     变更该项目参与者。
 
@@ -235,7 +235,7 @@ async def query_status():
 @router.get("/query", response_model=Dict[str, bool | str | ProjectRes])
 async def query_project_by_code(
     project_code: str, current_user: Annotated[str | None, Cookie()] = None
-):  # noqa
+):
     """
     根据:arg:`project_code`查询项目。
 
@@ -255,8 +255,8 @@ async def query_project_by_code(
     res = convert_project(project)
 
     if (
-        project.privilege == ProjectPrivilegeEnum.Private.name and
-            _user.user_code not in [u.user_code for u in res.participants]
+        project.privilege == ProjectPrivilegeEnum.Private.name
+        and _user.user_code not in [u.user_code for u in res.participants]
     ):
         return {"success": False, "reason": "Permission debied"}
 
@@ -272,7 +272,7 @@ async def query_project_by_participants(
     page_num: int = 1,
     page_size: int = 10,
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     """
     根据:arg:`user_code`查询该用户参与的项目。
 
@@ -316,7 +316,7 @@ async def list_projects_by_condition(
     page_num: int = 1,
     page_size: int = 10,
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     """
     根据给定条件获取对当前用户可见的所有项目。
 
@@ -391,7 +391,7 @@ async def count_projects_by_condition(
     status: Optional[str] = None,
     participants: Optional[str] = None,
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     """
     根据给定条件获取对当前用户可见的所有项目的总数。
 
@@ -456,7 +456,7 @@ async def stat_issue_state(
     before_date: str,
     after_date: str,
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     """
     统计给定时间范围内不同议题的状态占比。
 
@@ -491,7 +491,7 @@ async def stat_issue_date(
     before_date: str,
     after_date: str,
     current_user: Annotated[str | None, Cookie()] = None,
-):  # noqa
+):
     """
     统计给定时间每日提出的议题的个数。
 

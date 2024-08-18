@@ -140,7 +140,7 @@ def count_issues_by_condition(
     follower: Optional[str] = None,
     assigned: Optional[str] = None,
     tags: Optional[List[str]] = None,
-) -> Optional[int]:  # noqa
+) -> Optional[int]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             stmt = select(func.count(Issue.id))

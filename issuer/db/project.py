@@ -156,7 +156,7 @@ def count_projects_by_condition(
     owner: Optional[str] = None,
     status: Optional[str] = None,
     participants: Optional[Sequence[str]] = None,
-) -> Optional[int]:  # noqa
+) -> Optional[int]:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             stmt = select(func.count(distinct(Project.id))).where(
