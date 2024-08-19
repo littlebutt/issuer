@@ -12,7 +12,11 @@ const formatMembers = (members: User[]) => {
 	for (let i = 0; i < end; i++) {
 		res.push(members[i]?.avatar ?? "/statics/avatar.png")
 	}
-	return <AvatarCircles avatarUrls={res} numPeople={members.length} />
+	return members.length > 0 ? (
+		<AvatarCircles avatarUrls={res} numPeople={members.length} />
+	) : (
+		<></>
+	)
 }
 
 const formatOwner = (owner: User) => {

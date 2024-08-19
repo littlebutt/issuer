@@ -21,18 +21,19 @@ import {
 	SelectValue
 } from "./components/ui/select"
 import { fetchIssueStatuses, fetchUserOptions } from "./fetch"
-import {
-	MultiSelector,
-	MultiSelectorContent,
-	MultiSelectorInput,
-	MultiSelectorItem,
-	MultiSelectorList,
-	MultiSelectorTrigger
-} from "./components/ui/multi-select"
 import { Badge } from "./components/ui/badge"
 import { Input } from "./components/ui/input"
 import { updateIssueApi } from "./issue-api"
 import { useToast } from "./components/ui/use-toast"
+import {
+	MultiSelect,
+	MultiSelectContent,
+	MultiSelectItem,
+	MultiSelectList,
+	MultiSelectOptionItem,
+	MultiSelectTrigger,
+	MultiSelectValue
+} from "./components/ui/multi-select"
 
 interface IIssueEdit {
 	issue: Issue
@@ -49,8 +50,12 @@ const IssueEdit: React.FC<IIssueEdit> = props => {
 	>([])
 
 	const [issueStatus, setIssueStatus] = useState<string>(props.issue.status)
-	const [assigned, setAssigned] = useState<string[]>(
-		props.issue.assigned?.map(u => u.user_code) as string[]
+	const [assigned, setAssigned] = useState<
+		{ label: string; value: string }[]
+	>(
+		props.issue.assigned?.map(u => {
+			return { label: u.user_name, value: u.user_code }
+		}) as { label: string; value: string }[]
 	)
 	const [tags, setTags] = useState<string[]>(
 		props.issue.tags?.split(",") ?? []
@@ -67,7 +72,11 @@ const IssueEdit: React.FC<IIssueEdit> = props => {
 
 	const clearInput = () => {
 		setIssueStatus(props.issue.status)
-		setAssigned(props.issue.assigned?.map(u => u.user_code) as string[])
+		setAssigned(
+			props.issue.assigned?.map(u => {
+				return { label: u.user_name, value: u.user_code }
+			}) as { label: string; value: string }[]
+		)
 		setTags(props.issue.tags?.split(",") ?? [])
 		setCached("")
 	}
@@ -92,7 +101,7 @@ const IssueEdit: React.FC<IIssueEdit> = props => {
 			issueStatus,
 			tags.join(","),
 			"",
-			assigned.join(",")
+			assigned.map(a => a.value).join(",")
 		)
 	}
 
@@ -140,27 +149,38 @@ const IssueEdit: React.FC<IIssueEdit> = props => {
 							</div>
 							<div className="flex flex-col space-y-1">
 								<Label>指派</Label>
-								<MultiSelector
-									values={assigned}
-									onValuesChange={setAssigned}
-									className="w-full"
+								<MultiSelect
+									defaultValue={assigned.map(a => a.label)}
+									onValueChange={(
+										value: string[],
+										items: MultiSelectOptionItem[]
+									) =>
+										setAssigned(
+											items.map(item => {
+												return {
+													label: item.label as string,
+													value: item.value
+												}
+											})
+										)
+									}
 								>
-									<MultiSelectorTrigger>
-										<MultiSelectorInput placeholder="选择用户" />
-									</MultiSelectorTrigger>
-									<MultiSelectorContent>
-										<MultiSelectorList>
+									<MultiSelectTrigger>
+										<MultiSelectValue placeholder="选择用户" />
+									</MultiSelectTrigger>
+									<MultiSelectContent>
+										<MultiSelectList>
 											{userOptions.map(userOption => (
-												<MultiSelectorItem
+												<MultiSelectItem
 													key={userOption.value}
 													value={userOption.value}
 												>
 													{userOption.label}
-												</MultiSelectorItem>
+												</MultiSelectItem>
 											))}
-										</MultiSelectorList>
-									</MultiSelectorContent>
-								</MultiSelector>
+										</MultiSelectList>
+									</MultiSelectContent>
+								</MultiSelect>
 							</div>
 							<div className="flex flex-col space-y-1">
 								<Label>标签</Label>

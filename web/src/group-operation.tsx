@@ -31,12 +31,13 @@ import { useForm } from "react-hook-form"
 import { addGroupApi, updateGroupApi } from "./group-api"
 import { useToast } from "./components/ui/use-toast"
 import {
-	MultiSelector,
-	MultiSelectorContent,
-	MultiSelectorInput,
-	MultiSelectorItem,
-	MultiSelectorList,
-	MultiSelectorTrigger
+	MultiSelect,
+	MultiSelectContent,
+	MultiSelectItem,
+	MultiSelectList,
+	MultiSelectOptionItem,
+	MultiSelectTrigger,
+	MultiSelectValue
 } from "./components/ui/multi-select"
 
 interface IGroupOperation {
@@ -51,7 +52,9 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 	const cookie = useCookie()
 	const [groupName, setGroupName] = useState<string>("")
 	const [owner, setOwner] = useState<string>("")
-	const [selectedUsers, setSelectedUsers] = useState<string[]>([])
+	const [selectedUsers, setSelectedUsers] = useState<
+		{ label: string; value: string }[]
+	>([])
 
 	const {
 		register,
@@ -80,9 +83,13 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 	}
 
 	const clearInput = () => {
-		setGroupName("")
-		setOwner("")
-		setSelectedUsers([])
+		setGroupName(props.content.group_name)
+		setOwner(props.content.owner?.user_code as string)
+		setSelectedUsers(
+			props.content.members.map(m => {
+				return { label: m.user_name, value: m.user_code }
+			}) as { label: string; value: string }[]
+		)
 	}
 
 	const updateGroup = (
@@ -174,7 +181,7 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 										onChange={e =>
 											setGroupName(e.target.value)
 										}
-										value={props.content.group_name}
+										value={groupName}
 									/>
 								</div>
 								<div className="flex flex-col space-y-1">
@@ -199,33 +206,43 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 								</div>
 								<div className="flex flex-col space-y-1">
 									<Label htmlFor="members">成员</Label>
-									<MultiSelector
-										values={selectedUsers}
-										onValuesChange={setSelectedUsers}
-										className="max-w-xs w-full"
+									<MultiSelect
+										defaultValue={selectedUsers.map(
+											u => u.label
+										)}
+										onValueChange={(
+											value: string[],
+											items: MultiSelectOptionItem[]
+										) =>
+											setSelectedUsers(
+												items.map(item => {
+													return {
+														label: item.label as string,
+														value: item.value
+													}
+												})
+											)
+										}
 									>
-										<MultiSelectorTrigger>
-											<MultiSelectorInput placeholder="选择用户" />
-										</MultiSelectorTrigger>
-										<MultiSelectorContent>
-											<MultiSelectorList>
+										<MultiSelectTrigger>
+											<MultiSelectValue placeholder="选择用户" />
+										</MultiSelectTrigger>
+										<MultiSelectContent>
+											<MultiSelectList>
 												{props.userOptions.map(
 													userOption => (
-														<MultiSelectorItem
-															key={
-																userOption.value
-															}
+														<MultiSelectItem
 															value={
 																userOption.value
 															}
 														>
 															{userOption.label}
-														</MultiSelectorItem>
+														</MultiSelectItem>
 													)
 												)}
-											</MultiSelectorList>
-										</MultiSelectorContent>
-									</MultiSelector>
+											</MultiSelectList>
+										</MultiSelectContent>
+									</MultiSelect>
 								</div>
 							</div>
 						</form>
@@ -245,7 +262,7 @@ const GroupOperation: React.FC<IGroupOperation> = props => {
 									props.content.group_code,
 									groupName,
 									owner,
-									selectedUsers.join(",")
+									selectedUsers.map(u => u.value).join(",")
 								)
 								setDialogOpen(false)
 							})}

@@ -121,7 +121,6 @@ async def change_issue(
     _user = check_cookie(cookie=current_user)
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
-    issue = empty_strings_to_none(issue)
     issue_do = db.find_issue_by_code(issue_code=issue.issue_code)
     if issue_do is None:
         return {"success": False, "reason": "Cannot find issue"}
@@ -132,9 +131,6 @@ async def change_issue(
         issue.status if issue.status is not None else issue_do.status
     )
     issue_do.tags = issue.tags if issue.tags is not None else issue_do.tags
-    issue_do.followers = (
-        issue.followers if issue.followers is not None else issue_do.followers
-    )
     issue_do.assigned = (
         issue.assigned if issue.assigned is not None else issue_do.assigned
     )
