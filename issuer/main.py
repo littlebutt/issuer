@@ -3,7 +3,15 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from issuer.db import DatabaseFactory, User, Metas, insert_user, insert_metas
-from issuer.routers import users, user_group, project, issue, comment, notice
+from issuer.routers import (
+    hooks,
+    users,
+    user_group,
+    project,
+    issue,
+    comment,
+    notice,
+)
 
 
 def get_statics_path():
@@ -27,6 +35,7 @@ app.include_router(project.router)
 app.include_router(issue.router)
 app.include_router(comment.router)
 app.include_router(notice.router)
+app.include_router(hooks.router)
 app.mount(
     "/statics", StaticFiles(directory=get_statics_path()), name="statics"
 )
@@ -38,6 +47,8 @@ async def create_engine():
     # 创建schema
     app.db = DatabaseFactory.get_db()
 
+    # TODO: 通过环境变量或者``.env``定制化初始变量
+
     # 添加管理员
     admin = User(
         user_name="admin",
@@ -46,6 +57,15 @@ async def create_engine():
         email="admin@issuer.com",
     )
     insert_user(admin)
+
+    # 添加机器人
+    bot = User(
+        user_name="自动评论",
+        passwd="21232f297a57a5a743894a0e4a801fc3",
+        role="admin",
+        email="bot@issuer.com",
+    )
+    insert_user(bot)
 
     # 添加管理员角色
     user_role_admin = Metas(

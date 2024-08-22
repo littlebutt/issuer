@@ -7,7 +7,7 @@ from issuer.db import (
     list_issue_comment_by_issue,
     delete_issue_comment_by_issue,
     list_issue_comment_by_commenter,
-    change_issue_comment_by_code,
+    update_issue_comment_by_code,
     find_issue_comment_by_code,
 )
 from issuer.db.models import IssueComment
@@ -66,7 +66,7 @@ def test_change_issue_comment_by_code():
     assert comment_code is not None
 
     issue_comment.fold = True
-    res = change_issue_comment_by_code(issue_comment)
+    res = update_issue_comment_by_code(issue_comment)
     assert res is True
 
     res = find_issue_comment_by_code(comment_code=comment_code)

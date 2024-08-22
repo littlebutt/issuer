@@ -42,7 +42,6 @@ const Login: React.FC = () => {
 	} = useForm()
 
 	const switchMode = () => {
-		// FIXME: 切换登录和注册清除用户所有输入
 		setLoginMode(!loginMode)
 		setEmail("")
 		setUsername("")
@@ -103,7 +102,7 @@ const Login: React.FC = () => {
 					toast({
 						title: "注册成功"
 					})
-					setLoginMode(true)
+					switchMode()
 				} else {
 					toast({
 						title: "注册失败"

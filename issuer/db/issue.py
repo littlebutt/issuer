@@ -73,6 +73,23 @@ def find_issue_by_code(issue_code: str) -> Optional["Issue"]:
     return None
 
 
+def find_issue_by_project_and_code_id(
+    project_code: str, issue_id: int
+) -> Optional["Issue"]:
+    try:
+        with Session(DatabaseFactory.get_db().get_engine()) as session:
+            stmt = (
+                select(Issue)
+                .where(Issue.project_code == project_code)
+                .where(Issue.issue_id == issue_id)
+            )
+            res = session.exec(stmt).one()
+            return res
+    except Exception as e:
+        Logger.error(e)
+    return None
+
+
 def list_issues_by_condition(
     issue_code: Optional[str] = None,
     project_code: Optional[str] = None,

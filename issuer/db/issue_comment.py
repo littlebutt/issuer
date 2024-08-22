@@ -42,7 +42,7 @@ def delete_issue_comment_by_issue(issue_code: str) -> bool:
     return True
 
 
-def change_issue_comment_by_code(comment: "IssueComment") -> bool:
+def update_issue_comment_by_code(comment: "IssueComment") -> bool:
     try:
         with Session(DatabaseFactory.get_db().get_engine()) as session:
             stmt = select(IssueComment).where(

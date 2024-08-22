@@ -48,11 +48,12 @@ from issuer.db.issue import (
     delete_all_issues,
     count_issues_by_condition,
     find_issue_by_code,
+    find_issue_by_project_and_code_id,
 )
 from issuer.db.issue_comment import (
     insert_issue_comment,
     delete_all_issue_comments,
-    change_issue_comment_by_code,
+    update_issue_comment_by_code,
     delete_issue_comment_by_issue,
     list_issue_comment_by_commenter,
     list_issue_comment_by_issue,

@@ -68,7 +68,7 @@ async def fold_comment(
     if comment.commenter != _user.user_code:
         return {"success": False, "reason": "Permission denied"}
     comment.fold = True
-    res = db.change_issue_comment_by_code(comment)
+    res = db.update_issue_comment_by_code(comment)
     if res is False:
         return {"success": res}
 
