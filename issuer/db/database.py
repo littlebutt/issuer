@@ -4,6 +4,7 @@ from typing import ClassVar
 from sqlalchemy import Engine
 from sqlmodel import SQLModel, create_engine
 
+from issuer.config import GET_CONFIG
 from issuer.db import models
 
 
@@ -14,7 +15,7 @@ def get_default_db_url() -> str:
     return "sqlite:///" + db_file
 
 
-SQLALCHEMY_DB_URL = os.getenv("DB_URL", default=get_default_db_url())
+SQLALCHEMY_DB_URL = GET_CONFIG("DB_URL", get_default_db_url())
 
 
 class Database:

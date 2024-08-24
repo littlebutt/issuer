@@ -1,7 +1,11 @@
 import os
+import sys
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from issuer.config import GET_CONFIG
 from issuer.db import DatabaseFactory, User, Metas, insert_user, insert_metas
 from issuer.routers import (
     hooks,
@@ -109,3 +113,11 @@ async def create_engine():
         meta_type="ISSUE_STATUS", meta_value="closed", note="关闭"
     )
     insert_metas(issue_status_closed)
+
+
+# 启动应用
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("issuer.main:app",
+                host=GET_CONFIG("HOST", "127.0.0.1"),
+                port=int(GET_CONFIG("PORT", 8000)))

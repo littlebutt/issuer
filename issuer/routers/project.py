@@ -4,6 +4,7 @@ from typing import Annotated, Dict, List, Optional, Sequence
 from fastapi import APIRouter, Cookie
 
 from issuer import db
+from issuer.config import GET_CONFIG
 from issuer.db.models import Issue, Project, ProjectToUser
 from issuer.routers.convertors import convert_project
 from issuer.routers.models import (
@@ -519,3 +520,8 @@ async def stat_issue_date(
         if issue.propose_date.strftime("%Y-%m-%d") in res.keys():
             res[issue.propose_date.strftime("%Y-%m-%d")] += 1
     return {"success": True, "data": res}
+
+
+@router.get("/gitea_hook_url")
+async def get_gitea_hook_url(project_code: str):
+    return {"success": True, "data": f"{GET_CONFIG('HOST', '127.0.0.1')}:{GET_CONFIG('PORT', '8000')}/hooks/project/{project_code}"} # noqa
