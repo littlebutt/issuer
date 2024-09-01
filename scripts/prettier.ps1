@@ -4,6 +4,10 @@ $parentPath = Split-Path -Parent $currentPath
 
 $webPath = Join-Path -Path $parentPath -ChildPath `web`
 
-npx.ps1 --prefix $webPath prettier --write .
+Write-Output "Format .tsx files"
 
-Set-Location $parentPath && ruff.exe format 
+npx.ps1 --prefix $webPath prettier --write . --log-level=warn
+
+Write-Output "Format .py files"
+
+Set-Location $parentPath && ruff.exe format
