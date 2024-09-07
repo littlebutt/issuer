@@ -524,4 +524,7 @@ async def stat_issue_date(
 
 @router.get("/gitea_hook_url")
 async def get_gitea_hook_url(project_code: str):
-    return {"success": True, "data": f"{GET_CONFIG('HOST', '127.0.0.1')}:{GET_CONFIG('PORT', '8000')}/hooks/project/{project_code}"} # noqa
+    return {
+        "success": True,
+        "data": f"http://{GET_CONFIG('HOST', '127.0.0.1')}:{GET_CONFIG('PORT', '8000')}/hooks/project/{project_code}",
+    }  # noqa

@@ -118,6 +118,9 @@ async def create_engine():
 # 启动应用
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("issuer.main:app",
-                host=GET_CONFIG("HOST", "127.0.0.1"),
-                port=int(GET_CONFIG("PORT", 8000)))
+
+    uvicorn.run(
+        "issuer.main:app",
+        host=GET_CONFIG("HOST", "127.0.0.1"),
+        port=int(GET_CONFIG("PORT", 8000)),
+    )

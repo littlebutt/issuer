@@ -1,3 +1,0 @@
-[flake8]
-ignore = F401, W504
-exclude = .venv

@@ -4,8 +4,7 @@ from typing import Any, ClassVar
 from dotenv import load_dotenv
 
 
-class ConfigDict():
-
+class ConfigDict:
     def __init__(self) -> None:
         load_dotenv()
 

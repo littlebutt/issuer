@@ -21,7 +21,7 @@ import {
 } from "./components/ui/collapsible"
 import { Label } from "./components/ui/label"
 import { Button } from "./components/ui/button"
-import { ChevronsUpDown } from "lucide-react"
+import { ChevronsUpDown, Clipboard } from "lucide-react"
 import IssuePanel from "./issue-panel"
 import { Calendar } from "./components/ui/calendar"
 import {
@@ -47,6 +47,7 @@ import {
 	PieChart
 } from "recharts"
 import ProjectEdit from "./project-edit"
+import axios from "axios"
 
 const Project: React.FC = () => {
 	const { projectCode } = useParams()
@@ -72,7 +73,7 @@ const Project: React.FC = () => {
 		}
 	])
 	const [chartConfigReady, setChartConfigReady] = useState<boolean>(false)
-	const [isStatsOpen, setIsStatsOpen] = useState<boolean>(true)
+	const [isStatsOpen, setIsStatsOpen] = useState<boolean>(false)
 	const [isAdvancedOpen, setIsAdvancedOpen] = useState<boolean>(false)
 
 	const [statDate, setStatDate] = React.useState<DateRange | undefined>({
@@ -116,6 +117,23 @@ const Project: React.FC = () => {
 		{ status: string; value: Number; fill: string }[]
 	>([])
 	const [chartTotal, setChartTotal] = useState<number>(0)
+
+	const [giteaHookUrl, setGiteaHookUrl] = useState<string>("")
+
+	const fetchGiteaHook = () => {
+		axios({
+			method: "GET",
+			url: `/project/gitea_hook_url?project_code=${projectCode}`
+		})
+			.then(res => {
+				if (res.status === 200 && res.data.success === true) {
+					setGiteaHookUrl(res.data.data)
+				} else {
+					setGiteaHookUrl("error")
+				}
+			})
+			.catch(err => console.log(err))
+	}
 
 	const refresh = () => {
 		getProjects(projectCode as string, "", "", "", "", "", "")
@@ -190,6 +208,33 @@ const Project: React.FC = () => {
 			.catch(err => console.log(err))
 	}, [statDate])
 
+	const toClipboard = (content: string) => {
+		try {
+			navigator.clipboard.writeText(content)
+			toast({
+				title: "已复制",
+				variant: "success"
+			})
+		} catch (err) {
+			console.log(err)
+		}
+	}
+
+	const formatUrl = (url: string) => {
+		return (
+			<div className="flex space-x-1 align-middle">
+				<span className="">{url}</span>
+				<Button
+					size="sm"
+					variant="ghost"
+					onClick={() => toClipboard(url)}
+				>
+					<Clipboard className="h-4 w-4" />
+				</Button>
+			</div>
+		)
+	}
+
 	useEffect(() => {
 		initStatusChartConfig()
 	}, [issueStatuses])
@@ -204,6 +249,7 @@ const Project: React.FC = () => {
 		fetchIssueStatuses(issueStatuses, setIssueStatuses)
 		fetchUserOptions(userOptions, setUserOptions)
 		fetchProjectPrivileges(projectPrivileges, setProjectPrivileges)
+		fetchGiteaHook()
 	}, [])
 	return (
 		<div className="w-full flex flex-row space-x-2 p-1">
@@ -288,6 +334,35 @@ const Project: React.FC = () => {
 								{project.description}
 							</div>
 						</div>
+					</div>
+					<div>
+						<Collapsible
+							open={isAdvancedOpen}
+							onOpenChange={setIsAdvancedOpen}
+							className="w-full space-y-2"
+						>
+							<div className="flex items-center justify-between space-x-4">
+								<div className="text-sm font-normal text-muted-foreground">
+									高级
+								</div>
+								<CollapsibleTrigger asChild>
+									<Button
+										variant="ghost"
+										size="sm"
+										className="w-9 p-0"
+									>
+										<ChevronsUpDown className="h-4 w-4" />
+										<span className="sr-only">Toggle</span>
+									</Button>
+								</CollapsibleTrigger>
+							</div>
+							<CollapsibleContent className="space-y-2">
+								<div className="w-full flex flex-col space-y-1 font-mono text-sm">
+									<div>Gitea 钩子</div>
+									<div>{formatUrl(giteaHookUrl)}</div>
+								</div>
+							</CollapsibleContent>
+						</Collapsible>
 					</div>
 					<div>
 						<Collapsible
@@ -464,35 +539,6 @@ const Project: React.FC = () => {
 											</Pie>
 										</PieChart>
 									</ChartContainer>
-								</div>
-							</CollapsibleContent>
-						</Collapsible>
-					</div>
-					<div>
-						<Collapsible
-							open={isAdvancedOpen}
-							onOpenChange={setIsAdvancedOpen}
-							className="w-full space-y-2"
-						>
-							<div className="flex items-center justify-between space-x-4">
-								<div className="text-sm font-normal text-muted-foreground">
-									高级
-									{/* TODO: 修改高级 */}
-								</div>
-								<CollapsibleTrigger asChild>
-									<Button
-										variant="ghost"
-										size="sm"
-										className="w-9 p-0"
-									>
-										<ChevronsUpDown className="h-4 w-4" />
-										<span className="sr-only">Toggle</span>
-									</Button>
-								</CollapsibleTrigger>
-							</div>
-							<CollapsibleContent className="space-y-2">
-								<div className="rounded-md border px-4 py-3 font-mono text-sm">
-									Content
 								</div>
 							</CollapsibleContent>
 						</Collapsible>
