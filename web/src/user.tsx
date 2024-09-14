@@ -208,7 +208,7 @@ const User: React.FC = () => {
 							<Mail className="text-muted-foreground" size={20} />
 							<span>{userInfo.email}</span>
 						</div>
-						{!userInfo.phone ?? (
+						{userInfo.phone && (
 							<div className="flex justify-between">
 								<Phone
 									className="text-muted-foreground"
@@ -218,7 +218,7 @@ const User: React.FC = () => {
 							</div>
 						)}
 
-						{!userInfo.description ?? (
+						{userInfo.description && (
 							<div className="text-base text-muted-foreground overflow-auto m-1 w-full">
 								{userInfo.description}
 							</div>

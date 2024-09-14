@@ -33,7 +33,7 @@ export function SideMenu({ menuList, className }: MenuProps) {
 							key={index}
 						>
 							{groupLabel ? (
-								<p className="text-sm font-medium text-muted-foreground px-4 pb-2 max-w-[248px] truncate">
+								<p className="text-sm font-medium text-muted-foreground px-4 pb-2 max-w-[248px] truncate hidden md:block">
 									{groupLabel}
 								</p>
 							) : (
@@ -48,8 +48,11 @@ export function SideMenu({ menuList, className }: MenuProps) {
 													className="w-full justify-start h-10 mb-1 hover:bg-zinc-500"
 													asChild
 												>
-													<Link to={href}>
-														<span className="mr-4 text-sky-500">
+													<Link
+														to={href}
+														className="pl-2 md:pl-4"
+													>
+														<span className="text-white md:mr-4">
 															<Icon size={18} />
 														</span>
 														<p className="max-w-[200px] truncate translate-x-0 opacity-100">

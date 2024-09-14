@@ -98,7 +98,7 @@ const Header: React.FC = () => {
 	}, [])
 
 	return (
-		<div className="w-full h-[8%] bg-zinc-950 mb-2">
+		<div className="w-full h-[8%] bg-zinc-950 mb-2 hidden md:block">
 			<div className="w-32 float-end my-1">
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>

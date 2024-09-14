@@ -73,7 +73,7 @@ const Layout: React.FC = () => {
 	return (
 		<div className="grid grid-cols-[1fr_8fr] h-screen w-full">
 			<SideMenu
-				className="bg-zinc-950 text-white"
+				className="bg-zinc-950 text-white min-w-[50px]"
 				menuList={menuList}
 			></SideMenu>
 			<div className="flex flex-col h-full">

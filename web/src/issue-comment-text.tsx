@@ -74,6 +74,7 @@ const IssueCommentText: React.FC<IIssueCommentText> = props => {
 			props.issueCode,
 			commentContent
 		)
+		setCommentContent("")
 	}
 
 	useEffect(() => {

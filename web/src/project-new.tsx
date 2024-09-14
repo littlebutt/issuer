@@ -103,6 +103,13 @@ const ProjectNew: React.FC<IProjectNew> = props => {
 				}
 			})
 			.catch(err => console.log(err))
+		setProjectName("")
+		setStartDate(undefined)
+		setEndDate(undefined)
+		setBudget(0)
+		setDescription("")
+		setNoBudget(false)
+		setPrivilege("Public")
 	}
 
 	useEffect(() => {

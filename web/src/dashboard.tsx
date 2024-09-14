@@ -290,14 +290,14 @@ const Dashboard: React.FC = () => {
 	}, [])
 
 	return (
-		<div className="flex flex-col space-y-1 w-full px-5 py-0 gap-0 h-full">
-			<div className="flex flex-row justify-between h-[6%]">
+		<div className="flex flex-col space-y-1 w-full px-5 py-0 gap-0 h-[93%] md:h-full">
+			<div className="flex flex-row justify-between h-[2%] md:h-[6%]">
 				<div className="text-3xl font-semibold leading-none tracking-tight">
 					{greetings()}
 				</div>
 			</div>
 			<div className="flex h-[92%] flex-col space-y-3">
-				<div className="grid gap-4 grid-cols-3">
+				<div className="grid gap-4 md:grid-cols-3">
 					<Card className="border-2">
 						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 							<CardTitle className="text-xl">议题</CardTitle>
@@ -313,6 +313,7 @@ const Dashboard: React.FC = () => {
 										<Progress
 											value={issueStat.open}
 											total={issuesStatTotal}
+											className="hidden md:block"
 										/>
 									</div>
 									<div className="w-1/5 text-center">
@@ -329,6 +330,7 @@ const Dashboard: React.FC = () => {
 										<Progress
 											value={issueStat.finished}
 											total={issuesStatTotal}
+											className="hidden md:block"
 										/>
 									</div>
 									<div className="w-1/5 text-center">
@@ -345,6 +347,7 @@ const Dashboard: React.FC = () => {
 										<Progress
 											value={issueStat.closed}
 											total={issuesStatTotal}
+											className="hidden md:block"
 										/>
 									</div>
 									<div className="w-1/5 text-center">
@@ -361,6 +364,7 @@ const Dashboard: React.FC = () => {
 										<Progress
 											value={issueStat.other}
 											total={issuesStatTotal}
+											className="hidden md:block"
 										/>
 									</div>
 									<div className="w-1/5 text-center">
@@ -385,6 +389,7 @@ const Dashboard: React.FC = () => {
 										<Progress
 											value={projectStat.start}
 											total={projectStatTotal}
+											className="hidden md:block"
 										/>
 									</div>
 									<div className="w-1/5 text-center">
@@ -401,6 +406,7 @@ const Dashboard: React.FC = () => {
 										<Progress
 											value={projectStat.processing}
 											total={projectStatTotal}
+											className="hidden md:block"
 										/>
 									</div>
 									<div className="w-1/5 text-center">
@@ -417,6 +423,7 @@ const Dashboard: React.FC = () => {
 										<Progress
 											value={projectStat.checking}
 											total={projectStatTotal}
+											className="hidden md:block"
 										/>
 									</div>
 									<div className="w-1/5 text-center">
@@ -433,6 +440,7 @@ const Dashboard: React.FC = () => {
 										<Progress
 											value={projectStat.checked}
 											total={projectStatTotal}
+											className="hidden md:block"
 										/>
 									</div>
 									<div className="w-1/5 text-center">
@@ -449,6 +457,7 @@ const Dashboard: React.FC = () => {
 										<Progress
 											value={projectStat.other}
 											total={projectStatTotal}
+											className="hidden md:block"
 										/>
 									</div>
 									<div className="w-1/5 text-center">
@@ -494,8 +503,8 @@ const Dashboard: React.FC = () => {
 						</CardContent>
 					</Card>
 				</div>
-				<div className="flex flex-row">
-					<div className="w-2/3 p-1">
+				<div className="grid gap-4  md:grid-cols-[2fr_1fr]">
+					<div className="p-1">
 						<div className="w-full flex flex-col space-y-1 border-2 rounded-lg border-zinc-200 p-6 shadow-sm">
 							<div className="flex flex-row justify-start pb-5">
 								<div className="text-xl font-semibold leading-none tracking-tight">
@@ -540,7 +549,7 @@ const Dashboard: React.FC = () => {
 							</Table>
 						</div>
 					</div>
-					<div className="w-1/3 p-1">
+					<div className="p-1">
 						<Card className="border-2 ml-2">
 							<CardHeader className="pb-2">
 								<CardTitle className="text-xl">通知</CardTitle>
@@ -559,7 +568,7 @@ const Dashboard: React.FC = () => {
 												<div className="font-normal text-base">
 													{formatContent(
 														notice.content,
-														10
+														18
 													)}
 												</div>
 											</div>

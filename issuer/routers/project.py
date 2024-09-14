@@ -193,6 +193,9 @@ async def add_project(
     if _user is None:
         return {"success": False, "reason": "Invalid token"}
     project = empty_strings_to_none(project)
+    project = db.find_project_by_code(project.project_code)
+    if project is None:
+        return {"success": False, "reason": "Cannot find project"}
     res = db.insert_project_to_user(
         ProjectToUser(
             project_code=project.project_code, user_code=project.new_member

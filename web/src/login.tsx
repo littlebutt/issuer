@@ -126,11 +126,11 @@ const Login: React.FC = () => {
 	}, [])
 
 	return (
-		<div className="grid grid-cols-[2fr_1fr] h-screen w-full bg-zinc-100">
-			<div className=" bg-zinc-950 dark:bg-white"></div>
-			<div className="h-full grid place-items-center">
+		<div className="grid md:grid-cols-[2fr_1fr] h-screen w-full bg-zinc-100">
+			<div className=" bg-zinc-950 dark:bg-white hidden md:block"></div>
+			<div className="h-full flex justify-center items-center">
 				{loginMode ? (
-					<Card className="w-[350px]">
+					<Card className="w-4/5 h-1/2">
 						<CardHeader>
 							<CardTitle>登录</CardTitle>
 						</CardHeader>
@@ -200,7 +200,7 @@ const Login: React.FC = () => {
 						</CardFooter>
 					</Card>
 				) : (
-					<Card className="w-[350px]">
+					<Card className="w-4/5 h-1/2">
 						<CardHeader>
 							<CardTitle>注册</CardTitle>
 						</CardHeader>
