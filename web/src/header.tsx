@@ -63,6 +63,7 @@ const Header: React.FC = () => {
 			},
 			groupName
 		)
+		setGroupName("")
 	}
 
 	const doSignout = () => {
