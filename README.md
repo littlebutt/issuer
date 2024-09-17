@@ -10,6 +10,8 @@ issuer是一个面向非专业使用者的轻量级软件项目管理系统，�
 
 **响应页面**: 本项目通过 tailwindcss 实现响应式页面，可以在不同设备上正确展示页面信息。
 
+![devices](./docs/devices.jpg)
+
 ### 基本功能
 
 issuer分为三大部分——项目、议题和组织。其中项目是指软件工程项目，议题是针对各个项目提出的需求、BUG和特性，而组织是不同用户的集合。
@@ -85,6 +87,13 @@ issuer可以通过代码托管平台Gitea驱动议题状态，完成需求的代
 
 ![gitea5](./docs/gitea5.jpg)
 
+### 构建
+
+本项目通过`Makefile`构建，确保安装了`make`、`python`和`node`，命令如下：
+
+- make init: 初始化项目，第一次运行本项目的时候执行
+- make build-front: 编译前端项目
+- make start: 运行项目
 
 ### 贡献
 
